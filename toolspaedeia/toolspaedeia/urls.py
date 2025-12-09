@@ -24,5 +24,6 @@ from django.urls import include, path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("visualizer.urls")),
+    path("savings/", include("savings.urls")),
     *static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
 ]
