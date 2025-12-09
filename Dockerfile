@@ -4,7 +4,7 @@ COPY . /app
 WORKDIR /app/toolspaedeia/
 
 # deps
-RUN uv sync --locked
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --locked
 ENV PATH="/app/.venv/bin:$PATH"
 
 # static files
