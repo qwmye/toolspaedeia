@@ -21,7 +21,13 @@ services:
     image: postgres:latest
     container_name: toolspaedeia_postgres
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      POSTGRES_HOST: "postgres"
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: "toolspaedeia"
+      POSTGRES_USER: "root"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    ports:
+      - "8889:5432"
     volumes:
       - local_postgres_data:/var/lib/postgresql:Z
 
