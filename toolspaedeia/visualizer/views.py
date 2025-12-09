@@ -1,11 +1,8 @@
 from enum import Enum
-from io import StringIO
 
 import matplotlib.pyplot as plt
 from django.http import HttpResponse
-from django.shortcuts import render
-
-# Create your views here.
+from toolspaedeia.utils import get_svg_from_plot
 
 INCOME_TAX = 0.1
 
@@ -70,9 +67,6 @@ def generate_graph(request):
             f"{valori_dobanzi[bar_index]:.3f}",
             ha="center",
         )
-    output_svg = StringIO()
-    plt.savefig(output_svg, format="svg")
-    output_svg.seek(0)
-    data = output_svg.getvalue()
+    data = get_svg_from_plot()
 
     return HttpResponse(data)
