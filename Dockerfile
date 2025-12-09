@@ -7,5 +7,5 @@ WORKDIR /app/toolspaedeia/
 RUN uv sync --locked
 ENV PATH="/app/.venv/bin:$PATH"
 
-# migrations
-RUN ./manage.py migrate
+# static files
+RUN ./manage.py collectstatic
