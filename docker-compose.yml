@@ -10,9 +10,8 @@ services:
       context: .
     container_name: toolspaedeia_web
     platform: linux/x86_64
-    command: >
-      sh -c "python manage.py migrate &&
-            uvicorn toolspaedeia.asgi:application --host 0.0.0.0 --port 8888 --reload"
+    volumes:
+      - .:/app:z
     ports:
       - "8888:8888"
     depends_on:
