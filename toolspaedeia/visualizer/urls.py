@@ -1,7 +1,8 @@
 from django.urls import path
 
-from .views import generate_graph
+from .views import VisualizerView, show_demo_svg
 
 urlpatterns = [
-    path("visualize/", generate_graph, name="generate_graph"),
+    path("visualize/", VisualizerView.as_view(), name="visualizer"),
+    path("visualize/ajax", show_demo_svg, name="visualizer-ajax"),
 ]

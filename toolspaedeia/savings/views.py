@@ -28,7 +28,7 @@ class SavingsAccountDetailView(DetailView):
             balance += yearly_income[-1]
         plt.plot(range(1, len(yearly_income) + 1), yearly_income, "b-o")
         for x, y in enumerate(yearly_income):
-            plt.text(x + 1.1, y, f"{y:.5f}")
+            plt.text(x + 0.01 * abs(plt.axis()[1] - plt.axis()[0]), y, f"{y:.5f}")
         plt.title(f"{years} Year Projection")
 
         context_data["projection"] = get_svg_from_plot()

@@ -1,0 +1,30 @@
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+ </head>
+
+<div id="form">
+    {{ form.as_table }}
+</div>
+
+<div id="projection">{{ projection | safe }}</div>
+
+<script>
+    $('#id_initial_balance').on('input', function(e){        
+        $.ajax({
+            type : "POST", 
+            url: "{% url 'visualizer-ajax' %}",
+            data: {
+            initial_balance : $('#id_initial_balance').val(),
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            dataType: "json",
+            },
+            
+            success: function(data){
+                console.log(data)
+                $('#projection').html(data)
+            },
+
+            failure: function() {}
+        });
+    });    
+ </script>
