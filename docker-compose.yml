@@ -10,6 +10,7 @@ services:
       context: .
     container_name: toolspaedeia_web
     platform: linux/x86_64
+    command: sleep infinity
     volumes:
       - .:/app:z
     ports:

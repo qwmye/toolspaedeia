@@ -15,4 +15,4 @@ COPY . /app
 
 WORKDIR /app/toolspaedeia
 
-ENTRYPOINT ["uvicorn", "toolspaedeia.asgi:application", "--host", "0.0.0.0", "--port", "8888", "--reload"]
+CMD ["uvicorn", "toolspaedeia.asgi:application", "--host", "0.0.0.0", "--port", "8888", "--reload"]
