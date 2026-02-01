@@ -9,10 +9,10 @@
 <div id="projection">{{ projection | safe }}</div>
 
 <script>
-    $('#id_initial_balance').on('input', function(e){        
+    const get_svg = () => {
         $.ajax({
             type : "POST", 
-            url: "{% url 'visualizer-ajax' %}",
+            url: "{% url 'visualizer' %}",
             data: {
             initial_balance : $('#id_initial_balance').val(),
             csrfmiddlewaretoken: '{{ csrf_token }}',
@@ -26,5 +26,8 @@
 
             failure: function() {}
         });
-    });    
+    }
+
+    $('#id_initial_balance').on('input', get_svg);
+    $('#form').on('ready', get_svg);
  </script>

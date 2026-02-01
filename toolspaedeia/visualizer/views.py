@@ -83,7 +83,7 @@ def get_demo_svg(initial_balance=None):
 
 
 class VisualizerForm(forms.Form):
-    initial_balance = forms.FloatField(min_value=0, initial=10000)
+    initial_balance = forms.FloatField(min_value=0, initial=10000, required=False)
 
 
 class VisualizerView(FormView):
@@ -100,9 +100,7 @@ class VisualizerView(FormView):
         return context_data
 
     def form_valid(self, form):
+        if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            initial_balance = form.data.get("initial_balance")
+            return HttpResponse(get_demo_svg(initial_balance))
         return self.render_to_response(self.get_context_data(form=form))
-
-def show_demo_svg(request):
-    form = VisualizerForm(request.POST)
-    initial_balance = form.data.get("initial_balance")
-    return HttpResponse(get_demo_svg(initial_balance))
