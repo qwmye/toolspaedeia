@@ -1,13 +1,14 @@
 {% extends "base.html" %}
-
 {% block content %}
-<ul>
-    {% for object in object_list %}
-    <li><a href="{% url 'savings_accounts_detail' object.id %}">{{ object.name }}</a></li>
-    <li>{{ object.actual_interest_rate|floatformat:6 }}</li>
-    <hr/>
-    {% empty %}
-    <li>No objects yet.</li>
-    {% endfor %}
-</ul>
+    <ul>
+        {% for object in object_list %}
+            <li>
+                <a href="{% url 'savings_accounts_detail' object.id %}">{{ object.name }}</a>
+            </li>
+            <li>{{ object.actual_interest_rate|floatformat:6 }}</li>
+            <hr />
+        {% empty %}
+            <li>No objects yet.</li>
+        {% endfor %}
+    </ul>
 {% endblock content %}

@@ -10,3 +10,127 @@ dependencies = [
     "psycopg2-binary>=2.9.11",
     "uvicorn>=0.38.0",
 ]
+
+[tool.ruff]
+fix = true
+show-fixes = true
+line-length = 120
+target-version = "py313"
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+skip-magic-trailing-comma = false
+docstring-code-format = false
+docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint]
+select = [
+    "A",
+    "ARG",
+    "B",
+    "C4",
+    "C90",
+    "D",
+    "DTZ",
+    "DJ",
+    "BLE",
+    "E",
+    "ERA",
+    "F",
+    "FA",
+    "FBT",
+    "FLY",
+    "FURB",
+    "G",
+    "I",
+    "ICN",
+    "INP",
+    "INT",
+    "ISC",
+    "LOG",
+    "N",
+    "PERF",
+    "PIE",
+    "PL",
+    "PYI",
+    "PT",
+    "PTH",
+    "Q",
+    "RET",
+    "RSE",
+    "RUF",
+    "S",
+    "SIM",
+    "SLF",
+    "T20",
+    "TID",
+    "TRY",
+    "UP",
+    "W",
+]
+ignore = [
+    # https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    "COM812",
+    "COM819",
+    "D100",
+    "D101",
+    "D104",
+    "D203",
+    "D205",
+    "D206",
+    "D212",
+    "D300",
+    "E111",
+    "E114",
+    "E117",
+    "Q000",
+    "Q001",
+    "Q002",
+    "Q003",
+    "RUF012",
+    "W191",
+]
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 80
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = [
+    "F401",  # pyflakes: unused import
+]
+
+[tool.ruff.lint.isort]
+case-sensitive = true
+force-single-line = true
+known-first-party = ["toolspaedeia"]
+split-on-trailing-comma = false

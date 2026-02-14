@@ -23,13 +23,9 @@
 
     $('#id_initial_balance').on('input', get_svg);
     $('#form').on('ready', get_svg);
- </script>
+    </script>
 {% endblock head %}
-
 {% block content %}
-<div id="form">
-    {{ form.as_table }}
-</div>
-
-<div id="projection">{{ projection | safe }}</div>
+    <div id="form">{{ form.as_table }}</div>
+    <div id="projection">{{ projection | safe }}</div>
 {% endblock content %}

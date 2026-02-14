@@ -1,18 +1,29 @@
 import matplotlib.pyplot as plt
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView
+from django.views.generic import ListView
+
 from toolspaedeia.utils import get_svg_from_plot
 
 from .models import SavingsAccount
 
 
 class SavingsAccountList(ListView):
+    """List all savings accounts."""
+
     model = SavingsAccount
 
 
 class SavingsAccountDetailView(DetailView):
+    """
+    Details of a saving account.
+
+    Shows a projection of the balance over time.
+    """
+
     model = SavingsAccount
 
     def get_context_data(self, *args, **kwargs):
+        """Add projection data to the context."""
         context_data = super().get_context_data(*args, **kwargs)
 
         years = 10
