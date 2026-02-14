@@ -9,7 +9,7 @@ ENV UV_LINK_MODE=copy
 
 # Install git and ruff
 RUN apt-get update && apt-get install -y git \
-	&& pip install ruff \
+	&& pip install ruff pre-commit \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN --mount=type=cache,target=/root/.cache/uv uv sync --locked

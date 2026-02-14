@@ -10,11 +10,11 @@
         "donjayamanne.git-extension-pack",
         "codezombiech.gitignore",
         "github.vscode-github-actions",
-        "ziyasal.vscode-open-in-github"
+        "ziyasal.vscode-open-in-github",
+        "elagil.pre-commit-helper"
       ],
       "settings": {
         "editor.formatOnSave": true,
-        "python.formatting.provider": "black",
         "python.linting.enabled": true,
         "python.linting.pylintEnabled": false,
         "python.linting.ruffEnabled": true,
