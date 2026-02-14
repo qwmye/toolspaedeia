@@ -1,6 +1,7 @@
 from enum import Enum
 
 import matplotlib.pyplot as plt
+from common.mixins import TitledViewMixin
 from django import forms
 from django.http import HttpResponse
 from django.views.generic import FormView
@@ -107,11 +108,12 @@ class VisualizerForm(forms.Form):
     initial_balance = forms.FloatField(min_value=0, initial=10000, required=False)
 
 
-class VisualizerView(FormView):
+class VisualizerView(TitledViewMixin, FormView):
     """Visualize the projection of the balance over time."""
 
     template_name = "visualizer/visualizer.html"
     form_class = VisualizerForm
+    title = "Visualizer Demo"
 
     def get_context_data(self, **kwargs):
         """Add the projection SVG to the context."""
