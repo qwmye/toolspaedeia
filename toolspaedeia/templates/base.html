@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      {% if request.user.is_authenticated and request.user.preference.theme_mode %} data-theme="{{ request.user.preference.theme_mode }}"{% endif %}>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,61 +8,70 @@
         <meta name="description"
               content="Toolspaedeia is am education tool that helps students learn about tools and practices.">
         <meta name="color-scheme" content="light dark">
-        <link rel="stylesheet"
-              href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.fluid.classless.pumpkin.min.css">
+        {% if request.user.is_authenticated and request.user.preference.color_theme %}
+            <link rel="stylesheet"
+                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.fluid.classless.{{ request.user.preference.color_theme }}.min.css">
+        {% else %}
+            <link rel="stylesheet"
+                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.fluid.classless.min.css">
+        {% endif %}
         <title>{{ title }}</title>
+        <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
+                integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
+                crossorigin="anonymous"
+                defer></script>
         {% block head %}
-            <script type="module" defer>
-                const sunIcon = "&#9728;";
-                const moonIcon = "&#127769;";
-                const savedTheme = localStorage.getItem('theme');
-                const themeToggleButton = document.getElementById('theme-toggle');
-
-                if (savedTheme) {
-                    document.documentElement.setAttribute('data-theme', savedTheme);
-                    themeToggleButton.innerHTML = savedTheme === 'dark' ? moonIcon : sunIcon;
-                } else {
-                    const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    if (prefersDarkMode) {
-                        document.documentElement.setAttribute('data-theme', 'dark');
-                        localStorage.setItem('theme', 'dark');
-                        themeToggleButton.innerHTML = moonIcon;
-                    } else {
-                        document.documentElement.setAttribute('data-theme', 'light');
-                        localStorage.setItem('theme', 'light');
-                        themeToggleButton.innerHTML = sunIcon;
-                    }
-                }
-
-                export const toggleTheme = () => {
-                    const currentTheme = document.documentElement.getAttribute('data-theme');
-                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                    document.documentElement.setAttribute('data-theme', newTheme);
-                    localStorage.setItem('theme', newTheme);
-                    themeToggleButton.innerHTML = newTheme === 'dark' ? moonIcon : sunIcon;
-                }
-
-                themeToggleButton.addEventListener('click', toggleTheme);
-            </script>
         {% endblock head %}
     </head>
     <body>
         <header>
             <nav>
                 {% block nav %}
-                    <ul>
-                        <li>
-                            <a href="{% url 'savings:savings_accounts_list' %}">Savings</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'courses:course_list' %}">Courses</a>
-                        </li>
-                    </ul>
-                    <ul>
-                        <li>
-                            <button id="theme-toggle" aria-label="Toggle theme"></button>
-                        </li>
-                    </ul>
+                    {% if request.user.is_authenticated %}
+                        <ul>
+                            <li>
+                                <h2>
+                                    <a href="{% url 'home' %}">Toolspaedeia</a>
+                                </h2>
+                            </li>
+                            <li>
+                                <h2>
+                                    <a href="{% url 'savings:savings_accounts_list' %}">Savings</a>
+                                </h2>
+                            </li>
+                            <li>
+                                <h2>
+                                    <a href="{% url 'courses:course_list' %}">Courses</a>
+                                </h2>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li>
+                                {% comment %}
+                                <a href="{% url 'users:profile' %}">{{ request.user.username }}</a>
+                                {% endcomment %}
+                                <form action="{% url 'users:logout' %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit">Logout</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form action="{% url 'users:switch_theme' %}">
+                                    <button id="theme-toggle" type="submit" aria-label="Toggle theme">
+                                        {% if request.user.preference.theme_mode == 'dark' %}
+                                            <input type="hidden" name="theme_mode" value="light">
+                                            ☀️
+                                        {% else %}
+                                            <input type="hidden" name="theme_mode" value="dark">
+                                            🌙
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    {% else %}
+                        <a href="{% url 'users:login' %}">Login</a>
+                    {% endif %}
                 {% endblock nav %}
             </nav>
         </header>
