@@ -19,7 +19,7 @@ class Frecventa(Enum):
 
 
 class Cont:
-    """Cont de economii."""
+    """Generic savings account."""
 
     per_annum: float
     frecventa: Frecventa
@@ -36,42 +36,42 @@ class Cont:
 
 
 class ING(Cont):
-    """ING economy account."""
+    """ING savings account."""
 
     per_annum = 6
     frecventa = Frecventa.QUARTERLY
 
 
 class RevolutStandard(Cont):
-    """Revolut economy account, "Standard" plan."""
+    """Revolut savings account, "Standard" plan."""
 
     per_annum = 2.5
     frecventa = Frecventa.DAILY
 
 
 class RevolutMetal(Cont):
-    """Revolut economy account, "Metal" plan."""
+    """Revolut savings account, "Metal" plan."""
 
     per_annum = 3.75
     frecventa = Frecventa.DAILY
 
 
 class RevolutUltra(Cont):
-    """Revolut economy account, "Ultra" plan."""
+    """Revolut savings account, "Ultra" plan."""
 
     per_annum = 4.25
     frecventa = Frecventa.DAILY
 
 
 class Salt(Cont):
-    """Salt economy account Bank."""
+    """Salt savings account Bank."""
 
     per_annum = 6.75
     frecventa = Frecventa.YEARLY
 
 
 class BT(Cont):
-    """BT economy account."""
+    """BT savings account."""
 
     per_annum = 6.25
     frecventa = Frecventa.YEARLY
