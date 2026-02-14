@@ -1,8 +1,9 @@
 # Register your models here.
 
-from common.services import markdown_to_html
 from django.contrib import admin
 from django.utils.html import format_html
+
+from toolspaedeia.utils import markdown_to_html
 
 from .models import Course
 from .models import Module

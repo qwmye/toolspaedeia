@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
-from common.mixins import TitledViewMixin
 from django.views.generic import DetailView
 from django.views.generic import ListView
 
+from toolspaedeia.mixins import TitledViewMixin
 from toolspaedeia.utils import get_svg_from_plot
 
 from .models import SavingsAccount
@@ -13,6 +13,7 @@ class SavingsAccountList(TitledViewMixin, ListView):
 
     model = SavingsAccount
     title = "Savings Accounts"
+    context_object_name = "savings_accounts"
 
 
 class SavingsAccountDetailView(TitledViewMixin, DetailView):
@@ -24,6 +25,7 @@ class SavingsAccountDetailView(TitledViewMixin, DetailView):
 
     model = SavingsAccount
     title = "Savings Account Details"
+    context_object_name = "savings_account"
 
     def get_context_data(self, *args, **kwargs):
         """Add projection data to the context."""

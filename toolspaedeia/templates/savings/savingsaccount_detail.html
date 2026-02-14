@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>{{ object.name }}</h1>
+    <h1>{{ saving_account.name }}</h1>
     <p>
         Assuming an initial balance of <b>{{ initial_balance|floatformat:6 }}</b>,
         after {{ years }} years, the total profit is <b>{{ balance_diff|floatformat:6 }}</b>,

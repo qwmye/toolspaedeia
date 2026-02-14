@@ -27,5 +27,5 @@
     8888
   ],
   "name": "Django Dev Container",
-  "overrideCommand": false
+  "overrideCommand": true
 }
