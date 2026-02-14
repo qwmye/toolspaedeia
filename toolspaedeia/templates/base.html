@@ -20,6 +20,8 @@
                 integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
                 crossorigin="anonymous"
                 defer></script>
+        <link href=" https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@3.3.1/css/all/all.min.css "
+              rel="stylesheet">
         {% block head %}
         {% endblock head %}
     </head>
@@ -60,10 +62,10 @@
                                     <button id="theme-toggle" type="submit" aria-label="Toggle theme">
                                         {% if request.user.preference.theme_mode == 'dark' %}
                                             <input type="hidden" name="theme_mode" value="light">
-                                            ☀️
+                                            <i class="fi fi-br-sun"></i>
                                         {% else %}
                                             <input type="hidden" name="theme_mode" value="dark">
-                                            🌙
+                                            <i class="fi fi-rr-moon-stars"></i>
                                         {% endif %}
                                     </button>
                                 </form>
@@ -74,6 +76,7 @@
                     {% endif %}
                 {% endblock nav %}
             </nav>
+            <hr />
         </header>
         <main>
             {% block content %}
