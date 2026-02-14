@@ -1,14 +1,31 @@
 {
   "customizations": {
-    "extensions": [
-      "ms-python.python",
-      "ms-python.vscode-pylance"
-    ]
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "ms-python.debugpy",
+        "ms-python.vscode-python-envs",
+        "donjayamanne.git-extension-pack",
+        "codezombiech.gitignore",
+        "github.vscode-github-actions",
+        "ziyasal.vscode-open-in-github"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "python.formatting.provider": "black",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": false,
+        "python.linting.ruffEnabled": true,
+        "python.pythonPath": "/usr/local/bin/python"
+      }
+    }
   },
   "dockerFile": "../Dockerfile",
   "forwardPorts": [
     8888
   ],
   "name": "Django Dev Container",
-  "postCreateCommand": "uv pip install -r requirements.txt || uv pip install -e ."
+  "overrideCommand": false
 }
