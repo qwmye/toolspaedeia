@@ -11,7 +11,10 @@ from toolspaedeia.utils import markdown_to_html
 class CourseDetailView(TitledViewMixin, DetailView):
     model = Course
     context_object_name = "course"
-    title = "Course Details"
+
+    def get_title(self):
+        """Return the course name as the title."""
+        return self.get_object().name
 
 
 class CourseListView(TitledViewMixin, ListView):
@@ -23,7 +26,10 @@ class CourseListView(TitledViewMixin, ListView):
 class ModuleDetailView(TitledViewMixin, DetailView):
     model = Module
     context_object_name = "module"
-    title = "Module Details"
+
+    def get_title(self):
+        """Return the module title and course name as the title."""
+        return f"{self.get_object().title} | {self.get_object().course.name}"
 
     def get_context_data(self, **kwargs):
         """Add the module content in HTML format to the context."""
