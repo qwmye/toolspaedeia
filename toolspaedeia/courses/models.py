@@ -6,8 +6,8 @@ class Course(models.Model):
 
     name = models.CharField(max_length=255)
     description = models.TextField()
-    start_date = models.DateField(null=True)
-    end_date = models.DateField(null=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.name
