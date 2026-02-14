@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+
+{% block content %}
 <h1>{{object.name}}</h1>
 <p>
     Assuming an initial balance of <b>{{ initial_balance|floatformat:6 }}</b>,
@@ -7,3 +10,4 @@
 <p>
     {{ projection|safe }}
 </p>
+{% endblock content %}
