@@ -1,24 +1,37 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms import ModelForm
 from django.http import HttpResponse
-from django.shortcuts import redirect
-from django.views import View
+from django.urls import reverse_lazy
+from django.views.generic import FormView
 
 from users.models import UserPreferences
 
 
-class UserPreferencesView(View):
-    """View to display and manage user preferences."""
+class UserProfileFormView(LoginRequiredMixin, FormView):
+    class UserProfileModelForm(ModelForm):
+        """Inline to update user preferences."""
 
-    def get(self, request):
-        """Handle POST requests to update user preferences."""
-        if not (request.user.is_authenticated and request.user.is_active):
+        class Meta:
+            """Meta class for user preferences inline form."""
+
+            model = UserPreferences
+            fields = ["profile_picture", "color_theme", "theme_mode"]
+
+    form_class = UserProfileModelForm
+    template_name = "users/profile.html"
+    success_url = reverse_lazy("users:profile")
+
+    def get_form_kwargs(self):
+        """Get form kwargs for user profile form."""
+        kwargs = super().get_form_kwargs()
+        if self.request.user.is_authenticated:
+            kwargs["instance"] = self.request.user.preference
+        return kwargs
+
+    def form_valid(self, form):
+        """Handle valid form submission for user profile form."""
+        if not (self.request.user.is_authenticated and self.request.user.is_active):
             return HttpResponse("Unauthorized", status=401)
 
-        color_theme = request.GET.get("color_theme")
-        theme_mode = request.GET.get("theme_mode")
-        preferences, _ = UserPreferences.objects.get_or_create(user=request.user)
-        if color_theme:
-            preferences.color_theme = color_theme
-        if theme_mode:
-            preferences.theme_mode = theme_mode
-        preferences.save()
-        return redirect(request.META.get("HTTP_REFERER", "/"))
+        form.save()
+        return super().form_valid(form)

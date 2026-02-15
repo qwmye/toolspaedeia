@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"
-      {% if request.user.is_authenticated and request.user.preference.theme_mode %} data-theme="{{ request.user.preference.theme_mode }}"{% endif %}>
+      {% if request.user.is_authenticated and request.user.preference.theme_mode %} data-theme="{{ request.user.preference.theme_mode }}" {% endif %}>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,10 +10,10 @@
         <meta name="color-scheme" content="light dark">
         {% if request.user.is_authenticated and request.user.preference.color_theme %}
             <link rel="stylesheet"
-                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.fluid.classless.{{ request.user.preference.color_theme }}.min.css">
+                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.{{ request.user.preference.color_theme }}.min.css">
         {% else %}
             <link rel="stylesheet"
-                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.fluid.classless.min.css">
+                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css">
         {% endif %}
         <title>{{ title }}</title>
         <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
@@ -49,24 +49,25 @@
                         </ul>
                         <ul>
                             <li>
-                                {% comment %}
-                                <a href="{% url 'users:profile' %}">{{ request.user.username }}</a>
-                                {% endcomment %}
-                                <form action="{% url 'users:logout' %}" method="post">
-                                    {% csrf_token %}
-                                    <button type="submit">Logout</button>
+                                <form>
+                                    <button formaction="{% url 'users:profile' %}"
+                                            formmethod="get"
+                                            type="submit"
+                                            data-tooltip="Settings"
+                                            data-placement="bottom">
+                                        <i class="fi fi-br-gears"></i>
+                                    </button>
                                 </form>
                             </li>
                             <li>
-                                <form action="{% url 'users:switch_theme' %}">
-                                    <button id="theme-toggle" type="submit" aria-label="Toggle theme">
-                                        {% if request.user.preference.theme_mode == 'dark' %}
-                                            <input type="hidden" name="theme_mode" value="light">
-                                            <i class="fi fi-br-sun"></i>
-                                        {% else %}
-                                            <input type="hidden" name="theme_mode" value="dark">
-                                            <i class="fi fi-rr-moon-stars"></i>
-                                        {% endif %}
+                                <form>
+                                    {% csrf_token %}
+                                    <button formaction="{% url 'users:logout' %}"
+                                            formmethod="post"
+                                            type="submit"
+                                            data-tooltip="Logout"
+                                            data-placement="bottom">
+                                        <i class="fi fi-br-power"></i>
                                     </button>
                                 </form>
                             </li>
@@ -75,6 +76,15 @@
                         <a href="{% url 'users:login' %}">Login</a>
                     {% endif %}
                 {% endblock nav %}
+            </nav>
+            <nav aria-label="breadcrumb">
+                <ul>
+                    {% block breadcrumbs %}
+                        <li>
+                            <a href="{% url 'home' %}">Home</a>
+                        </li>
+                    {% endblock breadcrumbs %}
+                </ul>
             </nav>
             <hr />
         </header>

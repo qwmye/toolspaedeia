@@ -46,3 +46,4 @@ coverage.xml
 
 # Dev files
 staticfiles/
+profile_pictures/
