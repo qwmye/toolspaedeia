@@ -38,8 +38,18 @@ class UserCourseListView(TitledViewMixin, LoginRequiredMixin, ListView):
     def get_queryset(self):
         """Return the list of courses the user is enrolled in."""
         if self.request.user.is_superuser:
-            return Course.objects.all()
+            return Course.objects.exclude(publisher=self.request.user)
         return Course.objects.filter(purchases__user=self.request.user).distinct()
+
+    def get_context_data(self, *args, **kwargs):
+        """
+        Add the list of published courses and permission to publish course to
+        the context.
+        """
+        context_data = super().get_context_data(*args, **kwargs)
+        context_data["can_publish_course"] = self.request.user.has_perm("courses.publish_course")
+        context_data["published_courses"] = Course.objects.filter(publisher=self.request.user)
+        return context_data
 
 
 class BrowseCourseListView(TitledViewMixin, LoginRequiredMixin, ListView):
@@ -57,7 +67,7 @@ class BrowseCourseListView(TitledViewMixin, LoginRequiredMixin, ListView):
         """
         context_data = super().get_context_data(*args, **kwargs)
         for course in context_data["courses"]:
-            if self.request.user.is_superuser:
+            if self.request.user.is_superuser or course.publisher == self.request.user:
                 course.is_purchased = True
             else:
                 course.is_purchased = course.purchases.filter(user=self.request.user).exists()

@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
 
@@ -9,6 +10,9 @@ class Course(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
+    publisher = models.ForeignKey(
+        get_user_model(), related_name="published_courses", on_delete=models.SET_NULL, null=True
+    )
 
     class Meta:
         """Meta class for the Course model."""
