@@ -48,3 +48,15 @@ class UserPreferences(models.Model):
 
     def __str__(self) -> str:
         return f"Preferences for {self.user.username}"
+
+
+class Purchase(models.Model):
+    """Model to represent a purchase made by a user."""
+
+    user = models.ForeignKey(get_user_model(), related_name="purchases", on_delete=models.CASCADE)
+    course = models.ForeignKey("courses.Course", related_name="purchases", on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    purchase_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"Purchase of {self.course.name} by {self.user.username} on {self.purchase_date}"

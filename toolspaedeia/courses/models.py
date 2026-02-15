@@ -9,6 +9,13 @@ class Course(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
 
+    class Meta:
+        """Meta class for the Course model."""
+
+        permissions = [
+            ("publish_course", "Can publish course"),
+        ]
+
     def __str__(self) -> str:
         return self.name
 

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block breadcrumbs %}
     {{ block.super }}
-    <li>Courses</li>
+    <li>My Courses</li>
 {% endblock breadcrumbs %}
 {% block content %}
-    <h1>Courses</h1>
+    <h1>Purchased Courses</h1>
     {% for course in courses %}
         {% if forloop.first %}<hr />{% endif %}
         <article>

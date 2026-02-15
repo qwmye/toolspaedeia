@@ -27,12 +27,18 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         return context_data
 
 
-class CourseListView(TitledViewMixin, LoginRequiredMixin, ListView):
+class UserCourseListView(TitledViewMixin, LoginRequiredMixin, ListView):
     model = Course
     pk_url_kwarg = "course_id"
     context_object_name = "courses"
-    title = "Course List"
+    title = "My Courses"
     login_url = "users:login"
+
+    def get_queryset(self):
+        """Return the list of courses the user is enrolled in."""
+        if self.request.user.is_superuser:
+            return Course.objects.all()
+        return Course.objects.filter(purchases__user=self.request.user).distinct()
 
 
 class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
