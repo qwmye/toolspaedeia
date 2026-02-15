@@ -13,10 +13,11 @@ from django.urls import path
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    path("", RedirectView.as_view(url="/courses/"), name="home"),
+    path("", RedirectView.as_view(pattern_name="courses:browse_course_list"), name="home"),
     path("admin/", admin.site.urls),
     path("courses/", include("courses.urls")),
     path("users/", include("users.urls")),
     *static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
-    *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

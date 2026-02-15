@@ -1,6 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
+from users.views import PurchaseCourseView
 from users.views import UserProfileFormView
 
 app_name = "users"
@@ -13,4 +14,5 @@ urlpatterns = [
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("profile/", UserProfileFormView.as_view(), name="profile"),
+    path("purchase-course/", PurchaseCourseView.as_view(), name="purchase_course"),
 ]

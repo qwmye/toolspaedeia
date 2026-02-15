@@ -1,9 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelForm
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.views.generic import CreateView
 from django.views.generic import FormView
 
+from users.models import Purchase
 from users.models import UserPreferences
 
 
@@ -35,3 +38,22 @@ class UserProfileFormView(LoginRequiredMixin, FormView):
 
         form.save()
         return super().form_valid(form)
+
+
+class PurchaseCourseView(LoginRequiredMixin, CreateView):
+    """View to handle course purchases."""
+
+    http_method_names = ["post"]
+    model = Purchase
+    fields = ["course"]
+    success_url = reverse_lazy("courses:browse_courses")
+
+    def form_valid(self, form):
+        """Handle valid form submission for course purchase."""
+        if not (self.request.user.is_authenticated and self.request.user.is_active):
+            return HttpResponse("Unauthorized", status=401)
+
+        form.instance.user = self.request.user
+        form.instance.amount = form.instance.course.price
+        form.save()
+        return redirect(self.request.META.get("HTTP_REFERER", self.success_url))

@@ -32,6 +32,7 @@ class UserCourseListView(TitledViewMixin, LoginRequiredMixin, ListView):
     pk_url_kwarg = "course_id"
     context_object_name = "courses"
     title = "My Courses"
+    template_name = "courses/user_courses.html"
     login_url = "users:login"
 
     def get_queryset(self):
@@ -39,6 +40,28 @@ class UserCourseListView(TitledViewMixin, LoginRequiredMixin, ListView):
         if self.request.user.is_superuser:
             return Course.objects.all()
         return Course.objects.filter(purchases__user=self.request.user).distinct()
+
+
+class BrowseCourseListView(TitledViewMixin, LoginRequiredMixin, ListView):
+    model = Course
+    pk_url_kwarg = "course_id"
+    context_object_name = "courses"
+    title = "Browse Courses"
+    template_name = "courses/browse_courses.html"
+    login_url = "users:login"
+
+    def get_context_data(self, *args, **kwargs):
+        """
+        Add a additional details to the course to indicating whether the user
+        has purchased it.
+        """
+        context_data = super().get_context_data(*args, **kwargs)
+        for course in context_data["courses"]:
+            if self.request.user.is_superuser:
+                course.is_purchased = True
+            else:
+                course.is_purchased = course.purchases.filter(user=self.request.user).exists()
+        return context_data
 
 
 class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):

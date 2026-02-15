@@ -8,6 +8,7 @@ class Course(models.Model):
     description = models.TextField()
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
 
     class Meta:
         """Meta class for the Course model."""

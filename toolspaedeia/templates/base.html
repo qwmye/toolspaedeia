@@ -36,11 +36,6 @@
                                     <a href="{% url 'home' %}">Toolspaedeia</a>
                                 </h2>
                             </li>
-                            <li>
-                                <h2>
-                                    <a href="{% url 'courses:user_course_list' %}">My Courses</a>
-                                </h2>
-                            </li>
                         </ul>
                         <ul>
                             <li>
@@ -71,6 +66,22 @@
                         <a href="{% url 'users:login' %}">Login</a>
                     {% endif %}
                 {% endblock nav %}
+            </nav>
+            <nav aria-label="site navigation">
+                <ul>
+                    {% block site_nav %}
+                        <li>
+                            <p>
+                                <a href="{% url 'courses:user_course_list' %}">My Courses</a>
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                <a href="{% url 'courses:browse_course_list' %}">Browse Courses</a>
+                            </p>
+                        </li>
+                    {% endblock site_nav %}
+                </ul>
             </nav>
             <nav aria-label="breadcrumb">
                 <ul>
