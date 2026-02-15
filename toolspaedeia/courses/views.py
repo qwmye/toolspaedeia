@@ -49,6 +49,11 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         modules = list(self.object.modules.order_by("order"))
         context_data["modules"] = modules
         context_data["progress"] = 0
+        for module in modules:
+            module.is_completed = module.progressions.filter(user=self.request.user, completed=True).exists()
+            if module.is_completed:
+                context_data["progress"] += 1
+        context_data["progress_percentage"] = (context_data["progress"] / len(modules) * 100) if modules else 0
         context_data["user_is_publisher"] = self.request.user == self.object.publisher or self.request.user.is_superuser
         return context_data
 

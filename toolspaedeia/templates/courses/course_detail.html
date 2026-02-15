@@ -9,8 +9,16 @@
 {% block content %}
     <h1>{{ course.name }}</h1>
     {% if progress is not None %}
+        <div class="grid">
+            <sub>
+                {{ progress }} out of {{ modules|length }} modules completed
+            </sub>
+            <sub>
+                {{ progress_percentage|floatformat:2 }}% completed
+            </sub>
+        </div>
         <h2>
-            <progress value="{{ progress }}" total="{{ modules|length }}"></progress>
+            <progress value="{{ progress }}" max="{{ modules|length }}"></progress>
         </h2>
     {% endif %}
     <p>{{ course.description }}</p>
