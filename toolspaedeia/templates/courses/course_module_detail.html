@@ -18,14 +18,30 @@
     <hr />
     <section>
         <nav aria-label="Module navigation">
-            {% if previous_module %}
-                <a type="button"
-                   href="{% url 'courses:module_detail' course.id previous_module.id %}">Previous Module</a>
-            {% endif %}
-            {% if next_module %}
-                <a type="button"
-                   href="{% url 'courses:module_detail' course.id next_module.id %}">Next Module</a>
-            {% endif %}
+            <form>
+                {% csrf_token %}
+                <button type="submit"
+                        formaction="{% url 'courses:module_mark_complete' course.id module.id %}"
+                        formmethod="post">
+                    {% if module.is_completed %}
+                        Mark as Incomplete
+                    {% else %}
+                        Mark as Completed
+                    {% endif %}
+                </button>
+            </form>
+            <form method="get">
+                <div role="group">
+                    <button type="submit"
+                            {% if previous_module %}formaction="{% url 'courses:module_detail' course.id previous_module.id %}" {% else %} disabled {% endif %}>
+                        Previous
+                    </button>
+                    <button type="submit"
+                            {% if next_module %} formaction="{% url 'courses:module_detail' course.id next_module.id %}" {% else %} disabled {% endif %}>
+                        Next
+                    </button>
+                </div>
+            </form>
         </nav>
     </section>
 {% endblock content %}

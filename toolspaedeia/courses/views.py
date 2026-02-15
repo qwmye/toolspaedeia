@@ -47,13 +47,17 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         """Add the list of modules and progress to the context."""
         context_data = super().get_context_data(**kwargs)
         modules = list(self.object.modules.order_by("order"))
-        context_data["modules"] = modules
-        context_data["progress"] = 0
+        progress = 0
         for module in modules:
             module.is_completed = module.progressions.filter(user=self.request.user, completed=True).exists()
             if module.is_completed:
-                context_data["progress"] += 1
-        context_data["progress_percentage"] = (context_data["progress"] / len(modules) * 100) if modules else 0
+                progress += 1
+        context_data["modules"] = modules
+        context_data["total_modules"] = len(modules)
+        context_data["progress"] = progress
+        context_data["progress_percentage"] = (
+            (context_data["progress"] / context_data["total_modules"] * 100) if modules else 0
+        )
         context_data["user_is_publisher"] = self.request.user == self.object.publisher or self.request.user.is_superuser
         return context_data
 
@@ -150,6 +154,7 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
             context["previous_module"] = previous_module
         if next_module:
             context["next_module"] = next_module
+        module.is_completed = module.progressions.filter(user=self.request.user, completed=True).exists()
         context["module"] = module
         context["content"] = format_html(markdown_to_html(module.content or ""))
         return context
@@ -221,3 +226,24 @@ class ModuleDeleteView(TitledViewMixin, LoginRequiredMixin, DeleteView):
     def get_success_url(self) -> str:
         """Redirect the user to the course page, to preview all modules."""
         return reverse("courses:course_detail", kwargs={"course_id": self.object.course.id})
+
+
+class ModuleMarkCompleteView(LoginRequiredMixin, UpdateView):
+    http_method_names = ["post"]
+    model = Module
+    pk_url_kwarg = "module_id"
+    context_object_name = "module"
+    login_url = "users:login"
+    fields = []
+
+    def get_success_url(self) -> str:
+        """Redirect the user to the module detail page."""
+        return reverse("courses:course_detail", kwargs={"course_id": self.object.course.id})
+
+    def post(self, request, *args, **kwargs):
+        """Toggle the completion status of the module for the user."""
+        module = self.get_object()
+        progression, _ = module.progressions.get_or_create(user=request.user)
+        progression.completed = not progression.completed
+        progression.save()
+        return super().post(request, *args, **kwargs)

@@ -9,6 +9,7 @@ from .views import CourseUpdateView
 from .views import CourseUserListView
 from .views import ModuleCreateView
 from .views import ModuleDeleteView
+from .views import ModuleMarkCompleteView
 from .views import ModuleUpdateView
 
 app_name = "courses"
@@ -24,4 +25,5 @@ urlpatterns = [
     path("<course_id>/view/<module_id>/", CourseModuleDetailView.as_view(), name="module_detail"),
     path("<course_id>/update/<module_id>", ModuleUpdateView.as_view(), name="module_update"),
     path("<course_id>/delete/<module_id>", ModuleDeleteView.as_view(), name="module_delete"),
+    path("<course_id>/mark-complete/<module_id>", ModuleMarkCompleteView.as_view(), name="module_mark_complete"),
 ]

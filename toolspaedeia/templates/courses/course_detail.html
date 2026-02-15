@@ -11,14 +11,14 @@
     {% if progress is not None %}
         <div class="grid">
             <sub>
-                {{ progress }} out of {{ modules|length }} modules completed
+                {{ progress }} out of {{ total_modules }} modules completed
             </sub>
             <sub>
                 {{ progress_percentage|floatformat:2 }}% completed
             </sub>
         </div>
         <h2>
-            <progress value="{{ progress }}" max="{{ modules|length }}"></progress>
+            <progress value="{{ progress }}" max="{{ total_modules }}"></progress>
         </h2>
     {% endif %}
     <p>{{ course.description }}</p>
@@ -33,6 +33,7 @@
         <article>
             <header>
                 <h2 id="module-{{ module.id }}">{{ module }}</h2>
+                {% if module.is_completed %}<ins>Completed!</ins>{% endif %}
             </header>
             {{ module.description }}
             <footer>
