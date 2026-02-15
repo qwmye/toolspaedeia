@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li>
+        <a href="{% url 'courses:course_list' %}">Courses</a>
+    </li>
+    <li>
+        <a href="{% url 'courses:course_detail' course_id=module.course.id %}">{{ module.course.name }}</a>
+    </li>
+    <li>{{ module.title }}</li>
+{% endblock breadcrumbs %}
+{% block content %}
+    <h1>{{ module.title }}</h1>
+    <hr />
+    <section>
+        {{ content }}
+    </section>
+    <hr />
+    <section>
+        <nav aria-label="Module navigation">
+            {% if previous_module %}
+                <a type="button"
+                   href="{% url 'courses:module_detail' course.id previous_module.id %}">Previous Module</a>
+            {% endif %}
+            {% if next_module %}
+                <a type="button"
+                   href="{% url 'courses:module_detail' course.id next_module.id %}">Next Module</a>
+            {% endif %}
+        </nav>
+    </section>
+{% endblock content %}

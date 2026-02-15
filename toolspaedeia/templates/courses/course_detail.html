@@ -1,15 +1,28 @@
 {% extends "base.html" %}
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li>
+        <a href="{% url 'courses:course_list' %}">Courses</a>
+    </li>
+    <li>{{ course.name }}</li>
+{% endblock breadcrumbs %}
 {% block content %}
     <h1>{{ course.name }}</h1>
+    {% if progress is not None %}
+        <h2>
+            <progress value="{{ progress }}" total="{{ modules|length }}"></progress>
+        </h2>
+    {% endif %}
+    <p>{{ course.description }}</p>
     <hr />
-    {% for module in course.modules.all %}
+    {% for module in modules %}
         <article>
             <header>
                 <h2 id="module-{{ module.id }}">{{ module }}</h2>
             </header>
             {{ module.description }}
             <footer>
-                <a href="{% url 'courses:module_detail' module.id %}">Start {{ module }}</a>
+                <a href="{% url 'courses:module_detail' course.id module.id %}">Start {{ module }}</a>
             </footer>
         </article>
     {% endfor %}

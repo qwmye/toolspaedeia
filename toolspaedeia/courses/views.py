@@ -4,13 +4,13 @@ from django.views.generic import DetailView
 from django.views.generic import ListView
 
 from courses.models import Course
-from courses.models import Module
 from toolspaedeia.mixins import TitledViewMixin
 from toolspaedeia.utils import markdown_to_html
 
 
 class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
     model = Course
+    pk_url_kwarg = "course_id"
     context_object_name = "course"
     login_url = "users:login"
 
@@ -18,25 +18,54 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         """Return the course name as the title."""
         return self.get_object().name
 
+    def get_context_data(self, **kwargs):
+        """Add the list of modules and progress to the context."""
+        context_data = super().get_context_data(**kwargs)
+        modules = list(self.object.modules.order_by("order"))
+        context_data["modules"] = modules
+        context_data["progress"] = 0
+        return context_data
+
 
 class CourseListView(TitledViewMixin, LoginRequiredMixin, ListView):
     model = Course
+    pk_url_kwarg = "course_id"
     context_object_name = "courses"
     title = "Course List"
     login_url = "users:login"
 
 
-class ModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
-    model = Module
-    context_object_name = "module"
+class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
+    model = Course
+    pk_url_kwarg = "course_id"
+    context_object_name = "course"
     login_url = "users:login"
+    template_name = "courses/course_module_detail.html"
+
+    def get_object(self, queryset=None):
+        """Return the course object with the specified module."""
+        course = super().get_object(queryset)
+        module_id = self.kwargs.get("module_id")
+        if module_id:
+            course.module = course.modules.get(id=module_id)
+        return course
 
     def get_title(self):
         """Return the module title and course name as the title."""
-        return f"{self.get_object().title} | {self.get_object().course.name}"
+        course = self.get_object()
+        return f"{course.module.title} | {course.name}"
 
     def get_context_data(self, **kwargs):
         """Add the module content in HTML format to the context."""
         context = super().get_context_data(**kwargs)
-        context["content"] = format_html(markdown_to_html(self.object.content or ""))
+        course = self.get_object()
+        module = course.module
+        previous_module = self.object.modules.filter(order__lt=module.order).order_by("-order").first()
+        next_module = self.object.modules.filter(order__gt=module.order).order_by("order").first()
+        if previous_module:
+            context["previous_module"] = previous_module
+        if next_module:
+            context["next_module"] = next_module
+        context["module"] = module
+        context["content"] = format_html(markdown_to_html(module.content or ""))
         return context

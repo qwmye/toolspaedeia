@@ -10,14 +10,7 @@ from .models import Module
 class CourseAdmin(admin.ModelAdmin):
     """Admin interface for Course model."""
 
-    list_display = ("name", "start_date", "end_date")
-    search_fields = ("name",)
-
 
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
     """Admin interface for Module model."""
-
-    list_display = ("title", "course")
-    search_fields = ("title",)
-    list_filter = ("course",)
