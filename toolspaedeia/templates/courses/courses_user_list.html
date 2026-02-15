@@ -13,13 +13,14 @@
             </header>
             {{ course.description }}
             <footer>
-                <a href="{% url 'courses:course_detail' course.id %}">View Course Details</a>
+                <a href="{% url 'courses:course_detail' course.id %}">Go to Course</a>
             </footer>
         </article>
     {% empty %}
         <article>No courses purchased yet.</article>
     {% endfor %}
     <h1>Published Courses</h1>
+    <a href="{% url 'courses:course_publish' %}">Publish New Course</a>
     <hr />
     {% for course in published_courses %}
         <article>
@@ -28,7 +29,9 @@
             </header>
             {{ course.description }}
             <footer>
-                <a href="{% url 'courses:course_detail' course.id %}">Edit Course</a>
+                <a href="{% url 'courses:course_detail' course.id %}">Go to Course</a>
+                |
+                <a href="{% url 'courses:course_update' course.id %}">Edit Course</a>
             </footer>
         </article>
     {% empty %}

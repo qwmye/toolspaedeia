@@ -15,7 +15,7 @@
     {% endif %}
     <form method="post" action="{% url 'users:login' %}">
         {% csrf_token %}
-        <table>
+        <table class="striped">
             <tr>
                 <td>{{ form.username.label_tag }}</td>
                 <td>{{ form.username }}</td>

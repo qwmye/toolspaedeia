@@ -1,15 +1,27 @@
 from django.urls import path
 
-from .views import BrowseCourseListView
+from .views import CourseBrowseListView
+from .views import CourseDeleteView
 from .views import CourseDetailView
 from .views import CourseModuleDetailView
-from .views import UserCourseListView
+from .views import CoursePublishView
+from .views import CourseUpdateView
+from .views import CourseUserListView
+from .views import ModuleCreateView
+from .views import ModuleDeleteView
+from .views import ModuleUpdateView
 
 app_name = "courses"
 
 urlpatterns = [
-    path("browse/", BrowseCourseListView.as_view(), name="browse_course_list"),
-    path("my_courses/", UserCourseListView.as_view(), name="user_course_list"),
-    path("<course_id>/", CourseDetailView.as_view(), name="course_detail"),
-    path("<course_id>/modules/<module_id>/", CourseModuleDetailView.as_view(), name="module_detail"),
+    path("browse/", CourseBrowseListView.as_view(), name="course_browse_list"),
+    path("personal/", CourseUserListView.as_view(), name="course_user_list"),
+    path("publish/", CoursePublishView.as_view(), name="course_publish"),
+    path("<course_id>/view/", CourseDetailView.as_view(), name="course_detail"),
+    path("<course_id>/update/", CourseUpdateView.as_view(), name="course_update"),
+    path("<course_id>/delete/", CourseDeleteView.as_view(), name="course_delete"),
+    path("<course_id>/add/", ModuleCreateView.as_view(), name="module_add"),
+    path("<course_id>/view/<module_id>/", CourseModuleDetailView.as_view(), name="module_detail"),
+    path("<course_id>/update/<module_id>", ModuleUpdateView.as_view(), name="module_update"),
+    path("<course_id>/delete/<module_id>", ModuleDeleteView.as_view(), name="module_delete"),
 ]

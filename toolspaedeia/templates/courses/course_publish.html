@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li>
+        <a href="{% url 'courses:course_user_list' %}">My Courses</a>
+    </li>
+    <li>Add Course</li>
+{% endblock breadcrumbs %}
+{% block content %}
+    <h1>Add New Course</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create Course</button>
+    </form>
+{% endblock content %}

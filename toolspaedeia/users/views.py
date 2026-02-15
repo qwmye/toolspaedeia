@@ -28,7 +28,8 @@ class UserProfileFormView(LoginRequiredMixin, FormView):
         """Get form kwargs for user profile form."""
         kwargs = super().get_form_kwargs()
         if self.request.user.is_authenticated:
-            kwargs["instance"] = self.request.user.preference
+            preference, _ = UserPreferences.objects.get_or_create(user=self.request.user)
+            kwargs["instance"] = preference
         return kwargs
 
     def form_valid(self, form):
@@ -46,7 +47,7 @@ class PurchaseCourseView(LoginRequiredMixin, CreateView):
     http_method_names = ["post"]
     model = Purchase
     fields = ["course"]
-    success_url = reverse_lazy("courses:browse_courses")
+    success_url = reverse_lazy("courses:course_browse_list")
 
     def form_valid(self, form):
         """Handle valid form submission for course purchase."""

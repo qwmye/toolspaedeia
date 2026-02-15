@@ -10,10 +10,10 @@
         <meta name="color-scheme" content="light dark">
         {% if request.user.is_authenticated and request.user.preference.color_theme %}
             <link rel="stylesheet"
-                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.{{ request.user.preference.color_theme }}.min.css">
+                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.{{ request.user.preference.color_theme }}.min.css">
         {% else %}
             <link rel="stylesheet"
-                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css">
+                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
         {% endif %}
         <title>{{ title }}</title>
         <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
@@ -26,7 +26,7 @@
         {% endblock head %}
     </head>
     <body>
-        <header>
+        <header class="container">
             <nav>
                 {% block nav %}
                     {% if request.user.is_authenticated %}
@@ -72,12 +72,12 @@
                     {% block site_nav %}
                         <li>
                             <p>
-                                <a href="{% url 'courses:user_course_list' %}">My Courses</a>
+                                <a href="{% url 'courses:course_user_list' %}">My Courses</a>
                             </p>
                         </li>
                         <li>
                             <p>
-                                <a href="{% url 'courses:browse_course_list' %}">Browse Courses</a>
+                                <a href="{% url 'courses:course_browse_list' %}">Browse Courses</a>
                             </p>
                         </li>
                     {% endblock site_nav %}
@@ -94,7 +94,7 @@
             </nav>
             <hr />
         </header>
-        <main>
+        <main class="container">
             {% block content %}
             {% endblock content %}
         </main>

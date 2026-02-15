@@ -2,7 +2,7 @@
 {% block breadcrumbs %}
     {{ block.super }}
     <li>
-        <a href="{% url 'courses:user_course_list' %}">My Courses</a>
+        <a href="{% url 'courses:course_user_list' %}">My Courses</a>
     </li>
     <li>{{ course.name }}</li>
 {% endblock breadcrumbs %}
@@ -15,6 +15,12 @@
     {% endif %}
     <p>{{ course.description }}</p>
     <hr />
+    <h2>Modules</h2>
+    {% if user_is_publisher %}
+        <p>
+            <a href="{% url 'courses:module_add' course.id %}">Add New Module</a>
+        </p>
+    {% endif %}
     {% for module in modules %}
         <article>
             <header>
@@ -22,7 +28,11 @@
             </header>
             {{ module.description }}
             <footer>
-                <a href="{% url 'courses:module_detail' course.id module.id %}">Start {{ module }}</a>
+                {% if user_is_publisher %}
+                    <a href="{% url 'courses:module_update' course.id module.id %}">Edit</a>
+                {% else %}
+                    <a href="{% url 'courses:module_detail' course.id module.id %}">Start</a>
+                {% endif %}
             </footer>
         </article>
     {% endfor %}

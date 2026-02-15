@@ -13,7 +13,7 @@ from django.urls import path
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    path("", RedirectView.as_view(pattern_name="courses:browse_course_list"), name="home"),
+    path("", RedirectView.as_view(pattern_name="courses:course_browse_list"), name="home"),
     path("admin/", admin.site.urls),
     path("courses/", include("courses.urls")),
     path("users/", include("users.urls")),
