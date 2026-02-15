@@ -1,19 +1,19 @@
-from io import StringIO
-
-import matplotlib.pyplot as plt
 import mistune
-
-
-def get_svg_from_plot():
-    """Generate SVG from plot."""
-    output_svg = StringIO()
-    plt.savefig(output_svg, format="svg")
-    plt.close()
-    output_svg.seek(0)
-    return output_svg.getvalue()
+from mistune.directives import RSTDirective
+from mistune.directives import TableOfContents
 
 
 def markdown_to_html(markdown_text):
     """Convert MD to HTML."""
-    markdown = mistune.create_markdown()
+    markdown = mistune.create_markdown(
+        renderer="html",
+        plugins=[
+            "def_list",
+            "task_lists",
+            "superscript",
+            "subscript",
+            "math",
+            RSTDirective([TableOfContents()]),
+        ],
+    )
     return markdown(markdown_text)
