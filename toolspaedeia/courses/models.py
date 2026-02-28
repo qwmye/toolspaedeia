@@ -4,7 +4,14 @@ from django.utils import timezone
 
 
 class Course(models.Model):
-    """Model representing a course in the Paedeia system."""
+    """
+    The course is the primary "content" entity in the Paedeia system.
+    Modules are written for a course, users can buy and enroll in a course,
+    and it is the main attraction for users, through a complex and efficient
+    browser.
+
+    TODO: in the future, it is planned to add ratings and comments for courses.
+    """
 
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -16,7 +23,7 @@ class Course(models.Model):
     )
 
     class Meta:
-        """Meta class for the Course model."""
+        """Ensure correctness of verbose names."""
 
         verbose_name = "Course"
         verbose_name_plural = "Courses"
@@ -26,7 +33,10 @@ class Course(models.Model):
 
 
 class Module(models.Model):
-    """Model representing a module within a course."""
+    """
+    Each course is made up of one or more modules, which are the main content
+    sections of the course.
+    """
 
     course = models.ForeignKey(Course, related_name="modules", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
@@ -35,7 +45,10 @@ class Module(models.Model):
     order = models.PositiveIntegerField()
 
     class Meta:
-        """Meta class for the Module model."""
+        """
+        Add default ordering for modules, instead of relying on the creation
+        order. Ensure correctness of verbose names.
+        """
 
         ordering = ["order"]
         verbose_name = "Module"
@@ -46,7 +59,10 @@ class Module(models.Model):
 
 
 class ModuleProgression(models.Model):
-    """Model representing a user's progression through a module."""
+    """
+    Keep track of the progression of a user throughout the course, by marking
+    each module when it is completed.
+    """
 
     user = models.ForeignKey(get_user_model(), related_name="module_progressions", on_delete=models.CASCADE)
     module = models.ForeignKey(Module, related_name="progressions", on_delete=models.CASCADE)
@@ -54,7 +70,12 @@ class ModuleProgression(models.Model):
     completion_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        """Meta class for the ModuleProgression model."""
+        """
+        Module progression is unique for user + module combination. A user
+        cannot have the same module in progress multiple times at the same time,
+        even with different completion rates.
+        Also, ensure correctness of verbose names.
+        """
 
         unique_together = ("user", "module")
         verbose_name = "Module Progression"
@@ -77,7 +98,12 @@ class ModuleProgression(models.Model):
 
 
 class Quiz(models.Model):
-    """Model representing a quiz within a module."""
+    """
+    Modules can each (optionally) have a quiz.
+
+    The text of the quiz will be rendered the same way as the module content,
+    so it can include markdown, images, formulas, etc.
+    """
 
     module = models.OneToOneField(Module, related_name="quiz", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
@@ -86,7 +112,7 @@ class Quiz(models.Model):
     max_questions = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
-        """Meta class for the Quiz model."""
+        """Ensure correctness of verbose names."""
 
         verbose_name = "Quiz"
         verbose_name_plural = "Quizzes"
@@ -107,14 +133,24 @@ class Quiz(models.Model):
 
 
 class Question(models.Model):
-    """Model representing a question within a quiz."""
+    """
+    Each quiz can have one or more questions.
+
+    The text of the question will be rendered the same way as the module content
+    and it can include special text, markdown, images, formulas, etc.
+    Questions offer a fallback ordering, in case randomization is not enabled
+    for the entire quiz, instead of relying on the creation order.
+    """
 
     quiz = models.ForeignKey(Quiz, related_name="questions", on_delete=models.CASCADE)
     text = models.TextField()
     order = models.PositiveIntegerField()
 
     class Meta:
-        """Meta class for the Question model."""
+        """
+        Add ordering by the question order field, and ensure the correctness of
+        the verbose names.
+        """
 
         ordering = ["order"]
         verbose_name = "Question"
@@ -124,19 +160,27 @@ class Question(models.Model):
         return f"{self.quiz} - {self.id} Question {self.order}"
 
     def get_answers(self):
-        """Return a queryset of answers for this question."""
-        return self.answers.all().order_by("?")
+        """Return the randomized answers of the question."""
+        return self.answers.order_by("?")
 
 
 class Answer(models.Model):
-    """Model representing an answer option for a quiz question."""
+    """
+    Each question has one or more possible answers. Each answer can be marked as
+    correct, ensuring the possibility of logic for multiple answers being
+    correct at the same time, or even no correct answers.
+
+    Unlike with the questions, the text is not markdown. It will be
+    rendered as plain text. The text has a max length, so that fitting on a
+    single line is not compromised and the UI is not broken.
+    """
 
     question = models.ForeignKey(Question, related_name="answers", on_delete=models.CASCADE)
     text = models.CharField(max_length=255)
     is_correct = models.BooleanField(default=False)
 
     class Meta:
-        """Meta class for the Answer model."""
+        """Ensure correctness of verbose names."""
 
         verbose_name = "Answer"
         verbose_name_plural = "Answers"
