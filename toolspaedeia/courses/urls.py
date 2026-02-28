@@ -1,5 +1,6 @@
 from django.urls import path
 
+from .views import CheckQuizView
 from .views import CourseBrowseListView
 from .views import CourseDetailView
 from .views import CourseModuleDetailView
@@ -17,5 +18,10 @@ urlpatterns = [
         "<int:course_id>/modules/<int:module_id>/mark-complete/",
         ModuleMarkCompleteView.as_view(),
         name="module_mark_complete",
+    ),
+    path(
+        "<int:course_id>/quiz/<int:quiz_id>/check/",
+        CheckQuizView.as_view(),
+        name="check_quiz",
     ),
 ]
