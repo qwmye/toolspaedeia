@@ -96,7 +96,6 @@ class CourseUserListView(TitledViewMixin, LoginRequiredMixin, ListView):
         the context.
         """
         context_data = super().get_context_data(*args, **kwargs)
-        context_data["can_publish_course"] = self.request.user.has_perm("courses.publish_course")
         context_data["published_courses"] = Course.objects.filter(publisher=self.request.user)
         return context_data
 

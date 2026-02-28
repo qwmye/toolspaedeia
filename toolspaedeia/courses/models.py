@@ -18,10 +18,6 @@ class Course(models.Model):
     class Meta:
         """Meta class for the Course model."""
 
-        permissions = [
-            ("publish_course", "Can publish course"),
-        ]
-
     def __str__(self) -> str:
         return self.name
 
