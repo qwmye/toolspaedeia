@@ -19,7 +19,7 @@ class CoursePublishView(TitledViewMixin, LoginRequiredMixin, CreateView):
     pk_url_kwarg = "course_id"
     context_object_name = "course"
     login_url = "users:login"
-    template_name = "course_publish.html"
+    template_name = "courses/course_publish.html"
     title = "Publish Course"
     fields = ["name", "description", "price"]
 
@@ -67,7 +67,7 @@ class CourseUpdateView(TitledViewMixin, LoginRequiredMixin, UpdateView):
     pk_url_kwarg = "course_id"
     context_object_name = "course"
     login_url = "users:login"
-    template_name = "course_update.html"
+    template_name = "courses/course_update.html"
     title = "Edit Course"
     fields = ["name", "description", "price"]
 
@@ -81,7 +81,7 @@ class CourseUserListView(TitledViewMixin, LoginRequiredMixin, ListView):
     pk_url_kwarg = "course_id"
     context_object_name = "courses"
     title = "My Courses"
-    template_name = "courses_user_list.html"
+    template_name = "courses/courses_user_list.html"
     login_url = "users:login"
 
     def get_queryset(self):
@@ -106,7 +106,7 @@ class CourseBrowseListView(TitledViewMixin, LoginRequiredMixin, ListView):
     pk_url_kwarg = "course_id"
     context_object_name = "courses"
     title = "Browse Courses"
-    template_name = "courses_browse_list.html"
+    template_name = "courses/courses_browse_list.html"
     login_url = "users:login"
 
     def get_context_data(self, *args, **kwargs):
@@ -128,7 +128,7 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
     pk_url_kwarg = "course_id"
     context_object_name = "course"
     login_url = "users:login"
-    template_name = "course_module_detail.html"
+    template_name = "courses/course_module_detail.html"
 
     def get_object(self, queryset=None):
         """Return the course object with the specified module."""
@@ -175,7 +175,7 @@ class ModuleCreateView(TitledViewMixin, LoginRequiredMixin, CreateView):
     pk_url_kwarg = "course_id"
     context_object_name = "course"
     login_url = "users:login"
-    template_name = "module_create.html"
+    template_name = "modules/module_create.html"
     title = "Add Module"
     fields = ["title", "description", "content"]
 
@@ -206,7 +206,7 @@ class ModuleUpdateView(TitledViewMixin, LoginRequiredMixin, UpdateView):
     pk_url_kwarg = "module_id"
     context_object_name = "module"
     login_url = "users:login"
-    template_name = "module_update.html"
+    template_name = "modules/module_update.html"
     title = "Edit Module"
     fields = ["title", "description", "content"]
 

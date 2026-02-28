@@ -21,7 +21,7 @@ class UserProfileFormView(LoginRequiredMixin, FormView):
             fields = ["profile_picture", "color_theme", "theme_mode"]
 
     form_class = UserProfileModelForm
-    template_name = "profile.html"
+    template_name = "users/profile.html"
     success_url = reverse_lazy("users:profile")
 
     def get_form_kwargs(self):
