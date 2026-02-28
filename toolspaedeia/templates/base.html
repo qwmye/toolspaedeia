@@ -38,9 +38,9 @@
                     {% if request.user.is_authenticated %}
                         <ul>
                             <li>
-                                <h2>
+                                <h1>
                                     <a href="{% url 'home' %}">Toolspaedeia</a>
-                                </h2>
+                                </h1>
                             </li>
                         </ul>
                         <ul>
@@ -77,14 +77,14 @@
                 <ul>
                     {% block site_nav %}
                         <li>
-                            <p>
+                            <h2>
                                 <a href="{% url 'courses:course_user_list' %}">My Courses</a>
-                            </p>
+                            </h2>
                         </li>
                         <li>
-                            <p>
+                            <h2>
                                 <a href="{% url 'courses:course_browse_list' %}">Browse Courses</a>
-                            </p>
+                            </h2>
                         </li>
                     {% endblock site_nav %}
                 </ul>
