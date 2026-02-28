@@ -30,9 +30,6 @@
     <h1>
         Published Courses
     </h1>
-    {% if perms.courses.add_course %}
-        <a href="{% url 'courses:course_publish' %}">Publish New Course</a>
-    {% endif %}
     <hr />
     {% for course in published_courses %}
         <article>

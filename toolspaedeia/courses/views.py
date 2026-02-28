@@ -1,9 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.urls import reverse_lazy
 from django.utils.html import format_html
-from django.views.generic import CreateView
-from django.views.generic import DeleteView
 from django.views.generic import DetailView
 from django.views.generic import ListView
 from django.views.generic import UpdateView
@@ -12,25 +9,6 @@ from courses.models import Course
 from courses.models import Module
 from toolspaedeia.mixins import TitledViewMixin
 from toolspaedeia.utils import markdown_to_html
-
-
-class CoursePublishView(TitledViewMixin, LoginRequiredMixin, CreateView):
-    model = Course
-    pk_url_kwarg = "course_id"
-    context_object_name = "course"
-    login_url = "users:login"
-    template_name = "courses/course_publish.html"
-    title = "Publish Course"
-    fields = ["name", "description", "price"]
-
-    def get_success_url(self) -> str:
-        """Redirect the user to the newly added course."""
-        return reverse("courses:course_detail", kwargs={"course_id": self.object.id})
-
-    def form_valid(self, form):
-        """Set the publisher to the current user before saving the form."""
-        form.instance.publisher = self.request.user
-        return super().form_valid(form)
 
 
 class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
@@ -60,20 +38,6 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         )
         context_data["user_is_publisher"] = self.request.user == self.object.publisher or self.request.user.is_superuser
         return context_data
-
-
-class CourseUpdateView(TitledViewMixin, LoginRequiredMixin, UpdateView):
-    model = Course
-    pk_url_kwarg = "course_id"
-    context_object_name = "course"
-    login_url = "users:login"
-    template_name = "courses/course_update.html"
-    title = "Edit Course"
-    fields = ["name", "description", "price"]
-
-    def get_success_url(self) -> str:
-        """Redirect the user to the updated course."""
-        return reverse("courses:course_detail", kwargs={"course_id": self.object.id})
 
 
 class CourseUserListView(TitledViewMixin, LoginRequiredMixin, ListView):
@@ -157,74 +121,6 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         context["module"] = module
         context["content"] = format_html(markdown_to_html(module.content or ""))
         return context
-
-
-class CourseDeleteView(TitledViewMixin, LoginRequiredMixin, DeleteView):
-    http_method_names = ["post"]
-    model = Course
-    pk_url_kwarg = "course_id"
-    context_object_name = "course"
-    login_url = "users:login"
-    title = "Delete Course"
-    success_url = reverse_lazy("courses:course_browse_list")
-
-
-class ModuleCreateView(TitledViewMixin, LoginRequiredMixin, CreateView):
-    model = Module
-    pk_url_kwarg = "course_id"
-    context_object_name = "course"
-    login_url = "users:login"
-    template_name = "modules/module_create.html"
-    title = "Add Module"
-    fields = ["title", "description", "content"]
-
-    def get_success_url(self) -> str:
-        """Redirect the user to the course page, to preview all modules."""
-        return reverse("courses:course_detail", kwargs={"course_id": self.kwargs.get("course_id")})
-
-    def get_context_data(self, *args, **kwargs):
-        """Add the course in the context."""
-        context_data = super().get_context_data(*args, **kwargs)
-        course_id = self.kwargs.get("course_id")
-        context_data["course"] = Course.objects.get(id=course_id)
-        return context_data
-
-    def form_valid(self, form):
-        """Set the course to the current course before saving the form."""
-        course_id = self.kwargs.get("course_id")
-        form.instance.course_id = course_id
-        try:
-            form.instance.order = Course.objects.get(id=course_id).modules.latest("order").order + 1
-        except Module.DoesNotExist:
-            form.instance.order = 0
-        return super().form_valid(form)
-
-
-class ModuleUpdateView(TitledViewMixin, LoginRequiredMixin, UpdateView):
-    model = Module
-    pk_url_kwarg = "module_id"
-    context_object_name = "module"
-    login_url = "users:login"
-    template_name = "modules/module_update.html"
-    title = "Edit Module"
-    fields = ["title", "description", "content"]
-
-    def get_success_url(self) -> str:
-        """Redirect the user to the course page, to preview all modules."""
-        return reverse("courses:course_detail", kwargs={"course_id": self.object.course.id})
-
-
-class ModuleDeleteView(TitledViewMixin, LoginRequiredMixin, DeleteView):
-    http_method_names = ["post"]
-    model = Module
-    pk_url_kwarg = "module_id"
-    context_object_name = "module"
-    login_url = "users:login"
-    title = "Delete Module"
-
-    def get_success_url(self) -> str:
-        """Redirect the user to the course page, to preview all modules."""
-        return reverse("courses:course_detail", kwargs={"course_id": self.object.course.id})
 
 
 class ModuleMarkCompleteView(LoginRequiredMixin, UpdateView):

@@ -12,37 +12,27 @@
     <h1>
         {{ course }}
     </h1>
-    {% if not user_is_publisher %}
-        {% if progress is not None %}
-            <div class="grid">
-                <sub>
-                    {{ progress }} out of {{ total_modules }} modules completed
-                </sub>
-                <sub>
-                    {{ progress_percentage|floatformat:2 }}% completed
-                </sub>
-            </div>
-            <h2>
-                <progress value="{{ progress }}"
-                          max="{{ total_modules }}"></progress>
-            </h2>
-        {% endif %}
+    {% if progress is not None %}
+        <div class="grid">
+            <sub>
+                {{ progress }} out of {{ total_modules }} modules completed
+            </sub>
+            <sub>
+                {{ progress_percentage|floatformat:2 }}% completed
+            </sub>
+        </div>
+        <h2>
+            <progress value="{{ progress }}"
+                      max="{{ total_modules }}"></progress>
+        </h2>
     {% endif %}
     <p>
         {{ course.description }}
     </p>
-    {% if user_is_publisher %}
-        <a href="{% url 'courses:course_update' course.id %}">Edit Course</a>
-    {% endif %}
     <hr />
     <h2>
         Modules
     </h2>
-    {% if user_is_publisher %}
-        <p>
-            <a href="{% url 'courses:module_add' course.id %}">Add New Module</a>
-        </p>
-    {% endif %}
     {% for module in modules %}
         <article>
             <header>
@@ -55,11 +45,7 @@
             </header>
             {{ module.description }}
             <footer>
-                {% if user_is_publisher %}
-                    <a href="{% url 'courses:module_update' course.id module.id %}">Edit</a>
-                {% else %}
-                    <a href="{% url 'courses:module_detail' course.id module.id %}">Start</a>
-                {% endif %}
+                <a href="{% url 'courses:module_detail' course.id module.id %}">Start</a>
             </footer>
         </article>
     {% endfor %}
