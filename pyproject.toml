@@ -136,3 +136,23 @@ case-sensitive = true
 force-single-line = true
 known-first-party = ["toolspaedeia"]
 split-on-trailing-comma = false
+
+[tool.djlint]
+# https://djlint.com/docs/configuration/
+blank_line_after_tag=""
+blank_line_before_tag=""
+close_void_tags=true
+custom_blocks=""
+custom_html=""
+extend_exclude=""
+format_attribute_template_tags=true
+format_css=true
+format_js=true
+ignore=""
+include="D,H,T"
+indent=4
+line_break_after_multiline_tag=true
+max_attribute_length=10
+max_blank_lines=2
+max_line_length=120
+profile="django"
