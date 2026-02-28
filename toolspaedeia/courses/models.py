@@ -79,7 +79,7 @@ class ModuleProgression(models.Model):
 class Quiz(models.Model):
     """Model representing a quiz within a module."""
 
-    module = models.ForeignKey(Module, related_name="quizzes", on_delete=models.CASCADE)
+    module = models.OneToOneField(Module, related_name="quiz", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField()
     randomize_questions = models.BooleanField(default=False)
@@ -121,7 +121,7 @@ class Question(models.Model):
         verbose_name_plural = "Questions"
 
     def __str__(self) -> str:
-        return self.text
+        return f"{self.quiz} - {self.id} Question {self.order}"
 
     def get_answers(self):
         """Return a queryset of answers for this question."""
