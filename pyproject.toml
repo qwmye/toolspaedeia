@@ -12,6 +12,11 @@ dependencies = [
     "uvicorn>=0.38.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "coverage>=7.6.0",
+]
+
 [tool.ruff]
 fix = true
 show-fixes = true
@@ -84,7 +89,6 @@ select = [
     "PIE",
     "PL",
     "PYI",
-    "PT",
     "PTH",
     "Q",
     "RET",
