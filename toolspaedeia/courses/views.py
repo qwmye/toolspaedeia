@@ -1,12 +1,19 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.utils.html import format_html
+from django.views import View
 from django.views.generic import DetailView
 from django.views.generic import ListView
 from django.views.generic import UpdateView
 
 from courses.models import Course
 from courses.models import Module
+from courses.models import Quiz
+from courses.service import build_checked_answers_data
+from courses.service import build_quiz_data
+from courses.service import get_attempt_questions
+from courses.service import get_quiz_and_course
+from courses.service import render_quiz_section
 from toolspaedeia.mixins import TitledViewMixin
 from toolspaedeia.utils import markdown_to_html
 
@@ -120,6 +127,17 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         module.is_completed = module.progressions.filter(user=self.request.user, completed=True).exists()
         context["module"] = module
         context["content"] = format_html(markdown_to_html(module.content or ""))
+
+        try:
+            module_quiz = module.quiz
+        except Quiz.DoesNotExist:
+            module_quiz = None
+
+        context["module_quiz"] = module_quiz
+        context["module_quiz_data"] = (
+            build_quiz_data(list(module_quiz.get_questions_for_attempt())) if module_quiz else []
+        )
+
         return context
 
 
@@ -142,3 +160,34 @@ class ModuleMarkCompleteView(LoginRequiredMixin, UpdateView):
         progression.completed = not progression.completed
         progression.save()
         return super().post(request, *args, **kwargs)
+
+
+class CheckQuizView(LoginRequiredMixin, View):
+    """View for checking quiz answers and reloading the quiz."""
+
+    login_url = "users:login"
+
+    def get(self, request, course_id, quiz_id):
+        """Reload quiz with fresh questions."""
+        quiz, course = get_quiz_and_course(course_id, quiz_id)
+        questions = get_attempt_questions(quiz)
+        quiz_data = build_quiz_data(questions)
+        return render_quiz_section(request, quiz, course, quiz_data, show_results=False)
+
+    def post(self, request, course_id, quiz_id):
+        """Check submitted quiz answers and return quiz with feedback."""
+        quiz, course = get_quiz_and_course(course_id, quiz_id)
+        questions = get_attempt_questions(quiz, request.POST.getlist("question_ids"))
+
+        answers_by_question = {}
+        for question in questions:
+            submitted_answer_ids = set(request.POST.getlist(f"question-{question.id}"))
+            posted_answer_ids = request.POST.getlist(f"answer_ids_{question.id}")
+            answers_by_question[question.id] = build_checked_answers_data(
+                question,
+                submitted_answer_ids,
+                posted_answer_ids,
+            )
+
+        quiz_data = build_quiz_data(questions, answers_by_question=answers_by_question)
+        return render_quiz_section(request, quiz, course, quiz_data, show_results=True)

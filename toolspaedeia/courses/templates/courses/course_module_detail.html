@@ -20,6 +20,15 @@
         {{ content }}
     </section>
     <hr />
+    {% if module_quiz %}
+        <section>
+            <h2>
+                Quiz
+            </h2>
+            {% include "courses/partials/quiz_section.html" with quiz=module_quiz quiz_data=module_quiz_data show_results=False %}
+        </section>
+        <hr />
+    {% endif %}
     <section>
         <nav aria-label="Module navigation">
             <form>

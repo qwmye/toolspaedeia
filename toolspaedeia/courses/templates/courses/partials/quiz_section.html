@@ -1,0 +1,66 @@
+<article id="quiz-{{ quiz.id }}">
+    <header>
+        <h3>
+            {{ quiz.title }}
+        </h3>
+        {% if quiz.description %}
+            <p>
+                {{ quiz.description }}
+            </p>
+        {% endif %}
+    </header>
+    <form id="quiz-form-{{ quiz.id }}"
+          hx-target="#quiz-{{ quiz.id }}"
+          hx-swap="outerHTML">
+        {% csrf_token %}
+        {% for item in quiz_data %}
+            {% with question=item.question %}
+                <input type="hidden"
+                       name="question_ids"
+                       value="{{ question.id }}" />
+                <fieldset>
+                    <legend>
+                        Question {{ forloop.counter }}
+                    </legend>
+                    <section>
+                        {{ item.question_html }}
+                    </section>
+                    {% for answer_data in item.answers_data %}
+                        {% with answer=answer_data.answer %}
+                            <p>
+                                <input type="hidden"
+                                       name="answer_ids_{{ question.id }}"
+                                       value="{{ answer.id }}" />
+                                <input type="checkbox"
+                                       name="question-{{ question.id }}"
+                                       id="answer-{{ answer.id }}"
+                                       value="{{ answer.id }}"
+                                       {% if show_results %}
+                                           disabled aria-invalid="{{ answer_data.is_correct_choice|yesno:'false,true' }}" aria-describedby="result-answer-{{ answer.id }}"
+                                       {% endif %}
+                                       {% if answer_data.was_selected %}
+                                           checked
+                                       {% endif %} />
+                                <label for="answer-{{ answer.id }}">
+                                    {{ answer.text }}
+                                </label>
+                            </p>
+                        {% endwith %}
+                    {% endfor %}
+                </fieldset>
+            {% endwith %}
+        {% endfor %}
+        <button type="button"
+                {% if show_results %}
+                    hx-get="{% url 'courses:check_quiz' course.id quiz.id %}"
+                {% else %}
+                    hx-post="{% url 'courses:check_quiz' course.id quiz.id %}"
+                {% endif %}>
+            {% if show_results %}
+                Retry Quiz
+            {% else %}
+                Check Quiz
+            {% endif %}
+        </button>
+    </form>
+</article>
