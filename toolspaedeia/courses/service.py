@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 from courses.models import Quiz
 from toolspaedeia.utils import markdown_to_html
@@ -31,7 +31,7 @@ def build_quiz_data(questions, answers_by_question=None):
         quiz_data.append(
             {
                 "question": question,
-                "question_html": format_html(markdown_to_html(question.text or "")),
+                "question_html": mark_safe(markdown_to_html(question.text or "")),  # noqa: S308
                 "answers_data": answers_data,
             }
         )

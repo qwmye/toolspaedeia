@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import DetailView
 from django.views.generic import ListView
@@ -126,7 +126,7 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
             context["next_module"] = next_module
         module.is_completed = module.progressions.filter(user=self.request.user, completed=True).exists()
         context["module"] = module
-        context["content"] = format_html(markdown_to_html(module.content or ""))
+        context["content"] = mark_safe(markdown_to_html(module.content or ""))  # noqa: S308
 
         try:
             module_quiz = module.quiz
