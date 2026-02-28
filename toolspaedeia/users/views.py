@@ -11,6 +11,10 @@ from users.models import UserPreferences
 
 
 class UserProfileFormView(LoginRequiredMixin, FormView):
+    """View to display and update user profile preferences."""
+
+    login_url = reverse_lazy("users:login")
+
     class UserProfileModelForm(ModelForm):
         """Inline to update user preferences."""
 
@@ -47,6 +51,7 @@ class PurchaseCourseView(LoginRequiredMixin, CreateView):
     http_method_names = ["post"]
     model = Purchase
     fields = ["course"]
+    login_url = reverse_lazy("users:login")
     success_url = reverse_lazy("courses:course_browse_list")
 
     def form_valid(self, form):
