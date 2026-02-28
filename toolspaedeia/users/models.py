@@ -46,6 +46,12 @@ class UserPreferences(models.Model):
         choices=UserColorTheme.choices,
     )
 
+    class Meta:
+        """Meta class for the UserPreferences model."""
+
+        verbose_name = "User Preference"
+        verbose_name_plural = "User Preferences"
+
     def __str__(self) -> str:
         return f"Preferences for {self.user.username}"
 
@@ -57,6 +63,12 @@ class Purchase(models.Model):
     course = models.ForeignKey("courses.Course", related_name="purchases", on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     purchase_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        """Meta class for the Purchase model."""
+
+        verbose_name = "Purchase"
+        verbose_name_plural = "Purchases"
 
     def __str__(self) -> str:
         return f"Purchase of {self.course.name} by {self.user.username} on {self.purchase_date}"

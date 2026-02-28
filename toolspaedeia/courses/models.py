@@ -18,6 +18,9 @@ class Course(models.Model):
     class Meta:
         """Meta class for the Course model."""
 
+        verbose_name = "Course"
+        verbose_name_plural = "Courses"
+
     def __str__(self) -> str:
         return self.name
 
@@ -30,6 +33,13 @@ class Module(models.Model):
     description = models.TextField()
     content = models.TextField()
     order = models.PositiveIntegerField()
+
+    class Meta:
+        """Meta class for the Module model."""
+
+        ordering = ["order"]
+        verbose_name = "Module"
+        verbose_name_plural = "Modules"
 
     def __str__(self) -> str:
         return self.title
@@ -47,6 +57,8 @@ class ModuleProgression(models.Model):
         """Meta class for the ModuleProgression model."""
 
         unique_together = ("user", "module")
+        verbose_name = "Module Progression"
+        verbose_name_plural = "Module Progressions"
 
     def __str__(self) -> str:
         return f"{self.user.username} - {self.module.title} - {'Completed' if self.completed else 'In Progress'}"
@@ -62,3 +74,72 @@ class ModuleProgression(models.Model):
         self.completed = False
         self.completion_date = None
         self.save()
+
+
+class Quiz(models.Model):
+    """Model representing a quiz within a module."""
+
+    module = models.ForeignKey(Module, related_name="quizzes", on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    randomize_questions = models.BooleanField(default=False)
+    max_questions = models.PositiveIntegerField(null=True, blank=True)
+
+    class Meta:
+        """Meta class for the Quiz model."""
+
+        verbose_name = "Quiz"
+        verbose_name_plural = "Quizzes"
+
+    def __str__(self) -> str:
+        return self.title
+
+    def get_questions_for_attempt(self):
+        """
+        Return a queryset of questions for a quiz attempt, applying
+        randomization and max question limits.
+        """
+        questions = self.questions.all()
+        questions = questions.order_by("?") if self.randomize_questions else questions.order_by("order")
+        if self.max_questions:
+            questions = questions[: self.max_questions]
+        return questions
+
+
+class Question(models.Model):
+    """Model representing a question within a quiz."""
+
+    quiz = models.ForeignKey(Quiz, related_name="questions", on_delete=models.CASCADE)
+    text = models.TextField()
+    order = models.PositiveIntegerField()
+
+    class Meta:
+        """Meta class for the Question model."""
+
+        ordering = ["order"]
+        verbose_name = "Question"
+        verbose_name_plural = "Questions"
+
+    def __str__(self) -> str:
+        return self.text
+
+    def get_answers(self):
+        """Return a queryset of answers for this question."""
+        return self.answers.all().order_by("?")
+
+
+class Answer(models.Model):
+    """Model representing an answer option for a quiz question."""
+
+    question = models.ForeignKey(Question, related_name="answers", on_delete=models.CASCADE)
+    text = models.CharField(max_length=255)
+    is_correct = models.BooleanField(default=False)
+
+    class Meta:
+        """Meta class for the Answer model."""
+
+        verbose_name = "Answer"
+        verbose_name_plural = "Answers"
+
+    def __str__(self) -> str:
+        return self.text

@@ -46,7 +46,7 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         """Add the list of modules and progress to the context."""
         context_data = super().get_context_data(**kwargs)
-        modules = list(self.object.modules.order_by("order"))
+        modules = list(self.object.modules.all())
         progress = 0
         for module in modules:
             module.is_completed = module.progressions.filter(user=self.request.user, completed=True).exists()
