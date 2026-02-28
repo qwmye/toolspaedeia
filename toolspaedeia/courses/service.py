@@ -40,7 +40,13 @@ def build_quiz_data(questions, answers_by_question=None):
 
 
 def get_quiz_and_course(course_id, quiz_id):
-    """Return quiz and its course for the provided ids."""
+    """
+    Return quiz and its course for the provided ids.
+
+    Validates that quiz belongs to the specified course; raises 404 if mismatch.
+    This prevents users from submitting answers to a quiz via a different course
+    URL.
+    """
     quiz = get_object_or_404(
         Quiz.objects.select_related("module__course"),
         id=quiz_id,
