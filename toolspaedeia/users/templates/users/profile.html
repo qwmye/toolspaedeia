@@ -9,6 +9,16 @@
     <h1>
         Toolspaedeia Site Preferences
     </h1>
+    <h2>
+        User Profile - {{ request.user.get_full_name|default:request.user.username }}
+    </h2>
+    {% if request.user.preference.profile_picture %}
+        <img src="{{ request.user.preference.profile_picture.url }}"
+             width="128"
+             height="128"
+             alt="Profile Picture"
+             class="profile-picture" />
+    {% endif %}
     <hr />
     <form method="post"
           enctype="multipart/form-data">
