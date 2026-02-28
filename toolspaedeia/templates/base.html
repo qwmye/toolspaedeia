@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="en"
-      {% if request.user.is_authenticated and request.user.preference.theme_mode %} data-theme="{{ request.user.preference.theme_mode }}" {% endif %}>
+      {% if request.user.is_authenticated and request.user.preference.theme_mode %}
+          data-theme="{{ request.user.preference.theme_mode }}"
+      {% endif %}>
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="keywords" content="toolspaedeia, tools, paedeia, education">
+        <meta charset="utf-8" />
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1" />
+        <meta name="keywords"
+              content="toolspaedeia, tools, paedeia, education" />
         <meta name="description"
-              content="Toolspaedeia is am education tool that helps students learn about tools and practices.">
-        <meta name="color-scheme" content="light dark">
+              content="Toolspaedeia is am education tool that helps students learn about tools and practices." />
+        <meta name="color-scheme"
+              content="light dark" />
         {% if request.user.is_authenticated and request.user.preference.color_theme %}
             <link rel="stylesheet"
-                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.{{ request.user.preference.color_theme }}.min.css">
+                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.{{ request.user.preference.color_theme }}.min.css" />
         {% else %}
             <link rel="stylesheet"
-                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
         {% endif %}
         <title>{{ title }}</title>
         <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
@@ -21,7 +26,31 @@
                 crossorigin="anonymous"
                 defer></script>
         <link href=" https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@3.3.1/css/all/all.min.css "
-              rel="stylesheet">
+              rel="stylesheet" />
+        <style>
+            :root {
+                --color-red: #EF4444;
+                --color-pink: #EC4899;
+                --color-fuchsia: #D946EF;
+                --color-purple: #A855F7;
+                --color-violet: #7C3AED;
+                --color-indigo: #6366F1;
+                --color-blue: #3B82F6;
+                --color-azure: #0EA5E9;
+                --color-cyan: #06B6D4;
+                --color-jade: #10B981;
+                --color-green: #22C55E;
+                --color-lime: #84CC16;
+                --color-yellow: #EAB308;
+                --color-amber: #F59E0B;
+                --color-pumpkin: #F97316;
+                --color-orange: #FF8C00;
+                --color-sand: #D4A574;
+                --color-gray: #6B7280;
+                --color-zinc: #71717A;
+                --color-slate: #64748B;
+            }
+        </style>
         {% block head %}
         {% endblock head %}
     </head>

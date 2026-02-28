@@ -7,13 +7,19 @@
     <li>
         <a href="{% url 'courses:course_detail' course.id %}">{{ course.name }}</a>
     </li>
-    <li>Add Module</li>
+    <li>
+        Add Module
+    </li>
 {% endblock breadcrumbs %}
 {% block content %}
-    <h1>Add New Module</h1>
+    <h1>
+        Add New Module
+    </h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Add module</button>
+        <button type="submit">
+            Add module
+        </button>
     </form>
 {% endblock content %}

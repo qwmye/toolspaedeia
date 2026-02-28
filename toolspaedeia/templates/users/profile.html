@@ -1,14 +1,21 @@
 {% extends "base.html" %}
 {% block breadcrumbs %}
     {{ block.super }}
-    <li>User settings</li>
+    <li>
+        User settings
+    </li>
 {% endblock breadcrumbs %}
 {% block content %}
-    <h1>Toolspaedeia Site Preferences</h1>
+    <h1>
+        Toolspaedeia Site Preferences
+    </h1>
     <hr />
-    <form method="post" enctype="multipart/form-data">
+    <form method="post"
+          enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Save Changes</button>
+        <button type="submit">
+            Save Changes
+        </button>
     </form>
 {% endblock content %}

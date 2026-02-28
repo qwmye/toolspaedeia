@@ -7,18 +7,26 @@
     <li>
         <a href="{% url 'courses:course_detail' course_id=module.course.id %}">{{ module.course }}</a>
     </li>
-    <li>{{ module }}</li>
+    <li>
+        {{ module }}
+    </li>
 {% endblock breadcrumbs %}
 {% block content %}
-    <h1>Edit Module "{{ module }}"</h1>
+    <h1>
+        Edit Module "{{ module }}"
+    </h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <div role="group">
-            <button type="submit">Save</button>
+            <button type="submit">
+                Save
+            </button>
             <button class="contrast"
                     type="delete"
-                    formaction="{% url 'courses:module_delete' module.course.id module.id %}">Delete</button>
+                    formaction="{% url 'courses:module_delete' module.course.id module.id %}">
+                Delete
+            </button>
         </div>
     </form>
 {% endblock content %}

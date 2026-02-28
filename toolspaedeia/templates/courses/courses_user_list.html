@@ -1,15 +1,23 @@
 {% extends "base.html" %}
 {% block breadcrumbs %}
     {{ block.super }}
-    <li>My Courses</li>
+    <li>
+        My Courses
+    </li>
 {% endblock breadcrumbs %}
 {% block content %}
-    <h1>Purchased Courses</h1>
+    <h1>
+        Purchased Courses
+    </h1>
     {% for course in courses %}
-        {% if forloop.first %}<hr />{% endif %}
+        {% if forloop.first %}
+            <hr />
+        {% endif %}
         <article>
             <header>
-                <h2>{{ course.name }}</h2>
+                <h2>
+                    {{ course.name }}
+                </h2>
             </header>
             {{ course.description }}
             <footer>
@@ -19,13 +27,17 @@
     {% empty %}
         <article>No courses purchased yet.</article>
     {% endfor %}
-    <h1>Published Courses</h1>
+    <h1>
+        Published Courses
+    </h1>
     <a href="{% url 'courses:course_publish' %}">Publish New Course</a>
     <hr />
     {% for course in published_courses %}
         <article>
             <header>
-                <h2>{{ course.name }}</h2>
+                <h2>
+                    {{ course.name }}
+                </h2>
             </header>
             {{ course.description }}
             <footer>

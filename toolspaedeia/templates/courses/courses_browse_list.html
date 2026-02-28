@@ -1,15 +1,23 @@
 {% extends "base.html" %}
 {% block breadcrumbs %}
     {{ block.super }}
-    <li>Browse Courses</li>
+    <li>
+        Browse Courses
+    </li>
 {% endblock breadcrumbs %}
 {% block content %}
-    <h1>Courses</h1>
+    <h1>
+        Courses
+    </h1>
     {% for course in courses %}
-        {% if forloop.first %}<hr />{% endif %}
+        {% if forloop.first %}
+            <hr />
+        {% endif %}
         <article>
             <header>
-                <h2>{{ course.name }}</h2>
+                <h2>
+                    {{ course.name }}
+                </h2>
             </header>
             {{ course.description }}
             <footer>
@@ -18,13 +26,20 @@
                         <a href="{% url 'courses:course_detail' course_id=course.id %}">Go to Course</a>
                     </p>
                 {% else %}
-                    <form method="post" action="{% url 'users:purchase_course' %}">
+                    <form method="post"
+                          action="{% url 'users:purchase_course' %}">
                         {% csrf_token %}
-                        <input type="hidden" name="course" value="{{ course.id }}" />
+                        <input type="hidden"
+                               name="course"
+                               value="{{ course.id }}" />
                         {% if course.price > 0 %}
-                            <button type="submit">Purchase for {{ course.price }} EUR</button>
+                            <button type="submit">
+                                Purchase for {{ course.price }} EUR
+                            </button>
                         {% else %}
-                            <button type="submit">Enroll for Free</button>
+                            <button type="submit">
+                                Enroll for Free
+                            </button>
                         {% endif %}
                     </form>
                 {% endif %}

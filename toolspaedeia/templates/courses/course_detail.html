@@ -4,10 +4,14 @@
     <li>
         <a href="{% url 'courses:course_user_list' %}">My Courses</a>
     </li>
-    <li>{{ course.name }}</li>
+    <li>
+        {{ course.name }}
+    </li>
 {% endblock breadcrumbs %}
 {% block content %}
-    <h1>{{ course.name }}</h1>
+    <h1>
+        {{ course.name }}
+    </h1>
     {% if progress is not None %}
         <div class="grid">
             <sub>
@@ -18,12 +22,17 @@
             </sub>
         </div>
         <h2>
-            <progress value="{{ progress }}" max="{{ total_modules }}"></progress>
+            <progress value="{{ progress }}"
+                      max="{{ total_modules }}"></progress>
         </h2>
     {% endif %}
-    <p>{{ course.description }}</p>
+    <p>
+        {{ course.description }}
+    </p>
     <hr />
-    <h2>Modules</h2>
+    <h2>
+        Modules
+    </h2>
     {% if user_is_publisher %}
         <p>
             <a href="{% url 'courses:module_add' course.id %}">Add New Module</a>
@@ -32,8 +41,12 @@
     {% for module in modules %}
         <article>
             <header>
-                <h2 id="module-{{ module.id }}">{{ module }}</h2>
-                {% if module.is_completed %}<ins>Completed!</ins>{% endif %}
+                <h2 id="module-{{ module.id }}">
+                    {{ module }}
+                </h2>
+                {% if module.is_completed %}
+                    <ins>Completed!</ins>
+                {% endif %}
             </header>
             {{ module.description }}
             <footer>

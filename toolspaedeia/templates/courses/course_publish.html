@@ -4,13 +4,19 @@
     <li>
         <a href="{% url 'courses:course_user_list' %}">My Courses</a>
     </li>
-    <li>Add Course</li>
+    <li>
+        Add Course
+    </li>
 {% endblock breadcrumbs %}
 {% block content %}
-    <h1>Add New Course</h1>
+    <h1>
+        Add New Course
+    </h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Create Course</button>
+        <button type="submit">
+            Create Course
+        </button>
     </form>
 {% endblock content %}

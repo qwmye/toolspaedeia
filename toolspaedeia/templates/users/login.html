@@ -2,7 +2,11 @@
 {% block nav %}
 {% endblock nav %}
 {% block content %}
-    {% if form.errors %}<p>Your username and password didn't match. Please try again.</p>{% endif %}
+    {% if form.errors %}
+        <p>
+            Your username and password didn't match. Please try again.
+        </p>
+    {% endif %}
     {% if next %}
         {% if user.is_authenticated %}
             <p>
@@ -10,22 +14,36 @@
                 please login with an account that has access.
             </p>
         {% else %}
-            <p>Please login to see this page.</p>
+            <p>
+                Please login to see this page.
+            </p>
         {% endif %}
     {% endif %}
-    <form method="post" action="{% url 'users:login' %}">
+    <form method="post"
+          action="{% url 'users:login' %}">
         {% csrf_token %}
         <table class="striped">
             <tr>
-                <td>{{ form.username.label_tag }}</td>
-                <td>{{ form.username }}</td>
+                <td>
+                    {{ form.username.label_tag }}
+                </td>
+                <td>
+                    {{ form.username }}
+                </td>
             </tr>
             <tr>
-                <td>{{ form.password.label_tag }}</td>
-                <td>{{ form.password }}</td>
+                <td>
+                    {{ form.password.label_tag }}
+                </td>
+                <td>
+                    {{ form.password }}
+                </td>
             </tr>
         </table>
-        <input type="submit" value="Login">
-        <input type="hidden" name="next" value="{{ next }}">
+        <input type="submit"
+               value="Login" />
+        <input type="hidden"
+               name="next"
+               value="{{ next }}" />
     </form>
 {% endblock content %}

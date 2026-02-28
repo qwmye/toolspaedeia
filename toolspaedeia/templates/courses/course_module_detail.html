@@ -7,10 +7,14 @@
     <li>
         <a href="{% url 'courses:course_detail' course_id=module.course.id %}">{{ module.course.name }}</a>
     </li>
-    <li>{{ module.title }}</li>
+    <li>
+        {{ module.title }}
+    </li>
 {% endblock breadcrumbs %}
 {% block content %}
-    <h1>{{ module.title }}</h1>
+    <h1>
+        {{ module.title }}
+    </h1>
     <hr />
     <section>
         {{ content }}
@@ -33,11 +37,19 @@
             <form method="get">
                 <div role="group">
                     <button type="submit"
-                            {% if previous_module %}formaction="{% url 'courses:module_detail' course.id previous_module.id %}" {% else %} disabled {% endif %}>
+                            {% if previous_module %}
+                                formaction="{% url 'courses:module_detail' course.id previous_module.id %}"
+                            {% else %}
+                                disabled
+                            {% endif %}>
                         Previous
                     </button>
                     <button type="submit"
-                            {% if next_module %} formaction="{% url 'courses:module_detail' course.id next_module.id %}" {% else %} disabled {% endif %}>
+                            {% if next_module %}
+                                formaction="{% url 'courses:module_detail' course.id next_module.id %}"
+                            {% else %}
+                                disabled
+                            {% endif %}>
                         Next
                     </button>
                 </div>
