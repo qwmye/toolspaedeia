@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"
-      {% if request.user.is_authenticated and request.user.preference.theme_mode %}
-          data-theme="{{ request.user.preference.theme_mode }}"
+      {% if theme_mode %}
+          data-theme="{{ theme_mode }}"
       {% endif %}>
     <head>
         <meta charset="utf-8" />
@@ -13,9 +13,9 @@
               content="Toolspaedeia is an education tool that helps students learn about tools and practices." />
         <meta name="color-scheme"
               content="light dark" />
-        {% if request.user.is_authenticated and request.user.preference.color_theme %}
+        {% if color_theme %}
             <link rel="stylesheet"
-                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.{{ request.user.preference.color_theme }}.min.css" />
+                  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.{{ color_theme }}.min.css" />
         {% else %}
             <link rel="stylesheet"
                   href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
