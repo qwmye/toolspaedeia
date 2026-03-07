@@ -36,6 +36,9 @@
             <header>
                 <h2>
                     {{ course.name }}
+                    {% if course.is_draft %}
+                        (<ins>Draft</ins>)
+                    {% endif %}
                 </h2>
             </header>
             {{ course.description }}
