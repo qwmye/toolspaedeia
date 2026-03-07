@@ -4,6 +4,7 @@ from django_webtest import WebTest
 
 from courses.models import Course
 from users.models import Purchase
+from users.models import UserSettings
 from users.models import UserSitePreferences
 
 
@@ -46,6 +47,11 @@ class UsersIntegrationWebTests(WebTest):
     def get_profile_form(profile_page):
         """Return profile form from profile page."""
         return next(form for form in profile_page.forms.values() if form.fields.get("color_theme"))
+
+    @staticmethod
+    def get_settings_form(settings_page):
+        """Return settings form from settings page."""
+        return next(form for form in settings_page.forms.values() if form.fields.get("receive_notifications"))
 
     @staticmethod
     def get_purchase_form(browse_page):
@@ -308,3 +314,64 @@ class UsersIntegrationWebTests(WebTest):
         profile_after_second_logout = self.app.get(reverse("users:profile"), expect_errors=True)
         self.assertEqual(profile_after_second_logout.status_code, 302)
         self.assertIn(reverse("users:login"), profile_after_second_logout.location)
+
+    def test_settings_view_get_and_post_flow(self):
+        """
+        View and update user settings end-to-end.
+
+        Actions:
+            Login, open /settings/, uncheck notifications, submit.
+        Behaviour:
+            Form saves and redirects back to the same page.
+        Expectation:
+            Page shows the settings heading and the DB row
+            reflects the updated value.
+        """
+        self.login_through_form()
+        settings_page = self.app.get(reverse("users:settings"))
+
+        self.assertEqual(settings_page.status_code, 200)
+        self.assertIn("User Settings", settings_page.text)
+        self.assertIn(self.student.username, settings_page.text)
+
+        settings_form = self.get_settings_form(settings_page)
+        settings_form["receive_notifications"].checked = False
+        response = settings_form.submit().follow()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("User Settings", response.text)
+        user_settings = UserSettings.objects.get(user=self.student)
+        self.assertFalse(user_settings.receive_notifications)
+
+    def test_settings_view_requires_login(self):
+        """
+        Unauthenticated access to /settings/ redirects to login.
+
+        Actions:
+            GET /settings/ without logging in.
+        Behaviour:
+            302 to login with ?next= param.
+        Expectation:
+            Redirect to login page.
+        """
+        response = self.app.get(reverse("users:settings"), expect_errors=True)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("users:login"), response.location)
+
+    def test_settings_nav_link_visible(self):
+        """
+        The settings link is visible in the users nav.
+
+        Actions:
+            Login, open the settings page.
+        Behaviour:
+            Nav sidebar shows "Settings" link.
+        Expectation:
+            "Settings" appears alongside "Site preferences".
+        """
+        self.login_through_form()
+        settings_page = self.app.get(reverse("users:settings"))
+
+        self.assertIn("Settings", settings_page.text)
+        self.assertIn("Site preferences", settings_page.text)

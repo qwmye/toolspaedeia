@@ -13,6 +13,7 @@ from courses.models import Course
 from users.context_processors import theme_preferences
 from users.middleware import ThemeCookieMiddleware
 from users.models import Purchase
+from users.models import UserSettings
 from users.models import UserSitePreferences
 
 
@@ -66,6 +67,66 @@ class TestUserProfileFormView(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("users:profile"))
+
+
+class TestUserSettingsView(TestCase):
+    """Tests for user settings (profile picture, notifications)."""
+
+    def setUp(self):
+        """Create a user for testing settings view."""
+        self.user = get_user_model().objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpass123",  # noqa: S106
+        )
+        self.url = reverse("users:settings")
+
+    def test_get_requires_authenticated_user(self):
+        """Unauthenticated users are redirected to login."""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/users/login/", response.url)
+
+    def test_get_shows_settings_form_for_authenticated_user(self):
+        """Authenticated users see the settings form."""
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("User Settings", response.content.decode())
+
+    def test_get_creates_settings_if_missing(self):
+        """Visiting settings creates the UserSettings row via get_or_create."""
+        self.client.force_login(self.user)
+        self.assertFalse(UserSettings.objects.filter(user=self.user).exists())
+
+        self.client.get(self.url)
+
+        self.assertTrue(UserSettings.objects.filter(user=self.user).exists())
+
+    def test_post_requires_authenticated_user(self):
+        """Unauthenticated users are redirected when submitting settings."""
+        response = self.client.post(self.url, data={"receive_notifications": True})
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/users/login/", response.url)
+
+    def test_post_updates_receive_notifications(self):
+        """Posting valid settings updates the UserSettings record."""
+        self.client.force_login(self.user)
+
+        response = self.client.post(self.url, data={"receive_notifications": False})
+
+        self.assertEqual(response.status_code, 302)
+        settings = UserSettings.objects.get(user=self.user)
+        self.assertFalse(settings.receive_notifications)
+
+    def test_post_redirects_to_settings_on_success(self):
+        """Successful POST redirects back to settings page."""
+        self.client.force_login(self.user)
+        response = self.client.post(self.url, data={"receive_notifications": True}, follow=False)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("users:settings"))
 
 
 class TestPurchaseCourseView(TestCase):
