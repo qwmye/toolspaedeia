@@ -59,7 +59,9 @@ class PurchaseCourseView(LoginRequiredMixin, CreateView):
         if not (self.request.user.is_authenticated and self.request.user.is_active):
             return HttpResponse("Unauthorized", status=401)
 
-        form.instance.user = self.request.user
-        form.instance.amount = form.instance.course.price
-        form.save()
+        Purchase.objects.get_or_create(
+            user=self.request.user,
+            course=form.instance.course,
+            defaults={"amount": form.instance.course.price},
+        )
         return redirect(self.request.META.get("HTTP_REFERER", self.success_url))
