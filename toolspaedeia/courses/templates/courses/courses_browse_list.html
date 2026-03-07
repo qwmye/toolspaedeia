@@ -33,22 +33,69 @@
                         <a href="{% url 'courses:course_detail' course_id=course.id %}">Go to Course</a>
                     </p>
                 {% else %}
-                    <form method="post"
-                          action="{% url 'users:purchase_course' %}">
-                        {% csrf_token %}
-                        <input type="hidden"
-                               name="course"
-                               value="{{ course.id }}" />
-                        {% if course.price > 0 %}
-                            <button type="submit">
-                                Purchase for {{ course.price }} EUR
-                            </button>
-                        {% else %}
-                            <button type="submit">
-                                Enroll for Free
-                            </button>
-                        {% endif %}
-                    </form>
+                    {% if course.price > 0 %}
+                        <button onclick="document.getElementById('confirm-{{ course.id }}').showModal()">
+                            Purchase for {{ course.price }} EUR
+                        </button>
+                    {% else %}
+                        <button onclick="document.getElementById('confirm-{{ course.id }}').showModal()">
+                            Enroll for Free
+                        </button>
+                    {% endif %}
+                    <dialog id="confirm-{{ course.id }}">
+                        <article>
+                            <header>
+                                <button aria-label="Close"
+                                        rel="prev"
+                                        onclick="this.closest('dialog').close()">
+                                </button>
+                                {% if course.price > 0 %}
+                                    <h3>
+                                        Confirm Purchase
+                                    </h3>
+                                {% else %}
+                                    <h3>
+                                        Confirm Enrollment
+                                    </h3>
+                                {% endif %}
+                            </header>
+                            <p>
+                                {% if course.price > 0 %}
+                                    Are you sure you want to purchase
+                                    <strong>{{ course.name }}</strong>
+                                    for {{ course.price }}&nbsp;EUR?
+                                {% else %}
+                                    Are you sure you want to enroll in
+                                    <strong>{{ course.name }}</strong>?
+                                {% endif %}
+                            </p>
+                            <footer>
+                                <form method="post"
+                                      action="{% url 'users:purchase_course' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden"
+                                           name="course"
+                                           value="{{ course.id }}" />
+                                    <div role="group">
+                                        <button type="button"
+                                                class="secondary"
+                                                onclick="this.closest('dialog').close()">
+                                            Cancel
+                                        </button>
+                                        {% if course.price > 0 %}
+                                            <button type="submit">
+                                                Purchase
+                                            </button>
+                                        {% else %}
+                                            <button type="submit">
+                                                Enroll
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </form>
+                            </footer>
+                        </article>
+                    </dialog>
                 {% endif %}
             </footer>
         </article>
