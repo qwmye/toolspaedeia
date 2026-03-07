@@ -19,6 +19,8 @@
         "python.linting.enabled": true,
         "python.linting.pylintEnabled": false,
         "python.linting.ruffEnabled": true,
+        "python.terminal.activateEnvironment": false,
+        "terminal.integrated.defaultProfile.linux": "bash",
         "terminal.integrated.env.linux": {
           "PATH": "/workspaces/toolspaedeia/.venv/bin:${env:PATH}"
         }
@@ -30,5 +32,10 @@
     8888
   ],
   "name": "Django Dev Container",
-  "overrideCommand": true
+  "overrideCommand": true,
+  "postCreateCommand": "uv sync --locked --extra dev && rm -rf /app/.venv",
+  "postStartCommand": "rm -rf /app/.venv",
+  "remoteEnv": {
+    "UV_PROJECT_ENVIRONMENT": "/workspaces/toolspaedeia/.venv"
+  }
 }
