@@ -1,4 +1,8 @@
+from typing import Any
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models.query import Q
+from django.db.models.query import QuerySet
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views import View
@@ -31,7 +35,10 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         """Add the list of modules and progress to the context."""
         context_data = super().get_context_data(**kwargs)
-        modules = list(self.object.modules.all())
+        if self.request.user == self.object.publisher:
+            modules = list(self.object.modules.order_by("order"))
+        else:
+            modules = list(self.object.modules.filter(is_draft=False).order_by("order"))
         progress = 0
         for module in modules:
             module.is_completed = module.progressions.filter(user=self.request.user, completed=True).exists()
@@ -101,20 +108,26 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
     login_url = "users:login"
     template_name = "courses/course_module_detail.html"
 
-    def get_object(self, queryset=None):
+    def get_queryset(self) -> QuerySet[Course]:
+        """Return the course with the specified module, if it is not a draft."""
+        return super().get_queryset().filter(Q(is_draft=False) | Q(publisher=self.request.user))
+
+    def get_object(self, queryset=None) -> Course:
         """Return the course object with the specified module."""
         course = super().get_object(queryset)
         module_id = self.kwargs.get("module_id")
         if module_id:
-            course.module = course.modules.get(id=module_id)
+            course.module = course.modules.filter(Q(is_draft=False) | Q(course__publisher=self.request.user)).get(
+                id=module_id
+            )
         return course
 
-    def get_title(self):
+    def get_title(self) -> str:
         """Return the module title and course name as the title."""
         course = self.get_object()
         return f"{course.module.title} | {course.name}"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
         """Add the module content in HTML format to the context."""
         context = super().get_context_data(**kwargs)
         course = self.get_object()

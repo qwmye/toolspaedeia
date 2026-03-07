@@ -18,6 +18,9 @@
 {% block content %}
     <h1>
         {{ module.title }}
+        {% if module.is_draft %}
+            - <kbd>Draft</kbd>
+        {% endif %}
     </h1>
     <hr />
     <section>

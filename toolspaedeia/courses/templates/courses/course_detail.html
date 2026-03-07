@@ -38,6 +38,9 @@
             <header>
                 <h2 id="module-{{ module.id }}">
                     {{ module }}
+                    {% if module.is_draft %}
+                        - <kbd>Draft</kbd>
+                    {% endif %}
                 </h2>
                 {% if module.is_completed %}
                     <ins>Completed!</ins>
