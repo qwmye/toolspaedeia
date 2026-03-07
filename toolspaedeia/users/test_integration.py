@@ -174,10 +174,7 @@ class UsersIntegrationWebTests(WebTest):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn(
-            "Select a valid choice. not-a-valid-color is not one of the available choices.",
-            response.text,
-        )
+        self.assertIn("Select a valid choice. not-a-valid-color is not one of the available choices.", response.text)
 
         preference = UserPreferences.objects.get(user=self.student)
         self.assertEqual(preference.theme_mode, "")
@@ -206,7 +203,7 @@ class UsersIntegrationWebTests(WebTest):
 
     def test_purchase_course_post_flow_prevents_duplicate_purchase(self):
         """
-        Two-tabs scenario: submitting the same purchase twice is safe.
+        Two opened tabs scenario: submitting the same purchase twice is safe.
 
         Actions:
             Login, grab the purchase form twice (simulating two tabs),
@@ -289,7 +286,7 @@ class UsersIntegrationWebTests(WebTest):
 
     def test_logout_view_post_twice_remains_logged_out(self):
         """
-        Double-logout (e.g. two stale tabs) doesn't raise an exception.
+        Double logout (e.g. two stale tabs) doesn't raise an exception.
 
         Actions:
             Login, POST logout twice in a row.
