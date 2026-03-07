@@ -1,12 +1,5 @@
 {% extends "users_base.html" %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    <li>
-        Site Preferences
-    </li>
-{% endblock breadcrumbs %}
-
 {% block content %}
     <h2>
         User Site Preferences - {{ request.user.get_full_name|default:request.user.username }}

@@ -5,19 +5,6 @@
             async></script>
 {% endblock head %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    <li>
-        <a href="{% url 'courses:course_user_list' %}">My Courses</a>
-    </li>
-    <li>
-        <a href="{% url 'courses:course_detail' course_id=module.course.id %}">{{ module.course.name }}</a>
-    </li>
-    <li>
-        {{ module.title }}
-    </li>
-{% endblock breadcrumbs %}
-
 {% block content %}
     <h1>
         {{ module.title }}

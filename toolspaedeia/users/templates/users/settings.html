@@ -1,12 +1,5 @@
 {% extends "users_base.html" %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    <li>
-        Settings
-    </li>
-{% endblock breadcrumbs %}
-
 {% block content %}
     <h2>
         User Settings - {{ request.user.get_full_name|default:request.user.username }}
