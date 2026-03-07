@@ -67,6 +67,9 @@ class Purchase(models.Model):
     class Meta:
         """Meta class for the Purchase model."""
 
+        constraints = [
+            models.UniqueConstraint(fields=["user", "course"], name="users_purchase_unique_user_course"),
+        ]
         verbose_name = "Purchase"
         verbose_name_plural = "Purchases"
 
