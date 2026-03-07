@@ -7,6 +7,86 @@ from courses.models import Course
 from courses.models import Module
 from courses.models import Question
 from courses.models import Quiz
+from courses.service import calculate_final_grade
+
+
+class TestCalculateFinalGrade(TestCase):
+    def test_empty_quiz_data_returns_zero(self):
+        """No questions means a zero grade."""
+        self.assertEqual(calculate_final_grade([]), 0)
+
+    def test_all_correct_returns_100(self):
+        """Every answer is correct => 100%."""
+        quiz_data = [
+            {
+                "answers_data": [
+                    {"is_correct_choice": True},
+                    {"is_correct_choice": True},
+                ],
+            },
+            {
+                "answers_data": [
+                    {"is_correct_choice": True},
+                ],
+            },
+        ]
+        self.assertEqual(calculate_final_grade(quiz_data), 100)
+
+    def test_all_wrong_returns_zero(self):
+        """Not a single correct choice => 0%."""
+        quiz_data = [
+            {
+                "answers_data": [
+                    {"is_correct_choice": False},
+                    {"is_correct_choice": False},
+                ],
+            },
+        ]
+        self.assertEqual(calculate_final_grade(quiz_data), 0)
+
+    def test_partial_correctness(self):
+        """Mixed results should give the right rounded percentage (75%)."""
+        quiz_data = [
+            {
+                "answers_data": [
+                    {"is_correct_choice": True},
+                    {"is_correct_choice": False},
+                    {"is_correct_choice": True},
+                ],
+            },
+            {
+                "answers_data": [
+                    {"is_correct_choice": True},
+                ],
+            },
+        ]
+        self.assertEqual(calculate_final_grade(quiz_data), 75)
+
+    def test_single_question_single_answer(self):
+        """Edge case: one question with one answer."""
+        correct = [{"answers_data": [{"is_correct_choice": True}]}]
+        wrong = [{"answers_data": [{"is_correct_choice": False}]}]
+        self.assertEqual(calculate_final_grade(correct), 100)
+        self.assertEqual(calculate_final_grade(wrong), 0)
+
+    def test_question_with_empty_answers_returns_zero(self):
+        """A question with no answers shouldn't break."""
+        quiz_data = [{"answers_data": []}]
+        self.assertEqual(calculate_final_grade(quiz_data), 0)
+
+    def test_result_is_rounded_float(self):
+        """Grade with a non-integer ratio keeps two decimals (66.67%)."""
+        quiz_data = [
+            {
+                "answers_data": [
+                    {"is_correct_choice": True},
+                    {"is_correct_choice": True},
+                    {"is_correct_choice": False},
+                ],
+            },
+        ]
+        result = calculate_final_grade(quiz_data)
+        self.assertEqual(result, 66.67)
 
 
 class TestCheckQuizView(TestCase):

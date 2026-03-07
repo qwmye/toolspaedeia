@@ -247,14 +247,14 @@ class CoursesIntegrationWebTests(WebTest):
 
     def test_check_quiz_post_flow(self):
         """
-        Submitting quiz answers and seeing results.
+        Submitting quiz answers and seeing results with final grade.
 
         Actions:
             Login, navigate to quiz, POST with the correct answer selected.
         Behaviour:
-            Server evaluates and returns result mode.
+            Server evaluates and returns result mode with a grade.
         Expectation:
-            "Retry Quiz" button appears (results are shown).
+            "Retry Quiz" button and "Final Grade: 100%" appear.
         """
         browse_page = self.login_through_form()
         my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
@@ -272,6 +272,50 @@ class CoursesIntegrationWebTests(WebTest):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Retry Quiz", response.text)
+        self.assertIn("Final Grade: 100.00%", response.text)
+
+    def test_check_quiz_post_wrong_answer_shows_grade(self):
+        """
+        Submitting only the wrong answer produces a 0% grade.
+
+        Actions:
+            Login, POST quiz with only the wrong answer ticked.
+        Behaviour:
+            Both choices are wrong (wrong ticked, correct unticked).
+        Expectation:
+            Final grade is 0%.
+        """
+        self.login_through_form()
+        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
+        response = self.app.post(
+            check_url,
+            params={
+                "question_ids": [str(self.question.id)],
+                f"answer_ids_{self.question.id}": [str(self.correct_answer.id), str(self.wrong_answer.id)],
+                f"question-{self.question.id}": [str(self.wrong_answer.id)],
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Final Grade: 0.00%", response.text)
+
+    def test_check_quiz_get_has_no_final_grade(self):
+        """
+        A fresh quiz attempt shouldn't show any grade.
+
+        Actions:
+            Login, GET the quiz check endpoint.
+        Behaviour:
+            Returns quiz form without results.
+        Expectation:
+            "Final Grade" text is absent.
+        """
+        self.login_through_form()
+        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
+        response = self.app.get(check_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("Final Grade", response.text)
 
     def test_duplicate_purchase_is_idempotent(self):
         """
