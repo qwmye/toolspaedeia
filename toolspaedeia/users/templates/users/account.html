@@ -1,0 +1,16 @@
+{% extends "users_base.html" %}
+
+{% block content %}
+    <h2>
+        Account - {{ request.user.get_full_name|default:request.user.username }}
+    </h2>
+    <hr />
+    <form method="post"
+          enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">
+            Save Changes
+        </button>
+    </form>
+{% endblock content %}

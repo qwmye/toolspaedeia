@@ -375,3 +375,115 @@ class UsersIntegrationWebTests(WebTest):
 
         self.assertIn("Settings", settings_page.text)
         self.assertIn("Site preferences", settings_page.text)
+
+    @staticmethod
+    def get_account_form(account_page):
+        """Return account form from account page."""
+        return next(form for form in account_page.forms.values() if form.fields.get("username"))
+
+    def test_account_view_get_and_post_flow(self):
+        """
+        View and update account details end-to-end.
+
+        Actions:
+            Login, open /account/, change username + email, submit.
+        Behaviour:
+            Form saves and redirects back to the same page.
+        Expectation:
+            Page shows the account heading and the DB reflects new values.
+        """
+        self.login_through_form()
+        account_page = self.app.get(reverse("users:account"))
+
+        self.assertEqual(account_page.status_code, 200)
+        self.assertIn("Account", account_page.text)
+        self.assertIn(self.student.username, account_page.text)
+
+        account_form = self.get_account_form(account_page)
+        account_form["username"] = "new_student"
+        account_form["email"] = "new_student@example.com"
+        response = account_form.submit().follow()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Account", response.text)
+        self.student.refresh_from_db()
+        self.assertEqual(self.student.username, "new_student")
+        self.assertEqual(self.student.email, "new_student@example.com")
+
+    def test_account_view_password_change_flow(self):
+        """
+        Changing password keeps the user logged in.
+
+        Actions:
+            Login, open /account/, fill in matching passwords, submit.
+        Behaviour:
+            Password is updated and session remains valid.
+        Expectation:
+            User can still access the account page after submission.
+        """
+        self.login_through_form()
+        account_page = self.app.get(reverse("users:account"))
+        account_form = self.get_account_form(account_page)
+        account_form["new_password"] = "S3cur3Pa$$w0rd!"  # noqa: S105
+        account_form["confirm_password"] = "S3cur3Pa$$w0rd!"  # noqa: S105
+        response = account_form.submit().follow()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Account", response.text)
+        self.student.refresh_from_db()
+        self.assertTrue(self.student.check_password("S3cur3Pa$$w0rd!"))
+
+    def test_account_view_mismatched_passwords_shows_error(self):
+        """
+        Mismatched passwords re-render the form with a validation error.
+
+        Actions:
+            Login, open /account/, enter two different passwords, submit.
+        Behaviour:
+            Form re-renders with "Passwords do not match" error.
+        Expectation:
+            Error text visible, password unchanged in DB.
+        """
+        self.login_through_form()
+        account_page = self.app.get(reverse("users:account"))
+        account_form = self.get_account_form(account_page)
+        account_form["new_password"] = "Str0ng!P@ss1"  # noqa: S105
+        account_form["confirm_password"] = "Str0ng!P@ss2"  # noqa: S105
+        response = account_form.submit()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Passwords do not match", response.text)
+
+    def test_account_view_requires_login(self):
+        """
+        Unauthenticated access to /account/ redirects to login.
+
+        Actions:
+            GET /account/ without logging in.
+        Behaviour:
+            302 to login with ?next= param.
+        Expectation:
+            Redirect to login page.
+        """
+        response = self.app.get(reverse("users:account"), expect_errors=True)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("users:login"), response.location)
+
+    def test_account_nav_link_visible(self):
+        """
+        The account link is visible in the users nav.
+
+        Actions:
+            Login, open the account page.
+        Behaviour:
+            Nav sidebar shows "Account" link.
+        Expectation:
+            "Account" appears alongside "Site preferences" and "Settings".
+        """
+        self.login_through_form()
+        account_page = self.app.get(reverse("users:account"))
+
+        self.assertIn("Account", account_page.text)
+        self.assertIn("Site preferences", account_page.text)
+        self.assertIn("Settings", account_page.text)

@@ -41,7 +41,7 @@ class TestUserProfileFormView(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertInHTML("Site Preferences", response.content.decode())
+        self.assertIn("User Site Preferences", response.content.decode())
 
     def test_post_requires_authenticated_user(self):
         """Unauthenticated users are redirected when submitting profile form."""
@@ -127,6 +127,121 @@ class TestUserSettingsView(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("users:settings"))
+
+
+class TestUserAccountView(TestCase):
+    """Tests for user account view (username, email, password)."""
+
+    def setUp(self):
+        """Create a user for testing the account view."""
+        self.user = get_user_model().objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpass123",  # noqa: S106
+        )
+        self.url = reverse("users:account")
+
+    def test_get_requires_authenticated_user(self):
+        """Unauthenticated users are redirected to login."""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/users/login/", response.url)
+
+    def test_get_shows_account_form_for_authenticated_user(self):
+        """Authenticated users see the account form pre-filled."""
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Account", response.content.decode())
+
+    def test_post_requires_authenticated_user(self):
+        """Unauthenticated users are redirected when submitting."""
+        response = self.client.post(self.url, data={"username": "new", "email": "new@example.com"})
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/users/login/", response.url)
+
+    def test_post_updates_username_and_email(self):
+        """Posting valid data updates the user's username and email."""
+        self.client.force_login(self.user)
+        data = {"username": "newname", "email": "new@example.com"}
+
+        response = self.client.post(self.url, data=data)
+
+        self.assertEqual(response.status_code, 302)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.username, "newname")
+        self.assertEqual(self.user.email, "new@example.com")
+
+    def test_post_changes_password_when_provided(self):
+        """Posting matching passwords updates the password hash."""
+        self.client.force_login(self.user)
+        data = {
+            "username": self.user.username,
+            "email": self.user.email,
+            "new_password": "S3cur3Pa$$w0rd!",
+            "confirm_password": "S3cur3Pa$$w0rd!",
+        }
+
+        response = self.client.post(self.url, data=data)
+
+        self.assertEqual(response.status_code, 302)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("S3cur3Pa$$w0rd!"))
+
+    def test_post_mismatched_passwords_shows_error(self):
+        """Mismatched passwords re-render the form with an error."""
+        self.client.force_login(self.user)
+        data = {
+            "username": self.user.username,
+            "email": self.user.email,
+            "new_password": "newpass123",
+            "confirm_password": "differentpass",
+        }
+
+        response = self.client.post(self.url, data=data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Passwords do not match", response.content.decode())
+
+    def test_post_duplicate_username_shows_error(self):
+        """Taking another user's username re-renders the form with an error."""
+        get_user_model().objects.create_user(
+            username="taken",
+            email="taken@example.com",
+            password="takenpass",  # noqa: S106
+        )
+        self.client.force_login(self.user)
+        data = {"username": "taken", "email": self.user.email}
+
+        response = self.client.post(self.url, data=data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("already exists", response.content.decode())
+
+    def test_post_redirects_to_account_on_success(self):
+        """Successful POST redirects back to account page."""
+        self.client.force_login(self.user)
+        data = {"username": self.user.username, "email": self.user.email}
+        response = self.client.post(self.url, data=data, follow=False)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("users:account"))
+
+    def test_post_keeps_session_after_password_change(self):
+        """Changing the password does not log the user out."""
+        self.client.force_login(self.user)
+        data = {
+            "username": self.user.username,
+            "email": self.user.email,
+            "new_password": "S3cur3Pa$$w0rd!",
+            "confirm_password": "S3cur3Pa$$w0rd!",
+        }
+
+        self.client.post(self.url, data=data)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
 
 
 class TestPurchaseCourseView(TestCase):
