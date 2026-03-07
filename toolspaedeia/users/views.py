@@ -1,6 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelForm
-from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
@@ -31,16 +30,12 @@ class UserProfileFormView(LoginRequiredMixin, FormView):
     def get_form_kwargs(self):
         """Get form kwargs for user profile form."""
         kwargs = super().get_form_kwargs()
-        if self.request.user.is_authenticated:
-            preference, _ = UserSitePreferences.objects.get_or_create(user=self.request.user)
-            kwargs["instance"] = preference
+        preference, _ = UserSitePreferences.objects.get_or_create(user=self.request.user)
+        kwargs["instance"] = preference
         return kwargs
 
     def form_valid(self, form):
         """Handle valid form submission for user profile form."""
-        if not (self.request.user.is_authenticated and self.request.user.is_active):
-            return HttpResponse("Unauthorized", status=401)
-
         form.save()
         return super().form_valid(form)
 
@@ -56,9 +51,6 @@ class PurchaseCourseView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         """Handle valid form submission for course purchase."""
-        if not (self.request.user.is_authenticated and self.request.user.is_active):
-            return HttpResponse("Unauthorized", status=401)
-
         Purchase.objects.get_or_create(
             user=self.request.user,
             course=form.instance.course,
