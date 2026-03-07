@@ -14,6 +14,7 @@ def markdown_to_html(markdown_text):
             "superscript",
             "subscript",
             "math",
+            "strikethrough",
             FencedDirective([TableOfContents()]),
         ],
     )
