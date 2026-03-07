@@ -2,7 +2,6 @@
 
 from decimal import Decimal
 
-from courses.models import Course
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponse
@@ -10,6 +9,7 @@ from django.test import RequestFactory
 from django.test import TestCase
 from django.urls import reverse
 
+from courses.models import Course
 from users.context_processors import theme_preferences
 from users.middleware import ThemeCookieMiddleware
 from users.models import Purchase

@@ -139,7 +139,7 @@ max-doc-length = 80
 [tool.ruff.lint.isort]
 case-sensitive = true
 force-single-line = true
-known-first-party = ["toolspaedeia"]
+known-first-party = ["toolspaedeia", "users", "courses"]
 split-on-trailing-comma = false
 
 [tool.djlint]
