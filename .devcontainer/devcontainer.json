@@ -15,10 +15,13 @@
       ],
       "settings": {
         "editor.formatOnSave": true,
+        "python.defaultInterpreterPath": "/workspaces/toolspaedeia/.venv/bin/python",
         "python.linting.enabled": true,
         "python.linting.pylintEnabled": false,
         "python.linting.ruffEnabled": true,
-        "python.pythonPath": "/app/.venv/bin/python"
+        "terminal.integrated.env.linux": {
+          "PATH": "/workspaces/toolspaedeia/.venv/bin:${env:PATH}"
+        }
       }
     }
   },
