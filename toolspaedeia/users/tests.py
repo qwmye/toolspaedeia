@@ -1,12 +1,17 @@
-"""User profile and purchase view tests."""
+"""Tests for user views, theme context processor, and middleware."""
 
 from decimal import Decimal
 
 from courses.models import Course
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+from django.http import HttpResponse
+from django.test import RequestFactory
 from django.test import TestCase
 from django.urls import reverse
 
+from users.context_processors import theme_preferences
+from users.middleware import ThemeCookieMiddleware
 from users.models import Purchase
 from users.models import UserPreferences
 
@@ -149,3 +154,125 @@ class TestPurchaseCourseView(TestCase):
 
         purchases = Purchase.objects.filter(course=self.paid_course)
         self.assertEqual(purchases.count(), 2)
+
+
+class TestThemeContextProcessor(TestCase):
+    """Tests for the theme preferences context processor."""
+
+    def setUp(self):
+        """Create request factory and test user."""
+        self.factory = RequestFactory()
+        self.user = get_user_model().objects.create_user(
+            username="themeuser",
+            email="themeuser@example.com",
+            password="themepass",  # noqa: S106
+        )
+
+    def test_theme_preferences_authenticated_user_prefers_database_values(self):
+        """Authenticated requests use database preferences over cookies."""
+        UserPreferences.objects.create(user=self.user, theme_mode="dark", color_theme="blue")
+        request = self.factory.get("/")
+        request.user = self.user
+        request.COOKIES = {"theme_mode": "light", "color_theme": "green"}
+
+        context = theme_preferences(request)
+
+        self.assertEqual(context["theme_mode"], "dark")
+        self.assertEqual(context["color_theme"], "blue")
+
+    def test_theme_preferences_authenticated_user_without_preferences_falls_back_to_cookies(self):
+        """Authenticated users without preferences fall back to cookies."""
+        request = self.factory.get("/")
+        request.user = self.user
+        request.COOKIES = {"theme_mode": "light", "color_theme": "amber"}
+
+        context = theme_preferences(request)
+
+        self.assertEqual(context["theme_mode"], "light")
+        self.assertEqual(context["color_theme"], "amber")
+
+    def test_theme_preferences_anonymous_user_uses_cookie_values(self):
+        """Anonymous requests use cookie values."""
+        request = self.factory.get("/")
+        request.user = AnonymousUser()
+        request.COOKIES = {"theme_mode": "dark", "color_theme": "violet"}
+
+        context = theme_preferences(request)
+
+        self.assertEqual(context["theme_mode"], "dark")
+        self.assertEqual(context["color_theme"], "violet")
+
+
+class TestThemeCookieMiddleware(TestCase):
+    """Tests for ThemeCookieMiddleware cookie synchronization logic."""
+
+    def setUp(self):
+        """Create middleware and reusable test user."""
+        self.factory = RequestFactory()
+        self.user = get_user_model().objects.create_user(
+            username="middlewareuser",
+            email="middlewareuser@example.com",
+            password="middlewarepass",  # noqa: S106
+        )
+        self.middleware = ThemeCookieMiddleware(lambda _: HttpResponse("ok"))
+
+    def test_theme_cookie_middleware_sets_cookies_when_missing(self):
+        """Middleware sets both theme cookies if none are present."""
+        UserPreferences.objects.create(user=self.user, theme_mode="dark", color_theme="pumpkin")
+        request = self.factory.get("/")
+        request.user = self.user
+        request.COOKIES = {}
+
+        response = self.middleware(request)
+
+        self.assertIn("theme_mode", response.cookies)
+        self.assertEqual(response.cookies["theme_mode"].value, "dark")
+        self.assertIn("color_theme", response.cookies)
+        self.assertEqual(response.cookies["color_theme"].value, "pumpkin")
+
+    def test_theme_cookie_middleware_sets_only_cookie_with_changed_value(self):
+        """Middleware updates only cookies whose values differ from database."""
+        UserPreferences.objects.create(user=self.user, theme_mode="dark", color_theme="pumpkin")
+        request = self.factory.get("/")
+        request.user = self.user
+        request.COOKIES = {"theme_mode": "light", "color_theme": "pumpkin"}
+
+        response = self.middleware(request)
+
+        self.assertIn("theme_mode", response.cookies)
+        self.assertEqual(response.cookies["theme_mode"].value, "dark")
+        self.assertNotIn("color_theme", response.cookies)
+
+    def test_theme_cookie_middleware_does_not_set_cookies_when_values_match(self):
+        """Middleware skips cookie writes when values already match database."""
+        UserPreferences.objects.create(user=self.user, theme_mode="light", color_theme="green")
+        request = self.factory.get("/")
+        request.user = self.user
+        request.COOKIES = {"theme_mode": "light", "color_theme": "green"}
+
+        response = self.middleware(request)
+
+        self.assertNotIn("theme_mode", response.cookies)
+        self.assertNotIn("color_theme", response.cookies)
+
+    def test_theme_cookie_middleware_authenticated_user_without_preferences_sets_no_cookies(self):
+        """Middleware does not set cookies if preferences do not exist."""
+        request = self.factory.get("/")
+        request.user = self.user
+        request.COOKIES = {}
+
+        response = self.middleware(request)
+
+        self.assertNotIn("theme_mode", response.cookies)
+        self.assertNotIn("color_theme", response.cookies)
+
+    def test_theme_cookie_middleware_anonymous_user_sets_no_cookies(self):
+        """Middleware does not attempt preference sync for anonymous users."""
+        request = self.factory.get("/")
+        request.user = AnonymousUser()
+        request.COOKIES = {}
+
+        response = self.middleware(request)
+
+        self.assertNotIn("theme_mode", response.cookies)
+        self.assertNotIn("color_theme", response.cookies)
