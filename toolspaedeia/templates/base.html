@@ -78,12 +78,12 @@
                     {% block site_nav %}
                         <li>
                             <h2>
-                                <a href="{% url 'courses:course_user_list' %}">My Courses</a>
+                                <a href="{% url 'courses:course_browse_list' %}">Browse Courses</a>
                             </h2>
                         </li>
                         <li>
                             <h2>
-                                <a href="{% url 'courses:course_browse_list' %}">Browse Courses</a>
+                                <a href="{% url 'courses:course_user_list' %}">My Courses</a>
                             </h2>
                         </li>
                     {% endblock site_nav %}
