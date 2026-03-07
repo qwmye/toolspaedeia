@@ -38,18 +38,7 @@
     {% endif %}
     <section>
         <nav aria-label="Module navigation">
-            <form>
-                {% csrf_token %}
-                <button type="submit"
-                        formaction="{% url 'courses:module_mark_complete' course.id module.id %}"
-                        formmethod="post">
-                    {% if module.is_completed %}
-                        Mark as Incomplete
-                    {% else %}
-                        Mark as Completed
-                    {% endif %}
-                </button>
-            </form>
+            {% include "courses/partials/mark_complete_button.html" with course_id=course.id module_id=module.id %}
             <form method="get">
                 <div role="group">
                     <button type="submit"

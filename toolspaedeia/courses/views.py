@@ -3,12 +3,13 @@ from typing import Any
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.query import Q
 from django.db.models.query import QuerySet
-from django.urls import reverse
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import DetailView
 from django.views.generic import ListView
-from django.views.generic import UpdateView
 
 from courses.models import Course
 from courses.models import Module
@@ -156,25 +157,23 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         return context
 
 
-class ModuleMarkCompleteView(LoginRequiredMixin, UpdateView):
+class ModuleMarkCompleteView(LoginRequiredMixin, View):
     http_method_names = ["post"]
-    model = Module
-    pk_url_kwarg = "module_id"
-    context_object_name = "module"
     login_url = "users:login"
-    fields = []
 
-    def get_success_url(self) -> str:
-        """Redirect the user to the module detail page."""
-        return reverse("courses:course_detail", kwargs={"course_id": self.object.course.id})
-
-    def post(self, request, *args, **kwargs):
+    def post(self, request, course_id, module_id):
         """Toggle the completion status of the module for the user."""
-        module = self.get_object()
+        module = get_object_or_404(Module, pk=module_id)
         progression, _ = module.progressions.get_or_create(user=request.user)
         progression.completed = not progression.completed
         progression.save()
-        return super().post(request, *args, **kwargs)
+        context = {
+            "course_id": course_id,
+            "module_id": module_id,
+            "completed": progression.completed,
+        }
+        html = render_to_string("courses/partials/mark_complete_button.html", context, request=request)
+        return HttpResponse(html)
 
 
 class CheckQuizView(LoginRequiredMixin, View):
