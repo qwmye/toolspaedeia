@@ -6,9 +6,9 @@ from .models import UserSitePreferences
 
 @admin.register(UserSitePreferences)
 class UserSitePreferencesAdmin(admin.ModelAdmin):
-    """Admin interface for managing user preferences."""
+    pass
 
 
 @admin.register(Purchase)
 class PurchaseAdmin(admin.ModelAdmin):
-    """Admin interface for managing user purchases."""
+    pass

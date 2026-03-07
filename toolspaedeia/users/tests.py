@@ -19,7 +19,6 @@ class TestUserPreferencesView(TestCase):
     """Tests for user site preferences (theme)."""
 
     def setUp(self):
-        """Create a user for testing preferences view and form submission."""
         self.user = get_user_model().objects.create_user(
             username="testuser",
             email="test@example.com",
@@ -28,13 +27,11 @@ class TestUserPreferencesView(TestCase):
         self.url = reverse("users:preferences")
 
     def test_get_requires_authenticated_user(self):
-        """Unauthenticated users are redirected to login."""
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
         self.assertIn("/users/login/", response.url)
 
     def test_get_shows_preferences_form_for_authenticated_user(self):
-        """Authenticated users are shown the preferences form."""
         self.client.force_login(self.user)
         response = self.client.get(self.url)
 
@@ -42,16 +39,11 @@ class TestUserPreferencesView(TestCase):
         self.assertIn("User Site Preferences", response.content.decode())
 
     def test_post_requires_authenticated_user(self):
-        """
-        Unauthenticated users are redirected when submitting the
-        preferences form.
-        """
         response = self.client.post(self.url, data={"color_theme": "blue", "theme_mode": "light"})
         self.assertEqual(response.status_code, 302)
         self.assertIn("/users/login/", response.url)
 
     def test_post_updates_user_preferences(self):
-        """Posting valid preferences updates UserSitePreferences record."""
         self.client.force_login(self.user)
         data = {"color_theme": "blue", "theme_mode": "light"}
 
@@ -63,7 +55,6 @@ class TestUserPreferencesView(TestCase):
         self.assertEqual(pref.theme_mode, "light")
 
     def test_post_redirects_to_preferences_on_success(self):
-        """Successful POST redirects back to preferences page."""
         self.client.force_login(self.user)
         response = self.client.post(self.url, data={"color_theme": "green", "theme_mode": "dark"}, follow=False)
 
@@ -72,10 +63,7 @@ class TestUserPreferencesView(TestCase):
 
 
 class TestUserSettingsView(TestCase):
-    """Tests for user settings (profile picture, notifications)."""
-
     def setUp(self):
-        """Create a user for testing settings view."""
         self.user = get_user_model().objects.create_user(
             username="testuser",
             email="test@example.com",
@@ -84,13 +72,11 @@ class TestUserSettingsView(TestCase):
         self.url = reverse("users:settings")
 
     def test_get_requires_authenticated_user(self):
-        """Unauthenticated users are redirected to login."""
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
         self.assertIn("/users/login/", response.url)
 
     def test_get_shows_settings_form_for_authenticated_user(self):
-        """Authenticated users see the settings form."""
         self.client.force_login(self.user)
         response = self.client.get(self.url)
 
@@ -98,7 +84,7 @@ class TestUserSettingsView(TestCase):
         self.assertIn("User Settings", response.content.decode())
 
     def test_get_creates_settings_if_missing(self):
-        """Visiting settings creates the UserSettings row via get_or_create."""
+        """Visiting the page auto-creates the UserSettings row."""
         self.client.force_login(self.user)
         self.assertFalse(UserSettings.objects.filter(user=self.user).exists())
 
@@ -107,13 +93,11 @@ class TestUserSettingsView(TestCase):
         self.assertTrue(UserSettings.objects.filter(user=self.user).exists())
 
     def test_post_requires_authenticated_user(self):
-        """Unauthenticated users are redirected when submitting settings."""
         response = self.client.post(self.url, data={"receive_notifications": True})
         self.assertEqual(response.status_code, 302)
         self.assertIn("/users/login/", response.url)
 
     def test_post_updates_receive_notifications(self):
-        """Posting valid settings updates the UserSettings record."""
         self.client.force_login(self.user)
 
         response = self.client.post(self.url, data={"receive_notifications": False})
@@ -123,7 +107,6 @@ class TestUserSettingsView(TestCase):
         self.assertFalse(settings.receive_notifications)
 
     def test_post_redirects_to_settings_on_success(self):
-        """Successful POST redirects back to settings page."""
         self.client.force_login(self.user)
         response = self.client.post(self.url, data={"receive_notifications": True}, follow=False)
 
@@ -132,10 +115,7 @@ class TestUserSettingsView(TestCase):
 
 
 class TestUserAccountView(TestCase):
-    """Tests for user account view (username, email, password)."""
-
     def setUp(self):
-        """Create a user for testing the account view."""
         self.user = get_user_model().objects.create_user(
             username="testuser",
             email="test@example.com",
@@ -144,13 +124,11 @@ class TestUserAccountView(TestCase):
         self.url = reverse("users:account")
 
     def test_get_requires_authenticated_user(self):
-        """Unauthenticated users are redirected to login."""
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
         self.assertIn("/users/login/", response.url)
 
     def test_get_shows_account_form_for_authenticated_user(self):
-        """Authenticated users see the account form pre-filled."""
         self.client.force_login(self.user)
         response = self.client.get(self.url)
 
@@ -158,13 +136,11 @@ class TestUserAccountView(TestCase):
         self.assertIn("Account", response.content.decode())
 
     def test_post_requires_authenticated_user(self):
-        """Unauthenticated users are redirected when submitting."""
         response = self.client.post(self.url, data={"username": "new", "email": "new@example.com"})
         self.assertEqual(response.status_code, 302)
         self.assertIn("/users/login/", response.url)
 
     def test_post_updates_username_and_email(self):
-        """Posting valid data updates the user's username and email."""
         self.client.force_login(self.user)
         data = {"username": "newname", "email": "new@example.com"}
 
@@ -176,7 +152,6 @@ class TestUserAccountView(TestCase):
         self.assertEqual(self.user.email, "new@example.com")
 
     def test_post_updates_first_and_last_name(self):
-        """Posting first/last name updates the user model."""
         self.client.force_login(self.user)
         data = {
             "username": self.user.username,
@@ -193,7 +168,6 @@ class TestUserAccountView(TestCase):
         self.assertEqual(self.user.last_name, "Doe")
 
     def test_post_changes_password_when_provided(self):
-        """Posting matching passwords updates the password hash."""
         self.client.force_login(self.user)
         data = {
             "username": self.user.username,
@@ -209,7 +183,6 @@ class TestUserAccountView(TestCase):
         self.assertTrue(self.user.check_password("S3cur3Pa$$w0rd!"))
 
     def test_post_mismatched_passwords_shows_error(self):
-        """Mismatched passwords re-render the form with an error."""
         self.client.force_login(self.user)
         data = {
             "username": self.user.username,
@@ -224,7 +197,7 @@ class TestUserAccountView(TestCase):
         self.assertIn("Passwords do not match", response.content.decode())
 
     def test_post_duplicate_username_shows_error(self):
-        """Taking another user's username re-renders the form with an error."""
+        """Using another user's username should fail validation."""
         get_user_model().objects.create_user(
             username="taken",
             email="taken@example.com",
@@ -239,7 +212,6 @@ class TestUserAccountView(TestCase):
         self.assertIn("already exists", response.content.decode())
 
     def test_post_redirects_to_account_on_success(self):
-        """Successful POST redirects back to account page."""
         self.client.force_login(self.user)
         data = {"username": self.user.username, "email": self.user.email}
         response = self.client.post(self.url, data=data, follow=False)
@@ -248,7 +220,7 @@ class TestUserAccountView(TestCase):
         self.assertEqual(response.url, reverse("users:account"))
 
     def test_post_keeps_session_after_password_change(self):
-        """Changing the password does not log the user out."""
+        """Changing the password must not invalidate the current session."""
         self.client.force_login(self.user)
         data = {
             "username": self.user.username,
@@ -264,10 +236,7 @@ class TestUserAccountView(TestCase):
 
 
 class TestPurchaseCourseView(TestCase):
-    """Tests for course purchase and enrollment workflow."""
-
     def setUp(self):
-        """Create some initial users and courses for purchase tests."""
         self.publisher = get_user_model().objects.create_user(
             username="publisher",
             email="pub@example.com",
@@ -293,16 +262,12 @@ class TestPurchaseCourseView(TestCase):
         self.url = reverse("users:purchase_course")
 
     def test_post_requires_authenticated_user(self):
-        """Unauthenticated users are redirected to login."""
         response = self.client.post(self.url, data={"course": self.paid_course.id})
         self.assertEqual(response.status_code, 302)
         self.assertIn("/users/login/", response.url)
 
     def test_post_creates_purchase_with_course_price(self):
-        """
-        Purchasing a course creates a Purchase record with price set from
-        the course at that time.
-        """
+        """Price snapshot is taken from the course at purchase time."""
         self.client.force_login(self.student)
 
         response = self.client.post(self.url, data={"course": self.paid_course.id})
@@ -314,7 +279,6 @@ class TestPurchaseCourseView(TestCase):
         self.assertEqual(purchase.amount, Decimal("29.99"))
 
     def test_post_free_course_purchase(self):
-        """Enrolling in a free course creates a Purchase with amount=0."""
         self.client.force_login(self.student)
 
         response = self.client.post(self.url, data={"course": self.free_course.id})
@@ -325,7 +289,6 @@ class TestPurchaseCourseView(TestCase):
         self.assertEqual(purchase.amount, 0.00)
 
     def test_post_allows_multiple_different_courses_per_user(self):
-        """A user is able to purchase multiple courses."""
         self.client.force_login(self.student)
         self.client.post(self.url, data={"course": self.paid_course.id})
         self.client.post(self.url, data={"course": self.free_course.id})
@@ -334,7 +297,6 @@ class TestPurchaseCourseView(TestCase):
         self.assertEqual(purchases.count(), 2)
 
     def test_post_allows_multiple_users_to_purchase_same_course(self):
-        """Multiple users are able to purchase the same course."""
         other_student = get_user_model().objects.create_user(
             username="other",
             email="other@example.com",
@@ -352,10 +314,7 @@ class TestPurchaseCourseView(TestCase):
 
 
 class TestThemeContextProcessor(TestCase):
-    """Tests for the theme preferences context processor."""
-
     def setUp(self):
-        """Create request factory and test user."""
         self.factory = RequestFactory()
         self.user = get_user_model().objects.create_user(
             username="themeuser",
@@ -364,7 +323,7 @@ class TestThemeContextProcessor(TestCase):
         )
 
     def test_theme_preferences_authenticated_user_prefers_database_values(self):
-        """Authenticated requests use database preferences over cookies."""
+        """DB preferences take priority over cookie values."""
         UserSitePreferences.objects.create(user=self.user, theme_mode="dark", color_theme="blue")
         request = self.factory.get("/")
         request.user = self.user
@@ -376,7 +335,6 @@ class TestThemeContextProcessor(TestCase):
         self.assertEqual(context["color_theme"], "blue")
 
     def test_theme_preferences_authenticated_user_without_preferences_falls_back_to_cookies(self):
-        """Authenticated users without preferences fall back to cookies."""
         request = self.factory.get("/")
         request.user = self.user
         request.COOKIES = {"theme_mode": "light", "color_theme": "amber"}
@@ -387,7 +345,6 @@ class TestThemeContextProcessor(TestCase):
         self.assertEqual(context["color_theme"], "amber")
 
     def test_theme_preferences_anonymous_user_uses_cookie_values(self):
-        """Anonymous requests use cookie values."""
         request = self.factory.get("/")
         request.user = AnonymousUser()
         request.COOKIES = {"theme_mode": "dark", "color_theme": "violet"}
@@ -399,10 +356,9 @@ class TestThemeContextProcessor(TestCase):
 
 
 class TestThemeCookieMiddleware(TestCase):
-    """Tests for ThemeCookieMiddleware cookie synchronization logic."""
+    """Cookie sync logic: only write cookies when the DB value differs."""
 
     def setUp(self):
-        """Create middleware and reusable test user."""
         self.factory = RequestFactory()
         self.user = get_user_model().objects.create_user(
             username="middlewareuser",
@@ -412,7 +368,6 @@ class TestThemeCookieMiddleware(TestCase):
         self.middleware = ThemeCookieMiddleware(lambda _: HttpResponse("ok"))
 
     def test_theme_cookie_middleware_sets_cookies_when_missing(self):
-        """Middleware sets both theme cookies if none are present."""
         UserSitePreferences.objects.create(user=self.user, theme_mode="dark", color_theme="pumpkin")
         request = self.factory.get("/")
         request.user = self.user
@@ -426,7 +381,7 @@ class TestThemeCookieMiddleware(TestCase):
         self.assertEqual(response.cookies["color_theme"].value, "pumpkin")
 
     def test_theme_cookie_middleware_sets_only_cookie_with_changed_value(self):
-        """Middleware updates only cookies whose values differ from database."""
+        """Only the cookie that differs from the DB row gets rewritten."""
         UserSitePreferences.objects.create(user=self.user, theme_mode="dark", color_theme="pumpkin")
         request = self.factory.get("/")
         request.user = self.user
@@ -439,7 +394,6 @@ class TestThemeCookieMiddleware(TestCase):
         self.assertNotIn("color_theme", response.cookies)
 
     def test_theme_cookie_middleware_does_not_set_cookies_when_values_match(self):
-        """Middleware skips cookie writes when values already match database."""
         UserSitePreferences.objects.create(user=self.user, theme_mode="light", color_theme="green")
         request = self.factory.get("/")
         request.user = self.user
@@ -451,7 +405,6 @@ class TestThemeCookieMiddleware(TestCase):
         self.assertNotIn("color_theme", response.cookies)
 
     def test_theme_cookie_middleware_authenticated_user_without_preferences_sets_no_cookies(self):
-        """Middleware does not set cookies if preferences do not exist."""
         request = self.factory.get("/")
         request.user = self.user
         request.COOKIES = {}
@@ -462,7 +415,6 @@ class TestThemeCookieMiddleware(TestCase):
         self.assertNotIn("color_theme", response.cookies)
 
     def test_theme_cookie_middleware_anonymous_user_sets_no_cookies(self):
-        """Middleware does not attempt preference sync for anonymous users."""
         request = self.factory.get("/")
         request.user = AnonymousUser()
         request.COOKIES = {}

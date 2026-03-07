@@ -12,8 +12,6 @@ from .models import Quiz
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    """Admin interface for Course model."""
-
     search_fields = ["name"]
     list_display = ["name", "publisher", "is_draft"]
     list_filter = ["is_draft"]
@@ -21,8 +19,6 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
-    """Admin interface for Module model."""
-
     search_fields = ["title", "course__name"]
     list_display = ["title", "course", "order", "is_draft"]
     list_filter = ["is_draft"]
@@ -30,19 +26,19 @@ class ModuleAdmin(admin.ModelAdmin):
 
 @admin.register(ModuleProgression)
 class ModuleProgressionAdmin(admin.ModelAdmin):
-    """Admin interface for ModuleProgression model."""
+    pass
 
 
 @admin.register(Quiz)
 class QuizAdmin(admin.ModelAdmin):
-    """Admin interface for Quiz model."""
+    pass
 
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    """Admin interface for Question model."""
+    pass
 
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
-    """Admin interface for Answer model."""
+    pass

@@ -25,8 +25,6 @@ class Course(models.Model):
     is_draft = models.BooleanField(default=True)
 
     class Meta:
-        """Ensure correctness of verbose names."""
-
         verbose_name = "Course"
         verbose_name_plural = "Courses"
 
@@ -49,10 +47,7 @@ class Module(models.Model):
     is_draft = models.BooleanField(default=True)
 
     class Meta:
-        """
-        Add default ordering for modules, instead of relying on the creation
-        order. Ensure correctness of verbose names.
-        """
+        """Modules are ordered by `order` by default."""
 
         ordering = ["order"]
         verbose_name = "Module"
@@ -78,7 +73,6 @@ class ModuleProgression(models.Model):
         Module progression is unique for user + module combination. A user
         cannot have the same module in progress multiple times at the same time,
         even with different completion rates.
-        Also, ensure correctness of verbose names.
         """
 
         unique_together = ("user", "module")
@@ -89,13 +83,11 @@ class ModuleProgression(models.Model):
         return f"{self.user.username} - {self.module.title} - {'Completed' if self.completed else 'In Progress'}"
 
     def mark_completed(self):
-        """Mark the module as completed."""
         self.completed = True
         self.completion_date = timezone.now()
         self.save()
 
     def mark_in_progress(self):
-        """Mark the module as in progress."""
         self.completed = False
         self.completion_date = None
         self.save()
@@ -116,8 +108,6 @@ class Quiz(models.Model):
     max_questions = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
-        """Ensure correctness of verbose names."""
-
         verbose_name = "Quiz"
         verbose_name_plural = "Quizzes"
 
@@ -151,10 +141,7 @@ class Question(models.Model):
     order = models.PositiveIntegerField()
 
     class Meta:
-        """
-        Add ordering by the question order field, and ensure the correctness of
-        the verbose names.
-        """
+        """Questions are ordered by `order` by default."""
 
         ordering = ["order"]
         verbose_name = "Question"
@@ -184,8 +171,6 @@ class Answer(models.Model):
     is_correct = models.BooleanField(default=False)
 
     class Meta:
-        """Ensure correctness of verbose names."""
-
         verbose_name = "Answer"
         verbose_name_plural = "Answers"
 

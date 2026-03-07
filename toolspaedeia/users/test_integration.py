@@ -12,7 +12,6 @@ class UsersIntegrationWebTests(WebTest):
     csrf_checks = False
 
     def setUp(self):
-        """Create some initial users and a course."""
         self.publisher = get_user_model().objects.create_user(
             username="publisher",
             email="publisher@example.com",
@@ -32,7 +31,7 @@ class UsersIntegrationWebTests(WebTest):
         )
 
     def login_through_form(self):
-        """Perform the login action through the login form."""
+        """Log the student in via the login form and follow redirects."""
         self.app.reset()
         login_page = self.app.get(reverse("users:login"))
         login_form = login_page.form
@@ -45,17 +44,14 @@ class UsersIntegrationWebTests(WebTest):
 
     @staticmethod
     def get_preferences_form(preferences_page):
-        """Return preferences form from preferences page."""
         return next(form for form in preferences_page.forms.values() if form.fields.get("color_theme"))
 
     @staticmethod
     def get_settings_form(settings_page):
-        """Return settings form from settings page."""
         return next(form for form in settings_page.forms.values() if form.fields.get("receive_notifications"))
 
     @staticmethod
     def get_purchase_form(browse_page):
-        """Return purchase form from browse page."""
         return next(
             form for form in browse_page.forms.values() if form.action.endswith(reverse("users:purchase_course"))
         )
@@ -378,7 +374,6 @@ class UsersIntegrationWebTests(WebTest):
 
     @staticmethod
     def get_account_form(account_page):
-        """Return account form from account page."""
         return next(form for form in account_page.forms.values() if form.fields.get("username"))
 
     def test_account_view_get_and_post_flow(self):

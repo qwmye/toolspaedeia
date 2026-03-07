@@ -6,8 +6,6 @@ class UserSitePreferences(models.Model):
     """Model to store user preferences for the Paedeia system."""
 
     class ColorTheme(models.TextChoices):
-        """Predefined color themes for users to choose from."""
-
         RED = "red", "Red"
         PINK = "pink", "Pink"
         FUCHSIA = "fuchsia", "Fuchsia"
@@ -30,8 +28,6 @@ class UserSitePreferences(models.Model):
         SLATE = "slate", "Slate"
 
     class ThemeMode(models.TextChoices):
-        """Predefined theme modes for users to choose from."""
-
         LIGHT = "light", "Light"
         DARK = "dark", "Dark"
         SYSTEM = "", "System"
@@ -41,8 +37,6 @@ class UserSitePreferences(models.Model):
     color_theme = models.CharField(max_length=20, default="pumpkin", blank=True, choices=ColorTheme.choices)
 
     class Meta:
-        """Meta class for the UserSitePreferences model."""
-
         verbose_name = "User Preference"
         verbose_name_plural = "User Preferences"
 
@@ -58,8 +52,6 @@ class UserSettings(models.Model):
     receive_notifications = models.BooleanField(default=True)
 
     class Meta:
-        """Meta class for the UserSettings model."""
-
         verbose_name = "User Settings"
         verbose_name_plural = "User Settings"
 
@@ -76,8 +68,6 @@ class Purchase(models.Model):
     purchase_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        """Meta class for the Purchase model."""
-
         constraints = [
             models.UniqueConstraint(fields=["user", "course"], name="users_purchase_unique_user_course"),
         ]

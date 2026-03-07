@@ -31,7 +31,6 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
     login_url = "users:login"
 
     def get_title(self):
-        """Return the course name as the title."""
         return self.get_object().name
 
     def get_context_data(self, **kwargs):
@@ -65,7 +64,6 @@ class CourseUserListView(TitledViewMixin, LoginRequiredMixin, ListView):
     login_url = "users:login"
 
     def get_queryset(self):
-        """Return the list of courses the user is enrolled in."""
         if self.request.user.is_superuser:
             return Course.objects.exclude(publisher=self.request.user)
         return Course.objects.filter(purchases__user=self.request.user).distinct()
@@ -115,7 +113,6 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         return super().get_queryset().filter(Q(is_draft=False) | Q(publisher=self.request.user))
 
     def get_object(self, queryset=None) -> Course:
-        """Return the course object with the specified module."""
         course = super().get_object(queryset)
         module_id = self.kwargs.get("module_id")
         if module_id:
@@ -125,12 +122,10 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         return course
 
     def get_title(self) -> str:
-        """Return the module title and course name as the title."""
         course = self.get_object()
         return f"{course.module.title} | {course.name}"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        """Add the module content in HTML format to the context."""
         context = super().get_context_data(**kwargs)
         course = self.get_object()
         module = course.module
@@ -178,12 +173,9 @@ class ModuleMarkCompleteView(LoginRequiredMixin, View):
 
 
 class CheckQuizView(LoginRequiredMixin, View):
-    """View for checking quiz answers and reloading the quiz."""
-
     login_url = "users:login"
 
     def get(self, request, course_id, quiz_id):
-        """Reload quiz with fresh questions."""
         quiz, course = get_quiz_and_course(course_id, quiz_id)
         questions = get_attempt_questions(quiz)
         quiz_data = build_quiz_data(questions)
