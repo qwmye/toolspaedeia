@@ -173,6 +173,23 @@ class TestUserAccountView(TestCase):
         self.assertEqual(self.user.username, "newname")
         self.assertEqual(self.user.email, "new@example.com")
 
+    def test_post_updates_first_and_last_name(self):
+        """Posting first/last name updates the user model."""
+        self.client.force_login(self.user)
+        data = {
+            "username": self.user.username,
+            "email": self.user.email,
+            "first_name": "Jane",
+            "last_name": "Doe",
+        }
+
+        response = self.client.post(self.url, data=data)
+
+        self.assertEqual(response.status_code, 302)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, "Jane")
+        self.assertEqual(self.user.last_name, "Doe")
+
     def test_post_changes_password_when_provided(self):
         """Posting matching passwords updates the password hash."""
         self.client.force_login(self.user)
@@ -212,7 +229,7 @@ class TestUserAccountView(TestCase):
             password="takenpass",  # noqa: S106
         )
         self.client.force_login(self.user)
-        data = {"username": "taken", "email": self.user.email}
+        data = {"username": "taken", "email": self.user.email, "first_name": "", "last_name": ""}
 
         response = self.client.post(self.url, data=data)
 

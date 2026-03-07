@@ -10,10 +10,10 @@ class AccountForm(forms.ModelForm):
     confirm_password = forms.CharField(required=False, widget=forms.PasswordInput)
 
     class Meta:
-        """Bind to the User model, exposing only username and email."""
+        """Bind to the User model, exposing identity fields."""
 
         model = get_user_model()
-        fields = ["username", "email"]
+        fields = ["username", "first_name", "last_name", "email"]
 
     def clean_new_password(self):
         """Run Django's password validators on the new password."""
