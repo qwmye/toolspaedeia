@@ -11,7 +11,9 @@ from courses.models import Quiz
 from users.models import Purchase
 
 
-class CoursesIntegrationWebTests(WebTest):
+class CoursesWebTestBase(WebTest):
+    """Shared fixtures and login helper for course integration tests."""
+
     csrf_checks = False
 
     def setUp(self):
@@ -85,6 +87,10 @@ class CoursesIntegrationWebTests(WebTest):
         while response.status_code in {301, 302, 303, 307, 308}:
             response = response.follow()
         return response
+
+
+class PageLoadIntegrationTests(CoursesWebTestBase):
+    """Tests that load full pages by navigating through links."""
 
     def test_course_browse_list_navigation(self):
         """
@@ -167,155 +173,7 @@ class CoursesIntegrationWebTests(WebTest):
         self.assertEqual(module_page.status_code, 200)
         self.assertIn("Quiz Module", module_page.text)
         self.assertIn("Module Quiz", module_page.text)
-        self.assertIn("Mark as Completed", module_page.text)
-
-    def test_module_mark_complete_post_flow(self):
-        """
-        Marking a module as completed.
-
-        Actions:
-            Login, open the intro module, POST mark-complete.
-        Behaviour:
-            Progression row is created and marked completed;
-            redirects back to course detail.
-        Expectation:
-            DB has completed=True for the student+module and
-            course detail shows "1 out of 2".
-        """
-        browse_page = self.login_through_form()
-        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
-        detail_page = my_courses_page.click("Go to Course")
-        detail_page.click("Start", index=0)
-
-        mark_complete_url = reverse(
-            "courses:module_mark_complete", kwargs={"course_id": self.course.id, "module_id": self.module_intro.id}
-        )
-        detail_page = self.app.post(mark_complete_url).follow()
-
-        self.assertTrue(
-            ModuleProgression.objects.filter(user=self.student, module=self.module_intro, completed=True).exists()
-        )
-        self.assertIn("1 out of 2 modules completed", detail_page.text)
-
-    def test_module_mark_complete_toggles_back(self):
-        """
-        Marking complete twice toggles it back to incomplete.
-
-        Actions:
-            Login, POST mark-complete on intro module twice.
-        Behaviour:
-            First POST marks completed, second flips it back.
-        Expectation:
-            DB progression has completed=False after the second toggle;
-            course detail shows 0 out of 2 again.
-        """
-        self.login_through_form()
-        mark_url = reverse(
-            "courses:module_mark_complete", kwargs={"course_id": self.course.id, "module_id": self.module_intro.id}
-        )
-
-        self.app.post(mark_url).follow()
-        detail_page = self.app.post(mark_url).follow()
-
-        self.assertTrue(
-            ModuleProgression.objects.filter(user=self.student, module=self.module_intro, completed=False).exists()
-        )
-        self.assertIn("0 out of 2 modules completed", detail_page.text)
-
-    def test_check_quiz_get_flow(self):
-        """
-        GET on the quiz check endpoint loads a fresh attempt.
-
-        Actions:
-            Login, navigate to quiz module, GET the check URL.
-        Behaviour:
-            Returns the quiz form in "check" mode (no results).
-        Expectation:
-            "Check Quiz" button visible, "Retry Quiz" is not.
-        """
-        browse_page = self.login_through_form()
-        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
-        detail_page = my_courses_page.click("Go to Course")
-        detail_page.click("Start", index=1)
-
-        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
-        response = self.app.get(check_url)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("Check Quiz", response.text)
-        self.assertNotIn("Retry Quiz", response.text)
-
-    def test_check_quiz_post_flow(self):
-        """
-        Submitting quiz answers and seeing results with final grade.
-
-        Actions:
-            Login, navigate to quiz, POST with the correct answer selected.
-        Behaviour:
-            Server evaluates and returns result mode with a grade.
-        Expectation:
-            "Retry Quiz" button and "Final Grade: 100%" appear.
-        """
-        browse_page = self.login_through_form()
-        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
-        detail_page = my_courses_page.click("Go to Course")
-        detail_page.click("Start", index=1)
-        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
-        response = self.app.post(
-            check_url,
-            params={
-                "question_ids": [str(self.question.id)],
-                f"answer_ids_{self.question.id}": [str(self.correct_answer.id), str(self.wrong_answer.id)],
-                f"question-{self.question.id}": [str(self.correct_answer.id)],
-            },
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("Retry Quiz", response.text)
-        self.assertIn("Final Grade: 100.00%", response.text)
-
-    def test_check_quiz_post_wrong_answer_shows_grade(self):
-        """
-        Submitting only the wrong answer produces a 0% grade.
-
-        Actions:
-            Login, POST quiz with only the wrong answer ticked.
-        Behaviour:
-            Both choices are wrong (wrong ticked, correct unticked).
-        Expectation:
-            Final grade is 0%.
-        """
-        self.login_through_form()
-        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
-        response = self.app.post(
-            check_url,
-            params={
-                "question_ids": [str(self.question.id)],
-                f"answer_ids_{self.question.id}": [str(self.correct_answer.id), str(self.wrong_answer.id)],
-                f"question-{self.question.id}": [str(self.wrong_answer.id)],
-            },
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("Final Grade: 0.00%", response.text)
-
-    def test_check_quiz_get_has_no_final_grade(self):
-        """
-        A fresh quiz attempt shouldn't show any grade.
-
-        Actions:
-            Login, GET the quiz check endpoint.
-        Behaviour:
-            Returns quiz form without results.
-        Expectation:
-            "Final Grade" text is absent.
-        """
-        self.login_through_form()
-        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
-        response = self.app.get(check_url)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertNotIn("Final Grade", response.text)
+        self.assertIn("Mark as Complete", module_page.text)
 
     def test_duplicate_purchase_is_idempotent(self):
         """
@@ -384,6 +242,122 @@ class CoursesIntegrationWebTests(WebTest):
 
         self.assertEqual(resp.status_code, 404)
 
+    def test_module_page_no_message_on_first_load(self):
+        """
+        Initial module page load shows the button but no feedback message.
+
+        Actions:
+            Login, navigate to the intro module page.
+        Behaviour:
+            The mark-complete partial renders without the confirmation text.
+        Expectation:
+            "Mark as Complete" button is present; "Module marked as" is absent.
+        """
+        browse_page = self.login_through_form()
+        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        detail_page = my_courses_page.click("Go to Course")
+        module_page = detail_page.click("Start", index=0)
+
+        self.assertIn("Mark as Complete", module_page.text)
+        self.assertNotIn("Module marked as", module_page.text)
+
+    def test_module_page_no_message_when_already_completed(self):
+        """
+        Module page for an already-completed module hides the message.
+
+        Actions:
+            Mark the intro module complete, then reload the module page.
+        Behaviour:
+            The page shows the toggle button but no stale feedback text.
+        Expectation:
+            "Mark as Incomplete" button present; "Module marked as" absent.
+        """
+        ModuleProgression.objects.create(user=self.student, module=self.module_intro, completed=True)
+
+        browse_page = self.login_through_form()
+        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        detail_page = my_courses_page.click("Go to Course")
+        module_page = detail_page.click("Start", index=0)
+
+        self.assertIn("Mark as Incomplete", module_page.text)
+        self.assertNotIn("Module marked as", module_page.text)
+
+
+class HtmxViewIntegrationTests(CoursesWebTestBase):
+    """Tests that directly hit HTMX endpoints returning HTML fragments."""
+
+    def test_mark_complete_post_flow(self):
+        """
+        Marking a module as completed via HTMX.
+
+        Actions:
+            Login, POST mark-complete on the intro module.
+        Behaviour:
+            Progression row is created and marked completed;
+            returns updated button HTML.
+        Expectation:
+            DB has completed=True for the student+module and
+            response contains the toggled button label.
+        """
+        self.login_through_form()
+        mark_url = reverse(
+            "courses:module_mark_complete", kwargs={"course_id": self.course.id, "module_id": self.module_intro.id}
+        )
+        response = self.app.post(mark_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            ModuleProgression.objects.filter(user=self.student, module=self.module_intro, completed=True).exists()
+        )
+        self.assertIn("Mark as Incomplete", response.text)
+
+    def test_mark_complete_toggles_back(self):
+        """
+        Marking complete twice toggles it back to incomplete.
+
+        Actions:
+            Login, POST mark-complete on intro module twice.
+        Behaviour:
+            First POST marks completed, second flips it back.
+        Expectation:
+            DB progression has completed=False after the second toggle
+            and response shows the original button label.
+        """
+        self.login_through_form()
+        mark_url = reverse(
+            "courses:module_mark_complete", kwargs={"course_id": self.course.id, "module_id": self.module_intro.id}
+        )
+
+        first_response = self.app.post(mark_url)
+        second_response = self.app.post(mark_url)
+
+        self.assertEqual(first_response.status_code, 200)
+        self.assertIn("Mark as Incomplete", first_response.text)
+        self.assertEqual(second_response.status_code, 200)
+        self.assertIn("Mark as Complete", second_response.text)
+        self.assertTrue(
+            ModuleProgression.objects.filter(user=self.student, module=self.module_intro, completed=False).exists()
+        )
+
+    def test_mark_complete_post_shows_message(self):
+        """
+        The feedback message appears only after the HTMX POST.
+
+        Actions:
+            Login, POST mark-complete on the intro module.
+        Behaviour:
+            The returned HTML fragment includes the confirmation text.
+        Expectation:
+            "Module marked as complete." is in the response.
+        """
+        self.login_through_form()
+        mark_url = reverse(
+            "courses:module_mark_complete", kwargs={"course_id": self.course.id, "module_id": self.module_intro.id}
+        )
+        response = self.app.post(mark_url)
+
+        self.assertIn("Module marked as complete.", response.text)
+
     def test_mark_complete_after_logout_redirects(self):
         """
         Stale mark-complete POST after session expired.
@@ -407,12 +381,202 @@ class CoursesIntegrationWebTests(WebTest):
         self.assertIn(reverse("users:login"), resp.location)
         self.assertFalse(ModuleProgression.objects.filter(user=self.student, module=self.module_intro).exists())
 
+    def test_mark_complete_get_not_allowed(self):
+        """
+        GET on the mark-complete endpoint isn't supported.
+
+        Actions:
+            Login, send a GET to the mark-complete URL.
+        Behaviour:
+            View only accepts POST (http_method_names).
+        Expectation:
+            Returns 405 Method Not Allowed.
+        """
+        self.login_through_form()
+        mark_url = reverse(
+            "courses:module_mark_complete", kwargs={"course_id": self.course.id, "module_id": self.module_intro.id}
+        )
+        resp = self.app.get(mark_url, expect_errors=True)
+
+        self.assertEqual(resp.status_code, 405)
+
+    def test_mark_complete_response_contains_htmx_attributes(self):
+        """
+        The returned button fragment should include hx-post for the
+        next toggle.
+
+        Actions:
+            Login, POST mark-complete.
+        Behaviour:
+            Response is a standalone button with HTMX wiring.
+        Expectation:
+            HTML contains hx-post pointing back at the same URL
+            and hx-swap="outerHTML".
+        """
+        self.login_through_form()
+        mark_url = reverse(
+            "courses:module_mark_complete", kwargs={"course_id": self.course.id, "module_id": self.module_intro.id}
+        )
+        resp = self.app.post(mark_url)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(f'hx-post="{mark_url}"', resp.text)
+        self.assertIn('hx-swap="outerHTML"', resp.text)
+
+    def test_mark_complete_nonexistent_module_returns_404(self):
+        """
+        Marking a module that doesn't exist.
+
+        Actions:
+            Login, POST to mark-complete with a bogus module_id.
+        Behaviour:
+            Module.objects.get raises DoesNotExist.
+        Expectation:
+            Returns 404.
+        """
+        self.login_through_form()
+        mark_url = reverse("courses:module_mark_complete", kwargs={"course_id": self.course.id, "module_id": 99999})
+        resp = self.app.post(mark_url, expect_errors=True)
+
+        self.assertEqual(resp.status_code, 404)
+
+    def test_mark_complete_separate_users_independent(self):
+        """
+        Two users marking the same module don't interfere.
+
+        Actions:
+            Student marks intro complete, then a second user marks it too.
+        Behaviour:
+            Each gets their own ModuleProgression row.
+        Expectation:
+            Both progressions exist, both completed independently.
+        """
+        other_user = get_user_model().objects.create_user(
+            username="other",
+            email="other@example.com",
+            password="other-pass",  # noqa: S106
+        )
+        Purchase.objects.create(user=other_user, course=self.course, amount=self.course.price)
+
+        mark_url = reverse(
+            "courses:module_mark_complete", kwargs={"course_id": self.course.id, "module_id": self.module_intro.id}
+        )
+
+        # Student marks complete
+        self.login_through_form()
+        self.app.post(mark_url)
+
+        # Other user marks complete
+        self.app.reset()
+        login_page = self.app.get(reverse("users:login"))
+        form = login_page.form
+        form["username"] = "other"
+        form["password"] = "other-pass"  # noqa: S105
+        form.submit()
+        self.app.post(mark_url)
+
+        self.assertTrue(
+            ModuleProgression.objects.filter(user=self.student, module=self.module_intro, completed=True).exists()
+        )
+        self.assertTrue(
+            ModuleProgression.objects.filter(user=other_user, module=self.module_intro, completed=True).exists()
+        )
+        self.assertEqual(ModuleProgression.objects.filter(module=self.module_intro).count(), 2)
+
+    def test_check_quiz_get_flow(self):
+        """
+        GET on the quiz check endpoint loads a fresh attempt.
+
+        Actions:
+            Login, GET the check URL.
+        Behaviour:
+            Returns the quiz form in "check" mode (no results).
+        Expectation:
+            "Check Quiz" button visible, "Retry Quiz" is not.
+        """
+        self.login_through_form()
+        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
+        response = self.app.get(check_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Check Quiz", response.text)
+        self.assertNotIn("Retry Quiz", response.text)
+
+    def test_check_quiz_post_correct_answer(self):
+        """
+        Submitting quiz answers and seeing results with final grade.
+
+        Actions:
+            Login, POST with the correct answer selected.
+        Behaviour:
+            Server evaluates and returns result mode with a grade.
+        Expectation:
+            "Retry Quiz" button and "Final Grade: 100%" appear.
+        """
+        self.login_through_form()
+        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
+        response = self.app.post(
+            check_url,
+            params={
+                "question_ids": [str(self.question.id)],
+                f"answer_ids_{self.question.id}": [str(self.correct_answer.id), str(self.wrong_answer.id)],
+                f"question-{self.question.id}": [str(self.correct_answer.id)],
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Retry Quiz", response.text)
+        self.assertIn("Final Grade: 100.00%", response.text)
+
+    def test_check_quiz_post_wrong_answer(self):
+        """
+        Submitting only the wrong answer produces a 0% grade.
+
+        Actions:
+            Login, POST quiz with only the wrong answer ticked.
+        Behaviour:
+            Both choices are wrong (wrong ticked, correct unticked).
+        Expectation:
+            Final grade is 0%.
+        """
+        self.login_through_form()
+        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
+        response = self.app.post(
+            check_url,
+            params={
+                "question_ids": [str(self.question.id)],
+                f"answer_ids_{self.question.id}": [str(self.correct_answer.id), str(self.wrong_answer.id)],
+                f"question-{self.question.id}": [str(self.wrong_answer.id)],
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Final Grade: 0.00%", response.text)
+
+    def test_check_quiz_get_has_no_final_grade(self):
+        """
+        A fresh quiz attempt shouldn't show any grade.
+
+        Actions:
+            Login, GET the quiz check endpoint.
+        Behaviour:
+            Returns quiz form without results.
+        Expectation:
+            "Final Grade" text is absent.
+        """
+        self.login_through_form()
+        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
+        response = self.app.get(check_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("Final Grade", response.text)
+
     def test_check_quiz_wrong_course_id_returns_404(self):
         """
         Quiz check URL with mismatched course ID.
 
         Actions:
-            Login, POST quiz check with a course_id that doesn't own this quiz.
+            Login, GET quiz check with a course_id that doesn't own this quiz.
         Behaviour:
             get_object_or_404 rejects the mismatch.
         Expectation:
