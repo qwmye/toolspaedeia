@@ -1,11 +1,11 @@
 from django.contrib import admin
 
 from .models import Purchase
-from .models import UserPreferences
+from .models import UserSitePreferences
 
 
-@admin.register(UserPreferences)
-class UserPreferencesAdmin(admin.ModelAdmin):
+@admin.register(UserSitePreferences)
+class UserSitePreferencesAdmin(admin.ModelAdmin):
     """Admin interface for managing user preferences."""
 
 

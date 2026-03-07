@@ -13,7 +13,7 @@ from courses.models import Course
 from users.context_processors import theme_preferences
 from users.middleware import ThemeCookieMiddleware
 from users.models import Purchase
-from users.models import UserPreferences
+from users.models import UserSitePreferences
 
 
 class TestUserProfileFormView(TestCase):
@@ -40,7 +40,7 @@ class TestUserProfileFormView(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertInHTML("Toolspaedeia Site Preferences", response.content.decode())
+        self.assertInHTML("Site Preferences", response.content.decode())
 
     def test_post_requires_authenticated_user(self):
         """Unauthenticated users are redirected when submitting profile form."""
@@ -48,14 +48,14 @@ class TestUserProfileFormView(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_post_updates_user_preferences(self):
-        """Posting valid preferences updates/creates UserPreferences record."""
+        """Posting valid preferences updates UserSitePreferences record."""
         self.client.force_login(self.user)
         data = {"color_theme": "blue", "theme_mode": "light"}
 
         response = self.client.post(self.url, data=data)
 
         self.assertEqual(response.status_code, 302)
-        pref = UserPreferences.objects.get(user=self.user)
+        pref = UserSitePreferences.objects.get(user=self.user)
         self.assertEqual(pref.color_theme, "blue")
         self.assertEqual(pref.theme_mode, "light")
 
@@ -170,7 +170,7 @@ class TestThemeContextProcessor(TestCase):
 
     def test_theme_preferences_authenticated_user_prefers_database_values(self):
         """Authenticated requests use database preferences over cookies."""
-        UserPreferences.objects.create(user=self.user, theme_mode="dark", color_theme="blue")
+        UserSitePreferences.objects.create(user=self.user, theme_mode="dark", color_theme="blue")
         request = self.factory.get("/")
         request.user = self.user
         request.COOKIES = {"theme_mode": "light", "color_theme": "green"}
@@ -218,7 +218,7 @@ class TestThemeCookieMiddleware(TestCase):
 
     def test_theme_cookie_middleware_sets_cookies_when_missing(self):
         """Middleware sets both theme cookies if none are present."""
-        UserPreferences.objects.create(user=self.user, theme_mode="dark", color_theme="pumpkin")
+        UserSitePreferences.objects.create(user=self.user, theme_mode="dark", color_theme="pumpkin")
         request = self.factory.get("/")
         request.user = self.user
         request.COOKIES = {}
@@ -232,7 +232,7 @@ class TestThemeCookieMiddleware(TestCase):
 
     def test_theme_cookie_middleware_sets_only_cookie_with_changed_value(self):
         """Middleware updates only cookies whose values differ from database."""
-        UserPreferences.objects.create(user=self.user, theme_mode="dark", color_theme="pumpkin")
+        UserSitePreferences.objects.create(user=self.user, theme_mode="dark", color_theme="pumpkin")
         request = self.factory.get("/")
         request.user = self.user
         request.COOKIES = {"theme_mode": "light", "color_theme": "pumpkin"}
@@ -245,7 +245,7 @@ class TestThemeCookieMiddleware(TestCase):
 
     def test_theme_cookie_middleware_does_not_set_cookies_when_values_match(self):
         """Middleware skips cookie writes when values already match database."""
-        UserPreferences.objects.create(user=self.user, theme_mode="light", color_theme="green")
+        UserSitePreferences.objects.create(user=self.user, theme_mode="light", color_theme="green")
         request = self.factory.get("/")
         request.user = self.user
         request.COOKIES = {"theme_mode": "light", "color_theme": "green"}

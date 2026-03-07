@@ -7,7 +7,7 @@ from django.views.generic import CreateView
 from django.views.generic import FormView
 
 from users.models import Purchase
-from users.models import UserPreferences
+from users.models import UserSitePreferences
 
 
 class UserProfileFormView(LoginRequiredMixin, FormView):
@@ -21,8 +21,8 @@ class UserProfileFormView(LoginRequiredMixin, FormView):
         class Meta:
             """Meta class for user preferences inline form."""
 
-            model = UserPreferences
-            fields = ["profile_picture", "color_theme", "theme_mode"]
+            model = UserSitePreferences
+            fields = ["color_theme", "theme_mode"]
 
     form_class = UserProfileModelForm
     template_name = "users/profile.html"
@@ -32,7 +32,7 @@ class UserProfileFormView(LoginRequiredMixin, FormView):
         """Get form kwargs for user profile form."""
         kwargs = super().get_form_kwargs()
         if self.request.user.is_authenticated:
-            preference, _ = UserPreferences.objects.get_or_create(user=self.request.user)
+            preference, _ = UserSitePreferences.objects.get_or_create(user=self.request.user)
             kwargs["instance"] = preference
         return kwargs
 

@@ -1,6 +1,6 @@
 from django.utils.deprecation import MiddlewareMixin
 
-from users.models import UserPreferences
+from users.models import UserSitePreferences
 
 
 class ThemeCookieMiddleware(MiddlewareMixin):
@@ -20,7 +20,7 @@ class ThemeCookieMiddleware(MiddlewareMixin):
         """Synchronize theme cookies with user preferences when needed."""
         if request.user.is_authenticated:
             try:
-                preferences = UserPreferences.objects.get(user=request.user)
+                preferences = UserSitePreferences.objects.get(user=request.user)
 
                 current_theme_mode = request.COOKIES.get("theme_mode")
                 if current_theme_mode != preferences.theme_mode:
@@ -29,7 +29,7 @@ class ThemeCookieMiddleware(MiddlewareMixin):
                 current_color_theme = request.COOKIES.get("color_theme")
                 if current_color_theme != preferences.color_theme:
                     response.set_cookie("color_theme", preferences.color_theme, max_age=self.THEME_COOKIE_MAX_AGE)
-            except UserPreferences.DoesNotExist:
+            except UserSitePreferences.DoesNotExist:
                 pass
 
         return response

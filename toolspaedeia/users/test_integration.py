@@ -4,7 +4,7 @@ from django_webtest import WebTest
 
 from courses.models import Course
 from users.models import Purchase
-from users.models import UserPreferences
+from users.models import UserSitePreferences
 
 
 class UsersIntegrationWebTests(WebTest):
@@ -141,7 +141,7 @@ class UsersIntegrationWebTests(WebTest):
         profile_page = self.app.get(reverse("users:profile"))
 
         self.assertEqual(profile_page.status_code, 200)
-        self.assertIn("Toolspaedeia Site Preferences", profile_page.text)
+        self.assertIn("Site Preferences", profile_page.text)
         self.assertIn(self.student.username, profile_page.text)
 
         profile_form = self.get_profile_form(profile_page)
@@ -150,8 +150,8 @@ class UsersIntegrationWebTests(WebTest):
         response = profile_form.submit().follow()
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Toolspaedeia Site Preferences", response.text)
-        preference = UserPreferences.objects.get(user=self.student)
+        self.assertIn("Site Preferences", response.text)
+        preference = UserSitePreferences.objects.get(user=self.student)
         self.assertEqual(preference.color_theme, "blue")
         self.assertEqual(preference.theme_mode, "dark")
 
@@ -176,7 +176,7 @@ class UsersIntegrationWebTests(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Select a valid choice. not-a-valid-color is not one of the available choices.", response.text)
 
-        preference = UserPreferences.objects.get(user=self.student)
+        preference = UserSitePreferences.objects.get(user=self.student)
         self.assertEqual(preference.theme_mode, "")
         self.assertEqual(preference.color_theme, "pumpkin")
 

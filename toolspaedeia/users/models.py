@@ -2,10 +2,10 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 
-class UserPreferences(models.Model):
+class UserSitePreferences(models.Model):
     """Model to store user preferences for the Paedeia system."""
 
-    class UserColorTheme(models.TextChoices):
+    class ColorTheme(models.TextChoices):
         """Predefined color themes for users to choose from."""
 
         RED = "red", "Red"
@@ -29,31 +29,42 @@ class UserPreferences(models.Model):
         ZINC = "zinc", "Zinc"
         SLATE = "slate", "Slate"
 
-    class UserThemeMode(models.TextChoices):
+    class ThemeMode(models.TextChoices):
         """Predefined theme modes for users to choose from."""
 
         LIGHT = "light", "Light"
         DARK = "dark", "Dark"
         SYSTEM = "", "System"
 
-    user = models.OneToOneField(get_user_model(), related_name="preference", on_delete=models.CASCADE)
-    profile_picture = models.ImageField(upload_to="profile_pictures/", blank=True, null=True)
-    theme_mode = models.CharField(max_length=20, blank=True, default="", choices=UserThemeMode.choices)
-    color_theme = models.CharField(
-        max_length=20,
-        default="pumpkin",
-        blank=True,
-        choices=UserColorTheme.choices,
-    )
+    user = models.OneToOneField(get_user_model(), related_name="preferences", on_delete=models.CASCADE)
+    theme_mode = models.CharField(max_length=20, blank=True, default="", choices=ThemeMode.choices)
+    color_theme = models.CharField(max_length=20, default="pumpkin", blank=True, choices=ColorTheme.choices)
 
     class Meta:
-        """Meta class for the UserPreferences model."""
+        """Meta class for the UserSitePreferences model."""
 
         verbose_name = "User Preference"
         verbose_name_plural = "User Preferences"
 
     def __str__(self) -> str:
         return f"Preferences for {self.user.username}"
+
+
+class UserSettings(models.Model):
+    """Model to store user settings for the Paedeia system."""
+
+    user = models.OneToOneField(get_user_model(), related_name="settings", on_delete=models.CASCADE)
+    profile_picture = models.ImageField(upload_to="profile_pictures/", blank=True, null=True)
+    receive_notifications = models.BooleanField(default=True)
+
+    class Meta:
+        """Meta class for the UserSettings model."""
+
+        verbose_name = "User Settings"
+        verbose_name_plural = "User Settings"
+
+    def __str__(self) -> str:
+        return f"Settings for {self.user.username}"
 
 
 class Purchase(models.Model):
