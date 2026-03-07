@@ -22,6 +22,8 @@ class Course(models.Model):
         get_user_model(), related_name="published_courses", on_delete=models.SET_NULL, null=True
     )
 
+    is_draft = models.BooleanField(default=True)
+
     class Meta:
         """Ensure correctness of verbose names."""
 
@@ -43,6 +45,8 @@ class Module(models.Model):
     description = models.TextField()
     content = models.TextField()
     order = models.PositiveIntegerField()
+
+    is_draft = models.BooleanField(default=True)
 
     class Meta:
         """
