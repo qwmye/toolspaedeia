@@ -35,7 +35,7 @@
                                        name="question-{{ question.id }}"
                                        id="answer-{{ answer.id }}"
                                        value="{{ answer.id }}"
-                                       {% if show_results %}
+                                       {% if final_grade is not None %}
                                            disabled aria-invalid="{{ answer_data.is_correct_choice|yesno:'false,true' }}" aria-describedby="result-answer-{{ answer.id }}"
                                        {% endif %}
                                        {% if answer_data.was_selected %}
@@ -50,13 +50,22 @@
                 </fieldset>
             {% endwith %}
         {% endfor %}
+        {% if final_grade is not None %}
+            <section>
+                <h4>
+                    Final Grade: {{ final_grade|floatformat:2 }}%
+                </h4>
+                <progress value="{{ final_grade }}"
+                          max="100"></progress>
+            </section>
+        {% endif %}
         <button type="button"
-                {% if show_results %}
+                {% if final_grade is not None %}
                     hx-get="{% url 'courses:check_quiz' course.id quiz.id %}"
                 {% else %}
                     hx-post="{% url 'courses:check_quiz' course.id quiz.id %}"
                 {% endif %}>
-            {% if show_results %}
+            {% if final_grade is not None %}
                 Retry Quiz
             {% else %}
                 Check Quiz

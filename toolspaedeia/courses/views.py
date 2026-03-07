@@ -15,6 +15,7 @@ from courses.models import Module
 from courses.models import Quiz
 from courses.service import build_checked_answers_data
 from courses.service import build_quiz_data
+from courses.service import calculate_final_grade
 from courses.service import get_attempt_questions
 from courses.service import get_quiz_and_course
 from courses.service import render_quiz_section
@@ -186,7 +187,7 @@ class CheckQuizView(LoginRequiredMixin, View):
         quiz, course = get_quiz_and_course(course_id, quiz_id)
         questions = get_attempt_questions(quiz)
         quiz_data = build_quiz_data(questions)
-        return render_quiz_section(request, quiz, course, quiz_data, show_results=False)
+        return render_quiz_section(request, quiz, course, quiz_data)
 
     def post(self, request, course_id, quiz_id):
         """Check submitted quiz answers and return quiz with feedback."""
@@ -204,4 +205,5 @@ class CheckQuizView(LoginRequiredMixin, View):
             )
 
         quiz_data = build_quiz_data(questions, answers_by_question=answers_by_question)
-        return render_quiz_section(request, quiz, course, quiz_data, show_results=True)
+        final_grade = calculate_final_grade(quiz_data)
+        return render_quiz_section(request, quiz, course, quiz_data, final_grade=final_grade)

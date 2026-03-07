@@ -101,13 +101,22 @@ def build_checked_answers_data(question, submitted_answer_ids, posted_answer_ids
     return answers_data
 
 
-def render_quiz_section(request, quiz, course, quiz_data, show_results):
+def calculate_final_grade(quiz_data):
+    """Return the overall grade as a percentage across all questions."""
+    all_answers = [a for item in quiz_data for a in item["answers_data"]]
+    if not all_answers:
+        return 0
+    correct = sum(1 for a in all_answers if a["is_correct_choice"])
+    return round(correct / len(all_answers) * 100, 2)
+
+
+def render_quiz_section(request, quiz, course, quiz_data, final_grade=None):
     """Render quiz section partial HTML response."""
     context = {
         "quiz": quiz,
         "course": course,
         "quiz_data": quiz_data,
-        "show_results": show_results,
+        "final_grade": final_grade,
     }
     html = render_to_string("courses/partials/quiz_section.html", context, request=request)
     return HttpResponse(html)
