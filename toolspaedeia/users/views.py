@@ -12,13 +12,13 @@ from users.models import UserSettings
 from users.models import UserSitePreferences
 
 
-class UserProfileView(LoginRequiredMixin, UpdateView):
+class UserPreferencesView(LoginRequiredMixin, UpdateView):
     """View to display and update user site preferences."""
 
     model = UserSitePreferences
     fields = ["color_theme", "theme_mode"]
     template_name = "users/preferences.html"
-    success_url = reverse_lazy("users:profile")
+    success_url = reverse_lazy("users:preferences")
     login_url = reverse_lazy("users:login")
 
     def get_object(self, _queryset=None):

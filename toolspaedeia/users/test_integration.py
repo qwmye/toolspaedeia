@@ -44,9 +44,9 @@ class UsersIntegrationWebTests(WebTest):
         return response
 
     @staticmethod
-    def get_profile_form(profile_page):
-        """Return profile form from profile page."""
-        return next(form for form in profile_page.forms.values() if form.fields.get("color_theme"))
+    def get_preferences_form(preferences_page):
+        """Return preferences form from preferences page."""
+        return next(form for form in preferences_page.forms.values() if form.fields.get("color_theme"))
 
     @staticmethod
     def get_settings_form(settings_page):
@@ -91,7 +91,7 @@ class UsersIntegrationWebTests(WebTest):
             Login page re-renders with the "didn't match" message.
         Expectation:
             Error text is visible, login form is still there, and
-            visiting /profile/ still bounces to login.
+            visiting /preferences/ still bounces to login.
         """
         login_page = self.app.get(reverse("users:login"))
         login_form = login_page.form
@@ -103,9 +103,9 @@ class UsersIntegrationWebTests(WebTest):
         self.assertIn("Your username and password didn't match. Please try again.", response.text)
         self.assertIn("Login", response.text)
 
-        profile_response = self.app.get(reverse("users:profile"), expect_errors=True)
-        self.assertEqual(profile_response.status_code, 302)
-        self.assertIn(reverse("users:login"), profile_response.location)
+        preferences_response = self.app.get(reverse("users:preferences"), expect_errors=True)
+        self.assertEqual(preferences_response.status_code, 302)
+        self.assertIn(reverse("users:login"), preferences_response.location)
 
     def test_login_view_get_when_authenticated_redirects(self):
         """
@@ -131,12 +131,12 @@ class UsersIntegrationWebTests(WebTest):
         self.assertEqual(redirected_page.status_code, 200)
         self.assertIn("Courses", redirected_page.text)
 
-    def test_profile_view_get_and_post_flow(self):
+    def test_preferences_view_get_and_post_flow(self):
         """
-        View and update profile preferences end-to-end.
+        View and update site preferences end-to-end.
 
         Actions:
-            Login, open /profile/, pick blue+dark, submit.
+            Login, open /preferences/, pick blue+dark, submit.
         Behaviour:
             Form saves and redirects back to the same page.
         Expectation:
@@ -144,16 +144,16 @@ class UsersIntegrationWebTests(WebTest):
             reflects the new values.
         """
         self.login_through_form()
-        profile_page = self.app.get(reverse("users:profile"))
+        preferences_page = self.app.get(reverse("users:preferences"))
 
-        self.assertEqual(profile_page.status_code, 200)
-        self.assertIn("Site Preferences", profile_page.text)
-        self.assertIn(self.student.username, profile_page.text)
+        self.assertEqual(preferences_page.status_code, 200)
+        self.assertIn("Site Preferences", preferences_page.text)
+        self.assertIn(self.student.username, preferences_page.text)
 
-        profile_form = self.get_profile_form(profile_page)
-        profile_form["color_theme"] = "blue"
-        profile_form["theme_mode"] = "dark"
-        response = profile_form.submit().follow()
+        preferences_form = self.get_preferences_form(preferences_page)
+        preferences_form["color_theme"] = "blue"
+        preferences_form["theme_mode"] = "dark"
+        response = preferences_form.submit().follow()
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Site Preferences", response.text)
@@ -161,12 +161,12 @@ class UsersIntegrationWebTests(WebTest):
         self.assertEqual(preference.color_theme, "blue")
         self.assertEqual(preference.theme_mode, "dark")
 
-    def test_profile_view_post_invalid_choice_shows_validation_error(self):
+    def test_preferences_view_post_invalid_choice_shows_validation_error(self):
         """
         Invalid color_theme value triggers a validation error.
 
         Actions:
-            Login, POST profile with color_theme="not-a-valid-color".
+            Login, POST preferences with color_theme="not-a-valid-color".
         Behaviour:
             Form re-renders with a "Select a valid choice" error.
         Expectation:
@@ -174,7 +174,7 @@ class UsersIntegrationWebTests(WebTest):
         """
         self.login_through_form()
         response = self.app.post(
-            reverse("users:profile"),
+            reverse("users:preferences"),
             params={"color_theme": "not-a-valid-color", "theme_mode": "dark"},
             expect_errors=True,
         )
@@ -274,7 +274,7 @@ class UsersIntegrationWebTests(WebTest):
         Behaviour:
             Session is cleared, user lands on the login page.
         Expectation:
-            Trying to visit /profile/ afterwards redirects to login.
+            Trying to visit /preferences/ afterwards redirects to login.
         """
         self.login_through_form()
         logout_response = self.app.post(reverse("users:logout"), expect_errors=True)
@@ -286,9 +286,9 @@ class UsersIntegrationWebTests(WebTest):
         self.assertEqual(logged_out_page.status_code, 200)
         self.assertIn("Login", logged_out_page.text)
 
-        after_logout_profile = self.app.get(reverse("users:profile"), expect_errors=True)
-        self.assertEqual(after_logout_profile.status_code, 302)
-        self.assertIn(reverse("users:login"), after_logout_profile.location)
+        after_logout_preferences = self.app.get(reverse("users:preferences"), expect_errors=True)
+        self.assertEqual(after_logout_preferences.status_code, 302)
+        self.assertIn(reverse("users:login"), after_logout_preferences.location)
 
     def test_logout_view_post_twice_remains_logged_out(self):
         """
@@ -299,7 +299,7 @@ class UsersIntegrationWebTests(WebTest):
         Behaviour:
             Both POSTs redirect to login without errors.
         Expectation:
-            User stays logged out; /profile/ still requires auth.
+            User stays logged out; /preferences/ still requires auth.
         """
         self.login_through_form()
 
@@ -311,9 +311,9 @@ class UsersIntegrationWebTests(WebTest):
         self.assertEqual(second_logout_response.status_code, 302)
         self.assertEqual(second_logout_response.location, reverse("users:login"))
 
-        profile_after_second_logout = self.app.get(reverse("users:profile"), expect_errors=True)
-        self.assertEqual(profile_after_second_logout.status_code, 302)
-        self.assertIn(reverse("users:login"), profile_after_second_logout.location)
+        preferences_after_second_logout = self.app.get(reverse("users:preferences"), expect_errors=True)
+        self.assertEqual(preferences_after_second_logout.status_code, 302)
+        self.assertIn(reverse("users:login"), preferences_after_second_logout.location)
 
     def test_settings_view_get_and_post_flow(self):
         """

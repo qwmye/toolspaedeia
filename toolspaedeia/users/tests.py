@@ -1,5 +1,3 @@
-"""Tests for user views, theme context processor, and middleware."""
-
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
@@ -17,17 +15,17 @@ from users.models import UserSettings
 from users.models import UserSitePreferences
 
 
-class TestUserProfileFormView(TestCase):
-    """Tests for user profile preferences (theme, picture)."""
+class TestUserPreferencesView(TestCase):
+    """Tests for user site preferences (theme)."""
 
     def setUp(self):
-        """Create a user for testing profile view and form submission."""
+        """Create a user for testing preferences view and form submission."""
         self.user = get_user_model().objects.create_user(
             username="testuser",
             email="test@example.com",
             password="testpass123",  # noqa: S106
         )
-        self.url = reverse("users:profile")
+        self.url = reverse("users:preferences")
 
     def test_get_requires_authenticated_user(self):
         """Unauthenticated users are redirected to login."""
@@ -35,8 +33,8 @@ class TestUserProfileFormView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn("/users/login/", response.url)
 
-    def test_get_shows_profile_form_for_authenticated_user(self):
-        """Authenticated users are shown the profile form."""
+    def test_get_shows_preferences_form_for_authenticated_user(self):
+        """Authenticated users are shown the preferences form."""
         self.client.force_login(self.user)
         response = self.client.get(self.url)
 
@@ -44,9 +42,13 @@ class TestUserProfileFormView(TestCase):
         self.assertIn("User Site Preferences", response.content.decode())
 
     def test_post_requires_authenticated_user(self):
-        """Unauthenticated users are redirected when submitting profile form."""
+        """
+        Unauthenticated users are redirected when submitting the
+        preferences form.
+        """
         response = self.client.post(self.url, data={"color_theme": "blue", "theme_mode": "light"})
         self.assertEqual(response.status_code, 302)
+        self.assertIn("/users/login/", response.url)
 
     def test_post_updates_user_preferences(self):
         """Posting valid preferences updates UserSitePreferences record."""
@@ -60,13 +62,13 @@ class TestUserProfileFormView(TestCase):
         self.assertEqual(pref.color_theme, "blue")
         self.assertEqual(pref.theme_mode, "light")
 
-    def test_post_redirects_to_profile_on_success(self):
-        """Successful POST redirects back to profile page."""
+    def test_post_redirects_to_preferences_on_success(self):
+        """Successful POST redirects back to preferences page."""
         self.client.force_login(self.user)
         response = self.client.post(self.url, data={"color_theme": "green", "theme_mode": "dark"}, follow=False)
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("users:profile"))
+        self.assertEqual(response.url, reverse("users:preferences"))
 
 
 class TestUserSettingsView(TestCase):
