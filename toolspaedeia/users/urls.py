@@ -2,7 +2,8 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from users.views import PurchaseCourseView
-from users.views import UserProfileFormView
+from users.views import UserProfileView
+from users.views import UserSettingsView
 
 app_name = "users"
 
@@ -13,6 +14,7 @@ urlpatterns = [
         name="login",
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
-    path("profile/", UserProfileFormView.as_view(), name="profile"),
+    path("preferences/", UserProfileView.as_view(), name="profile"),
     path("purchase-course/", PurchaseCourseView.as_view(), name="purchase_course"),
+    path("settings/", UserSettingsView.as_view(), name="settings"),
 ]

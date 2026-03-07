@@ -1,43 +1,42 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms import ModelForm
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from django.views.generic import FormView
+from django.views.generic import UpdateView
 
 from users.models import Purchase
+from users.models import UserSettings
 from users.models import UserSitePreferences
 
 
-class UserProfileFormView(LoginRequiredMixin, FormView):
-    """View to display and update user profile preferences."""
+class UserProfileView(LoginRequiredMixin, UpdateView):
+    """View to display and update user site preferences."""
 
+    model = UserSitePreferences
+    fields = ["color_theme", "theme_mode"]
+    template_name = "users/preferences.html"
+    success_url = reverse_lazy("users:profile")
     login_url = reverse_lazy("users:login")
 
-    class UserProfileModelForm(ModelForm):
-        """Inline to update user preferences."""
+    def get_object(self, _queryset=None):
+        """Return the current user's preferences, creating them if needed."""
+        obj, _ = UserSitePreferences.objects.get_or_create(user=self.request.user)
+        return obj
 
-        class Meta:
-            """Meta class for user preferences inline form."""
 
-            model = UserSitePreferences
-            fields = ["color_theme", "theme_mode"]
+class UserSettingsView(LoginRequiredMixin, UpdateView):
+    """View to display and update user settings."""
 
-    form_class = UserProfileModelForm
-    template_name = "users/profile.html"
-    success_url = reverse_lazy("users:profile")
+    model = UserSettings
+    fields = ["profile_picture", "receive_notifications"]
+    template_name = "users/settings.html"
+    success_url = reverse_lazy("users:settings")
+    login_url = reverse_lazy("users:login")
 
-    def get_form_kwargs(self):
-        """Get form kwargs for user profile form."""
-        kwargs = super().get_form_kwargs()
-        preference, _ = UserSitePreferences.objects.get_or_create(user=self.request.user)
-        kwargs["instance"] = preference
-        return kwargs
-
-    def form_valid(self, form):
-        """Handle valid form submission for user profile form."""
-        form.save()
-        return super().form_valid(form)
+    def get_object(self, _queryset=None):
+        """Return the current user's settings, creating them if needed."""
+        obj, _ = UserSettings.objects.get_or_create(user=self.request.user)
+        return obj
 
 
 class PurchaseCourseView(LoginRequiredMixin, CreateView):
