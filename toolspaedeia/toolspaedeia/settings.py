@@ -79,15 +79,6 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     },
-    "container": {
-        "ENGINE": "django.db.backends.postgresql",
-        "HOST": "postgres",
-        "PORT": "5432",
-        "NAME": "toolspaedeia",
-        "USER": "root",
-        "ATOMIC_REQUESTS": False,
-        "CONN_MAX_AGE": 60,
-    },
 }
 
 
