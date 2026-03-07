@@ -15,6 +15,8 @@ class CourseAdmin(admin.ModelAdmin):
     """Admin interface for Course model."""
 
     search_fields = ["name"]
+    list_display = ["name", "publisher", "is_draft"]
+    list_filter = ["is_draft"]
 
 
 @admin.register(Module)
@@ -22,7 +24,8 @@ class ModuleAdmin(admin.ModelAdmin):
     """Admin interface for Module model."""
 
     search_fields = ["title", "course__name"]
-    list_display = ["title", "course", "order"]
+    list_display = ["title", "course", "order", "is_draft"]
+    list_filter = ["is_draft"]
 
 
 @admin.register(ModuleProgression)
