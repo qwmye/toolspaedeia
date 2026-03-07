@@ -44,5 +44,8 @@ coverage.xml
 *.swp
 *.swo
 
+# MacOS specific files
+.DS_Store
+
 # Dev files
 staticfiles/
