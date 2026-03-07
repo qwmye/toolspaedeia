@@ -73,6 +73,7 @@ class CourseUserListView(TitledViewMixin, LoginRequiredMixin, ListView):
 
 class CourseBrowseListView(TitledViewMixin, LoginRequiredMixin, ListView):
     model = Course
+    queryset = Course.objects.filter(is_draft=False)
     pk_url_kwarg = "course_id"
     context_object_name = "courses"
     title = "Browse Courses"
