@@ -12,7 +12,6 @@
     <form id="quiz-form-{{ quiz.id }}"
           hx-target="#quiz-{{ quiz.id }}"
           hx-swap="outerHTML">
-        {% csrf_token %}
         {% for item in quiz_data %}
             {% with question=item.question %}
                 <input type="hidden"

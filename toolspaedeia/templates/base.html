@@ -31,7 +31,7 @@
         {% block head %}
         {% endblock head %}
     </head>
-    <body>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <header class="container">
             <nav>
                 {% block nav %}
