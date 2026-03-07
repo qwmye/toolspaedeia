@@ -38,7 +38,7 @@
     {% endif %}
     <section>
         <nav aria-label="Module navigation">
-            {% include "courses/partials/mark_complete_button.html" with course_id=course.id module_id=module.id %}
+            {% include "courses/partials/mark_complete_button.html" with course_id=course.id module_id=module.id completed=module.is_completed %}
             <form method="get">
                 <div role="group">
                     <button type="submit"

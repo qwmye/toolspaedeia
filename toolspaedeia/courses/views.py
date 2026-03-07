@@ -171,6 +171,7 @@ class ModuleMarkCompleteView(LoginRequiredMixin, View):
             "course_id": course_id,
             "module_id": module_id,
             "completed": progression.completed,
+            "show_message": True,
         }
         html = render_to_string("courses/partials/mark_complete_button.html", context, request=request)
         return HttpResponse(html)
