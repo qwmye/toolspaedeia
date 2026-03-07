@@ -49,3 +49,4 @@ coverage.xml
 
 # Dev files
 staticfiles/
+media/
