@@ -9,7 +9,7 @@
 
 {% block content %}
     <h2>
-        User Profile - {{ request.user.get_full_name|default:request.user.username }}
+        User Site Preferences - {{ request.user.get_full_name|default:request.user.username }}
     </h2>
     {% if request.user.settings.profile_picture %}
         <img src="{{ request.user.settings.profile_picture.url }}"
