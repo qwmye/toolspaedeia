@@ -1,6 +1,10 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
+
+from courses.utils import ALLOWED_RESOURCE_EXTENSIONS
+from courses.utils import resource_upload_path
 
 
 class Course(models.Model):
@@ -176,3 +180,18 @@ class Answer(models.Model):
 
     def __str__(self) -> str:
         return self.text
+
+
+class Resource(models.Model):
+    module = models.ForeignKey(Module, related_name="resources", on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    file = models.FileField(
+        upload_to=resource_upload_path,
+        validators=[FileExtensionValidator(allowed_extensions=ALLOWED_RESOURCE_EXTENSIONS)],
+    )
+
+    class Meta:
+        ordering = ["title"]
+
+    def __str__(self) -> str:
+        return self.title
