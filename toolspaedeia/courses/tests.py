@@ -1,5 +1,10 @@
+import tempfile
+
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from django.test import TestCase
+from django.test.utils import override_settings
 from django.urls import reverse
 
 from courses.models import Answer
@@ -7,7 +12,9 @@ from courses.models import Course
 from courses.models import Module
 from courses.models import Question
 from courses.models import Quiz
+from courses.models import Resource
 from courses.service import calculate_final_grade
+from courses.utils import markdown_to_html
 
 
 class TestCalculateFinalGrade(TestCase):
@@ -304,3 +311,158 @@ class TestCheckQuizView(TestCase):
         q2_pos = content.find("Question Two")
         q1_pos = content.find("Question One")
         self.assertLess(q2_pos, q1_pos, "Question Two should appear before Question One (reversed order)")
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class TestResourcePlugin(TestCase):
+    """Resource rendering through the mistune plugin in markdown_to_html."""
+
+    def setUp(self):
+        self.publisher = get_user_model().objects.create_user(
+            username="publisher",
+            email="publisher@example.com",
+            password="publisher-pass",  # noqa: S106
+        )
+        self.course = Course.objects.create(
+            name="Course",
+            description="desc",
+            publisher=self.publisher,
+        )
+        self.module = Module.objects.create(
+            course=self.course,
+            title="Mod",
+            description="desc",
+            content="",
+            order=1,
+        )
+
+    def _make_resource(self, title="Slides", filename="slides.pdf"):
+        r = Resource(module=self.module, title=title)
+        r.file.save(filename, ContentFile(b"fake"), save=True)
+        return r
+
+    def test_pdf_placeholder_rendered_as_iframe(self):
+        resource = self._make_resource("Lecture Slides")
+        html = markdown_to_html("Download resource:Lecture Slides here.", resources=[resource])
+
+        self.assertIn("<iframe", html)
+        self.assertIn(resource.file.url, html)
+        self.assertNotIn("resource:", html)
+
+    def test_image_placeholder_rendered_as_img(self):
+        resource = self._make_resource("Diagram", "diagram.png")
+        html = markdown_to_html("See resource:Diagram below.", resources=[resource])
+
+        self.assertIn("<img", html)
+        self.assertIn(resource.file.url, html)
+
+    def test_video_placeholder_rendered_as_video(self):
+        resource = self._make_resource("Demo", "demo.mp4")
+        html = markdown_to_html("Watch resource:Demo", resources=[resource])
+
+        self.assertIn("<video", html)
+        self.assertIn(resource.file.url, html)
+
+    def test_audio_placeholder_rendered_as_audio(self):
+        resource = self._make_resource("Podcast", "episode.mp3")
+        html = markdown_to_html("Listen to resource:Podcast", resources=[resource])
+
+        self.assertIn("<audio", html)
+        self.assertIn(resource.file.url, html)
+
+    def test_generic_file_rendered_as_link(self):
+        resource = self._make_resource("Notes", "notes.txt")
+        html = markdown_to_html("Get resource:Notes", resources=[resource])
+
+        self.assertIn(f'<a href="{resource.file.url}">', html)
+        self.assertIn("Notes</a>", html)
+
+    def test_unmatched_placeholder_left_as_is(self):
+        html = markdown_to_html("See resource:Missing File for details.", resources=[])
+
+        self.assertIn("resource:Missing File", html)
+
+    def test_multiple_placeholders_in_same_text(self):
+        r1 = self._make_resource("A", "a.png")
+        r2 = self._make_resource("B", "b.pdf")
+        html = markdown_to_html("Get resource:A and resource:B", resources=[r1, r2])
+
+        self.assertIn(r1.file.url, html)
+        self.assertIn(r2.file.url, html)
+
+    def test_no_resources_renders_markdown_normally(self):
+        html = markdown_to_html("**bold** text")
+
+        self.assertIn("<strong>bold</strong>", html)
+
+    def test_no_placeholders_returns_html_unchanged(self):
+        r = self._make_resource("Slides")
+        html_with = markdown_to_html("Plain text.", resources=[r])
+        html_without = markdown_to_html("Plain text.")
+
+        self.assertEqual(html_with, html_without)
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class TestResourceModel(TestCase):
+    def setUp(self):
+        self.publisher = get_user_model().objects.create_user(
+            username="testpub",
+            email="pub@example.com",
+            password="pubpass",  # noqa: S106
+        )
+        self.course = Course.objects.create(
+            name="Course",
+            description="desc",
+            publisher=self.publisher,
+        )
+        self.module = Module.objects.create(
+            course=self.course,
+            title="Mod",
+            description="desc",
+            content="",
+            order=1,
+        )
+
+    def _make_resource(self, title="Notes"):
+        r = Resource(module=self.module, title=title)
+        r.file.save("notes.pdf", ContentFile(b"fake"), save=True)
+        return r
+
+    def test_upload_path_contains_publisher_username(self):
+        r = self._make_resource()
+        self.assertIn(f"resources/{self.publisher.username}/", r.file.name)
+
+    def test_str_returns_title(self):
+        r = self._make_resource("My Notes")
+        self.assertEqual(str(r), "My Notes")
+
+    def test_resource_deleted_with_module(self):
+        self._make_resource()
+        self.assertEqual(Resource.objects.count(), 1)
+        self.module.delete()
+        self.assertEqual(Resource.objects.count(), 0)
+
+    def test_allowed_extension_passes_validation(self):
+        r = Resource(module=self.module, title="Image")
+        r.file.save("photo.png", ContentFile(b"fake"), save=False)
+        try:
+            r.full_clean()
+        except ValidationError:
+            self.fail("ValidationError raised for allowed extension .png")
+
+    def test_disallowed_extension_fails_validation(self):
+        r = Resource(module=self.module, title="Executable")
+        r.file.save("malware.exe", ContentFile(b"fake"), save=False)
+        with self.assertRaises(ValidationError):
+            r.full_clean()
+
+    def test_spreadsheet_extension_passes_validation(self):
+        for ext in ["xls", "xlsx", "ods", "csv"]:
+            with self.subTest(extension=ext):
+                r = Resource(module=self.module, title=f"Sheet_{ext}")
+                r.file.save(f"data.{ext}", ContentFile(b"fake"), save=False)
+                try:
+                    r.full_clean()
+                except ValidationError:
+                    self.fail(f"ValidationError raised for allowed extension .{ext}")

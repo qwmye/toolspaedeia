@@ -1,4 +1,8 @@
+import tempfile
+
 from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
+from django.test.utils import override_settings
 from django.urls import reverse
 from django_webtest import WebTest
 
@@ -8,12 +12,11 @@ from courses.models import Module
 from courses.models import ModuleProgression
 from courses.models import Question
 from courses.models import Quiz
+from courses.models import Resource
 from users.models import Purchase
 
 
 class CoursesWebTestBase(WebTest):
-    """Shared fixtures and login helper for course integration tests."""
-
     csrf_checks = False
 
     def setUp(self):
@@ -90,8 +93,6 @@ class CoursesWebTestBase(WebTest):
 
 
 class PageLoadIntegrationTests(CoursesWebTestBase):
-    """Tests that load full pages by navigating through links."""
-
     def test_course_browse_list_navigation(self):
         """
         Browse page lists available courses with purchase state.
@@ -587,3 +588,78 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
         resp = self.app.get(bad_url, expect_errors=True)
 
         self.assertEqual(resp.status_code, 404)
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class ResourceIntegrationTests(CoursesWebTestBase):
+    def _attach_resource(self, module, title="Handout", filename="handout.pdf"):
+        r = Resource(module=module, title=title)
+        r.file.save(filename, ContentFile(b"data"), save=True)
+        return r
+
+    def test_module_page_lists_resources_at_bottom(self):
+        """
+        Resources section appears when a module has attached files.
+
+        Actions:
+            Attach a resource to the intro module, login, navigate
+            to the module page.
+        Behaviour:
+            Page renders the Resources heading with a download link.
+        Expectation:
+            Resource title and file URL both appear in the HTML.
+        """
+        resource = self._attach_resource(self.module_intro, "Lecture Notes")
+
+        browse_page = self.login_through_form()
+        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        detail_page = my_courses_page.click("Go to Course")
+        module_page = detail_page.click("Start", index=0)
+
+        self.assertEqual(module_page.status_code, 200)
+        self.assertIn("Resources", module_page.text)
+        self.assertIn("Lecture Notes", module_page.text)
+        self.assertIn(resource.file.url, module_page.text)
+
+    def test_module_page_hides_resources_section_when_empty(self):
+        """
+        No Resources heading when module has no attached files.
+
+        Actions:
+            Login, navigate to the intro module (no resources).
+        Behaviour:
+            Page renders without the Resources section.
+        Expectation:
+            "Resources" heading is absent from the page.
+        """
+        browse_page = self.login_through_form()
+        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        detail_page = my_courses_page.click("Go to Course")
+        module_page = detail_page.click("Start", index=0)
+
+        self.assertNotIn("Resources", module_page.text)
+
+    def test_inline_resource_placeholder_rendered_as_link(self):
+        """
+        resource:<title> in module content becomes a clickable link.
+
+        Actions:
+            Set module content with a resource:X placeholder, attach
+            a matching resource, login, open the module page.
+        Behaviour:
+            Markdown renders the placeholder as an <a> link.
+        Expectation:
+            The raw placeholder text is gone, replaced by a link to
+            the uploaded file.
+        """
+        self.module_intro.content = "Read the resource:Summary before continuing."
+        self.module_intro.save()
+        resource = self._attach_resource(self.module_intro, "Summary", "summary.pdf")
+
+        browse_page = self.login_through_form()
+        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        detail_page = my_courses_page.click("Go to Course")
+        module_page = detail_page.click("Start", index=0)
+
+        self.assertNotIn("resource:Summary", module_page.text)
+        self.assertIn(resource.file.url, module_page.text)
