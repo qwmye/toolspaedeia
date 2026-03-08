@@ -20,8 +20,8 @@ from courses.service import calculate_final_grade
 from courses.service import get_attempt_questions
 from courses.service import get_quiz_and_course
 from courses.service import render_quiz_section
+from courses.utils import markdown_to_html
 from toolspaedeia.mixins import TitledViewMixin
-from toolspaedeia.utils import markdown_to_html
 
 
 class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
@@ -137,7 +137,12 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
             context["next_module"] = next_module
         module.is_completed = module.progressions.filter(user=self.request.user, completed=True).exists()
         context["module"] = module
-        context["content"] = mark_safe(markdown_to_html(module.content or ""))  # noqa: S308
+
+        resources = list(module.resources.all())
+        context["resources"] = resources
+
+        content_md = module.content or ""
+        context["content"] = mark_safe(markdown_to_html(content_md, resources=resources))  # noqa: S308
 
         try:
             module_quiz = module.quiz

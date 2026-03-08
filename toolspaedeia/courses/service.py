@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
 from courses.models import Quiz
-from toolspaedeia.utils import markdown_to_html
+from courses.utils import markdown_to_html
 
 
 def build_fresh_answers_data(question):
