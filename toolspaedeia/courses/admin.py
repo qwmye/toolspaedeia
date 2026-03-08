@@ -29,6 +29,7 @@ class ModuleAdmin(admin.ModelAdmin):
     list_display = ["title", "course", "order", "is_draft"]
     list_filter = ["is_draft"]
     inlines = [ResourceInline]
+    ordering = ["course", "order"]
 
 
 @admin.register(ModuleProgression)
