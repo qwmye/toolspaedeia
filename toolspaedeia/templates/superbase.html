@@ -1,3 +1,5 @@
+{% load pwa %}
+
 <!DOCTYPE html>
 <html lang="en"
       {% if theme_mode %}
@@ -27,6 +29,8 @@
                 defer></script>
         <link href=" https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@3.3.1/css/all/all.min.css "
               rel="stylesheet" />
+
+        {% progressive_web_app_meta %}
 
         {% block head %}
         {% endblock head %}

@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "nested_admin",
+    "pwa",
     "courses",
     "users",
 ]
@@ -117,7 +118,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATICFILES_DIRS = [str(BASE_DIR / "static")]
+
+STATIC_URL = "/static/"
 STATIC_ROOT = str(BASE_DIR / "staticfiles")
 
 MEDIA_URL = "/media/"
@@ -133,3 +136,16 @@ LOGOUT_REDIRECT_URL = "users:login"
 
 # Clickjacking protection settings
 X_FRAME_OPTIONS = "SAMEORIGIN"
+
+# PWA settings
+PWA_APP_NAME = "Toolspaedeia"
+PWA_APP_SHORT_NAME = "Toolspaedeia"
+PWA_APP_DESCRIPTION = "A collection of tools and courses."
+PWA_APP_THEME_COLOR = "#000000"
+PWA_APP_DISPLAY = "standalone"
+PWA_APP_ICONS = [
+    {"src": STATIC_URL + "logo@0.5x.png", "sizes": "192x192", "type": "image/png"},
+    {"src": STATIC_URL + "logo@1x.png", "sizes": "384x384", "type": "image/png"},
+    {"src": STATIC_URL + "logo@2x.png", "sizes": "768x768", "type": "image/png"},
+    {"src": STATIC_URL + "logo@4x.png", "sizes": "1536x1536", "type": "image/png"},
+]
