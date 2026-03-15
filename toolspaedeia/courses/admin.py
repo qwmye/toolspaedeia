@@ -40,17 +40,17 @@ class ModuleProgressionAdmin(admin.ModelAdmin):
 
 @admin.register(Quiz)
 class QuizAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["title", "module", "randomize_questions", "max_questions"]
 
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["order", "quiz"]
 
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["text", "question", "is_correct"]
 
 
 @admin.register(Resource)
