@@ -34,7 +34,8 @@ class ModuleAdmin(admin.ModelAdmin):
 
 @admin.register(ModuleProgression)
 class ModuleProgressionAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["id", "user", "module", "completed"]
+    list_filter = ["completed"]
 
 
 @admin.register(Quiz)
