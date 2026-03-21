@@ -37,6 +37,17 @@
     </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <header class="container">
+            <form>
+                <button formaction="{% url 'home' %}"
+                        formmethod="get"
+                        type="submit"
+                        data-tooltip="ToolsPaedeia"
+                        data-placement="bottom">
+                    <h1>
+                        ToolsPaedeia
+                    </h1>
+                </button>
+            </form>
             <nav>
                 {% block nav %}
                     <ul>
@@ -48,23 +59,10 @@
                     </ul>
                 {% endblock nav %}
             </nav>
-            <nav aria-label="site navigation">
-                <ul>
-                    {% block site_nav %}
-                        <li>
-                            <h1>
-                                <a href="{% url 'courses:course_browse_list' %}">Courses</a>
-                            </h1>
-                        </li>
-                    {% endblock site_nav %}
-                </ul>
-            </nav>
-            <nav aria-label="module navigation">
-                <ul>
-                    {% block module_nav %}
-                    {% endblock module_nav %}
-                </ul>
-            </nav>
+            <section class="grid">
+                {% block module_nav %}
+                {% endblock module_nav %}
+            </section>
             <hr />
         </header>
         <main class="container">

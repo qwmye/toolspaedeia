@@ -3,13 +3,29 @@
 {% block nav %}
     <ul>
         <li>
-            <h1>
-                <a href="{% url 'home' %}"
-                   title="ToolsPaedeia">ToolsPaedeia</a>
-            </h1>
+            <form>
+                <button formaction="{% url 'home' %}"
+                        formmethod="get"
+                        type="submit"
+                        data-tooltip="ToolsPaedeia"
+                        data-placement="bottom">
+                    <i class="fi fi-sr-house-chimney"></i>
+                </button>
+            </form>
         </li>
     </ul>
     <ul>
+        <li>
+            <form>
+                <button formaction="{% url 'courses:course_browse_list' %}"
+                        formmethod="get"
+                        type="submit"
+                        data-tooltip="Browse courses"
+                        data-placement="bottom">
+                    <i class="fi fi-sr-books"></i>
+                </button>
+            </form>
+        </li>
         <li>
             <form>
                 <button formaction="{% url 'users:preferences' %}"

@@ -1,14 +1,10 @@
 {% extends "base.html" %}
 
 {% block module_nav %}
-    <li>
-        <h2>
-            <a href="{% url 'courses:course_browse_list' %}">Browse Courses</a>
-        </h2>
-    </li>
-    <li>
-        <h2>
-            <a href="{% url 'courses:course_user_list' %}">My Courses</a>
-        </h2>
-    </li>
+    <h2>
+        <a href="{% url 'courses:course_browse_list' %}">Browse Courses</a>
+    </h2>
+    <h2>
+        <a href="{% url 'courses:course_user_list' %}">My Courses</a>
+    </h2>
 {% endblock module_nav %}
