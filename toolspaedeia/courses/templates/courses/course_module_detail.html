@@ -6,13 +6,17 @@
 {% endblock head %}
 
 {% block content %}
-    <h1>
-        {{ module.title }}
-        {% if module.is_draft %}
-            - <kbd>Draft</kbd>
-        {% endif %}
-    </h1>
+    <div class="grid">
+        <h1>
+            {{ module.title }}
+            {% if module.is_draft %}
+                - <kbd>Draft</kbd>
+            {% endif %}
+        </h1>
+    </div>
+
     <hr />
+
     <section>
         {{ content }}
     </section>
@@ -43,27 +47,27 @@
         <hr />
     {% endif %}
     <section>
+        {% include "courses/partials/mark_complete_button.html" with course_id=course.id module_id=module.id completed=module.is_completed %}
         <nav aria-label="Module navigation">
-            {% include "courses/partials/mark_complete_button.html" with course_id=course.id module_id=module.id completed=module.is_completed %}
-            <form method="get">
-                <div role="group">
-                    <button type="submit"
-                            {% if previous_module %}
-                                formaction="{% url 'courses:module_detail' course.id previous_module.id %}"
-                            {% else %}
-                                disabled
-                            {% endif %}>
-                        Previous
-                    </button>
-                    <button type="submit"
-                            {% if next_module %}
-                                formaction="{% url 'courses:module_detail' course.id next_module.id %}"
-                            {% else %}
-                                disabled
-                            {% endif %}>
-                        Next
-                    </button>
-                </div>
+
+            <form method="get"
+                  role="group">
+                <button type="submit"
+                        {% if previous_module %}
+                            formaction="{% url 'courses:module_detail' course.id previous_module.id %}"
+                        {% else %}
+                            disabled
+                        {% endif %}>
+                    Previous
+                </button>
+                <button type="submit"
+                        {% if next_module %}
+                            formaction="{% url 'courses:module_detail' course.id next_module.id %}"
+                        {% else %}
+                            disabled
+                        {% endif %}>
+                    Next
+                </button>
             </form>
         </nav>
     </section>

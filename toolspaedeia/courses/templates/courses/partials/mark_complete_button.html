@@ -1,13 +1,17 @@
-<div id="mark-complete-section">
-    {% with action_name=completed|yesno:"complete,incomplete" button_name=completed|yesno:"Incomplete,Complete" %}
-        <button type="button"
-                hx-post="{% url 'courses:module_mark_complete' course_id module_id %}"
-                hx-target="#mark-complete-section"
-                hx-swap="outerHTML">
-            Mark as {{ button_name }}
-        </button>
+{% with action_name=completed|yesno:"complete,incomplete" button_name=completed|yesno:"Incomplete,Complete" %}
+    <button id="mark-complete-button"
+            type="submit"
+            hx-post="{% url 'courses:module_mark_complete' course_id module_id %}"
+            hx-target="#mark-complete-button"
+            hx-swap="outerHTML">
         {% if show_message %}
-            <ins>Module marked as {{ action_name }}.</ins>
+            {% if completed %}
+                <ins>Module marked as {{ action_name }}.</ins>
+            {% else %}
+                <del>Module marked as {{ action_name }}.</del>
+            {% endif %}
+        {% else %}
+            Mark as {{ button_name }}
         {% endif %}
-    {% endwith %}
-</div>
+    </button>
+{% endwith %}
