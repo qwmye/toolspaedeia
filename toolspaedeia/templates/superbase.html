@@ -51,7 +51,18 @@
             <nav aria-label="site navigation">
                 <ul>
                     {% block site_nav %}
+                        <li>
+                            <h1>
+                                <a href="{% url 'courses:course_browse_list' %}">Courses</a>
+                            </h1>
+                        </li>
                     {% endblock site_nav %}
+                </ul>
+            </nav>
+            <nav aria-label="module navigation">
+                <ul>
+                    {% block module_nav %}
+                    {% endblock module_nav %}
                 </ul>
             </nav>
             <hr />
