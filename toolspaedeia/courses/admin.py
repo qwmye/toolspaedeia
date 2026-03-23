@@ -1,5 +1,3 @@
-# Register your models here.
-
 import nested_admin
 from django.contrib import admin
 
@@ -64,22 +62,29 @@ class QuestionInlineAdmin(nested_admin.NestedStackedInline):
 @admin.register(Quiz)
 class QuizAdmin(nested_admin.NestedModelAdmin):
     list_display = ["title", "module", "randomize_questions", "max_questions"]
+    list_select_related = ["module"]
     inlines = [QuestionInlineAdmin]
 
     def get_queryset(self, request):
-        queryset = super().get_queryset(request).select_related("module")
+        queryset = super().get_queryset(request)
         if request.user.is_superuser:
             return queryset
         return queryset.filter(module__course__publisher=request.user)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "module" and not request.user.is_superuser:
+            kwargs["queryset"] = Module.objects.filter(course__publisher=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(ModuleProgression)
 class ModuleProgressionAdmin(admin.ModelAdmin):
     list_display = ["id", "user", "module", "completed"]
+    list_select_related = ["module"]
     list_filter = ["completed"]
 
     def get_queryset(self, request):
-        queryset = super().get_queryset(request).select_related("module")
+        queryset = super().get_queryset(request)
         if request.user.is_superuser:
             return queryset
         return queryset.filter(module__course__publisher=request.user)
