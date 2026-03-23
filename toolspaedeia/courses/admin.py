@@ -31,6 +31,23 @@ class CourseAdmin(nested_admin.NestedModelAdmin):
     list_filter = ["is_draft"]
     inlines = [ModuleInlineAdmin]
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        if request.user.is_superuser:
+            return queryset
+        return queryset.filter(publisher=request.user)
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.publisher = request.user
+        super().save_model(request, obj, form, change)
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        if not request.user.is_superuser:
+            fields.remove("publisher")
+        return fields
+
 
 class AnswerInlineAdmin(nested_admin.NestedTabularInline):
     model = Answer
@@ -49,8 +66,20 @@ class QuizAdmin(nested_admin.NestedModelAdmin):
     list_display = ["title", "module", "randomize_questions", "max_questions"]
     inlines = [QuestionInlineAdmin]
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request).select_related("module")
+        if request.user.is_superuser:
+            return queryset
+        return queryset.filter(module__course__publisher=request.user)
+
 
 @admin.register(ModuleProgression)
 class ModuleProgressionAdmin(admin.ModelAdmin):
     list_display = ["id", "user", "module", "completed"]
     list_filter = ["completed"]
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request).select_related("module")
+        if request.user.is_superuser:
+            return queryset
+        return queryset.filter(module__course__publisher=request.user)
