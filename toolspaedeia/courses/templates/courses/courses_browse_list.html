@@ -60,8 +60,8 @@
                         <a href="{% url 'courses:course_detail' course_id=course.id %}">Go to Course</a>
                     </p>
                 {% else %}
-                    <button onclick="document.getElementById('confirm-{{ course.id }}').showModal()">
-                        {% if course.price > 0 %}
+                    {% if course.price > 0 %}
+                        <button onclick="document.getElementById('confirm-{{ course.id }}').showModal()">
                             Purchase for {{ course.price }} EUR
                         </button>
                     {% else %}
