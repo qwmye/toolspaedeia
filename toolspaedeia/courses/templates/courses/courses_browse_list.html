@@ -1,5 +1,39 @@
 {% extends "courses_base.html" %}
 
+{% block head %}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe("pk_test_51TD9RnL174jy09JDqU7eFdTs7D7MfrEKC53DT1X1R3tTBqmn1BVEpY7h1ZfqQ4aTib87v8n50b1g267aGxVUqrVq00XSVFxoHM");
+        async function redirectToCheckout(courseId, price) {
+            try {
+                const response = await fetch("/courses/create-checkout-session/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || ''
+                    },
+                    body: JSON.stringify({
+                        course_id: courseId
+                    })
+                });
+                const data = await response.json();
+                if (data.id) {
+                    const result = await stripe.redirectToCheckout({
+                        sessionId: data.id
+                    });
+                    if (result.error) {
+                        alert(result.error.message);
+                    }
+                } else {
+                    alert(data.error || "Failed to create Stripe session.");
+                }
+            } catch (e) {
+                alert("Error: " + e);
+            }
+        }
+    </script>
+{% endblock head %}
+
 {% block content %}
     <h1>
         Courses
@@ -26,8 +60,8 @@
                         <a href="{% url 'courses:course_detail' course_id=course.id %}">Go to Course</a>
                     </p>
                 {% else %}
-                    {% if course.price > 0 %}
-                        <button onclick="document.getElementById('confirm-{{ course.id }}').showModal()">
+                    <button onclick="document.getElementById('confirm-{{ course.id }}').showModal()">
+                        {% if course.price > 0 %}
                             Purchase for {{ course.price }} EUR
                         </button>
                     {% else %}
@@ -63,8 +97,7 @@
                                 {% endif %}
                             </p>
                             <footer>
-                                <form method="post"
-                                      action="{% url 'users:purchase_course' %}">
+                                <form>
                                     {% csrf_token %}
                                     <input type="hidden"
                                            name="course"
@@ -76,11 +109,14 @@
                                             Cancel
                                         </button>
                                         {% if course.price > 0 %}
-                                            <button type="submit">
+                                            <button type="button"
+                                                    onclick="redirectToCheckout('{{ course.id }}', '{{ course.price }}')">
                                                 Purchase
                                             </button>
                                         {% else %}
-                                            <button type="submit">
+                                            <button type="submit"
+                                                    formaction="{% url 'users:purchase_course' %}"
+                                                    formmethod="post">
                                                 Enroll
                                             </button>
                                         {% endif %}

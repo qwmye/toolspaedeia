@@ -1,5 +1,6 @@
 from django.urls import path
 
+from .stripe_checkout import create_checkout_session
 from .views import CheckQuizView
 from .views import CourseBrowseListView
 from .views import CourseDetailView
@@ -24,4 +25,5 @@ urlpatterns = [
         CheckQuizView.as_view(),
         name="check_quiz",
     ),
+    path("create-checkout-session/", create_checkout_session, name="create_checkout_session"),
 ]
