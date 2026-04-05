@@ -12,7 +12,9 @@ class UserSitePreferencesAdmin(admin.ModelAdmin):
 
 @admin.register(Purchase)
 class PurchaseAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["id", "user", "course", "amount", "state", "stripe_checkout_session_id", "purchase_date"]
+    list_filter = ["state", "purchase_date"]
+    search_fields = ["user__username", "course__name", "stripe_checkout_session_id"]
 
 
 @admin.register(UserSettings)

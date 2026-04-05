@@ -1,15 +1,29 @@
+import json
+from json import JSONDecodeError
+
+import stripe
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView
 from django.views.generic import UpdateView
 
+from courses.models import Course
 from users.forms import AccountForm
 from users.models import Purchase
 from users.models import UserSettings
 from users.models import UserSitePreferences
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class UserPreferencesView(LoginRequiredMixin, UpdateView):
@@ -44,12 +58,129 @@ class PurchaseCourseView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("courses:course_browse_list")
 
     def form_valid(self, form):
-        Purchase.objects.get_or_create(
+        Purchase.objects.update_or_create(
             user=self.request.user,
             course=form.instance.course,
-            defaults={"amount": form.instance.course.price},
+            defaults={
+                "amount": form.instance.course.price,
+                "state": Purchase.State.ACCEPTED,
+                "stripe_checkout_session_id": None,
+            },
         )
         return redirect(self.request.META.get("HTTP_REFERER", self.success_url))
+
+
+class CreateCheckoutSessionView(LoginRequiredMixin, View):
+    http_method_names = ["post"]
+    login_url = reverse_lazy("users:login")
+
+    def post(self, request):
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+        except JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON payload."}, status=400)
+
+        course_id = data.get("course_id")
+        if not course_id:
+            return JsonResponse({"error": "Missing course_id."}, status=400)
+
+        course = get_object_or_404(Course, id=course_id, is_draft=False)
+
+        if Purchase.objects.filter(
+            user=request.user,
+            course=course,
+            state=Purchase.State.ACCEPTED,
+        ).exists():
+            return JsonResponse({"error": "Course already purchased."}, status=400)
+
+        amount = int(float(course.price) * 100)
+
+        purchase, _ = Purchase.objects.update_or_create(
+            user=request.user,
+            course=course,
+            defaults={
+                "amount": course.price,
+                "state": Purchase.State.PENDING,
+                "stripe_checkout_session_id": None,
+            },
+        )
+
+        try:
+            session = stripe.checkout.Session.create(
+                payment_method_types=["card"],
+                customer_email=request.user.email,
+                line_items=[
+                    {
+                        "price_data": {
+                            "currency": "eur",
+                            "product_data": {"name": course.name},
+                            "unit_amount": amount,
+                        },
+                        "quantity": 1,
+                    }
+                ],
+                mode="payment",
+                success_url=request.build_absolute_uri("/courses/browse/?success"),
+                cancel_url=request.build_absolute_uri("/courses/browse/?canceled"),
+                metadata={
+                    "purchase_id": str(purchase.id),
+                    "course_id": str(course.id),
+                    "user_id": str(request.user.id),
+                },
+            )
+        except Exception as exc:  # noqa: BLE001
+            return JsonResponse({"error": str(exc)}, status=400)
+
+        purchase.stripe_checkout_session_id = session.id
+        purchase.save(update_fields=["stripe_checkout_session_id"])
+        return JsonResponse({"id": session.id})
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class StripeWebhookView(View):
+    http_method_names = ["post"]
+
+    @staticmethod
+    def _get_purchase_from_session(session_data):
+        session_id = session_data.get("id")
+        if session_id:
+            purchase = Purchase.objects.filter(stripe_checkout_session_id=session_id).first()
+            if purchase:
+                return purchase
+
+        metadata = session_data.get("metadata") or {}
+        purchase_id = metadata.get("purchase_id")
+        if purchase_id:
+            return Purchase.objects.filter(id=purchase_id).first()
+        return None
+
+    def post(self, request):
+        payload = request.body
+        signature = request.META.get("HTTP_STRIPE_SIGNATURE", "")
+        webhook_secret = getattr(settings, "STRIPE_WEBHOOK_SECRET", "")
+
+        try:
+            if webhook_secret:
+                event = stripe.Webhook.construct_event(payload, signature, webhook_secret)
+            else:
+                event = json.loads(payload.decode("utf-8"))
+        except Exception:  # noqa: BLE001
+            return HttpResponse(status=400)
+
+        event_type = event.get("type")
+        session_data = (event.get("data") or {}).get("object") or {}
+        purchase = self._get_purchase_from_session(session_data)
+
+        if purchase:
+            if event_type == "checkout.session.completed":
+                purchase.state = Purchase.State.ACCEPTED
+                purchase.save(update_fields=["state"])
+            elif event_type in {"checkout.session.async_payment_failed", "checkout.session.expired"}:
+                if purchase.state != Purchase.State.ACCEPTED:
+                    purchase.state = Purchase.State.REFUSED
+                    purchase.save(update_fields=["state"])
+
+        return HttpResponse(status=200)
 
 
 class UserAccountView(LoginRequiredMixin, UpdateView):
@@ -66,6 +197,5 @@ class UserAccountView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         user = form.save()
-        # Keep the session alive when the password hash changes.
         update_session_auth_hash(self.request, user)
         return redirect(self.success_url)

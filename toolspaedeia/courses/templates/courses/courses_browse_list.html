@@ -59,7 +59,24 @@
                     <p>
                         <a href="{% url 'courses:course_detail' course_id=course.id %}">Go to Course</a>
                     </p>
+                {% elif course.is_payment_pending %}
+                    <blockquote aria-live="polite"
+                                role="status">
+                        <strong>Payment Pending</strong>
+                        <p>
+                            Access will be granted after Stripe confirms the payment.
+                        </p>
+                    </blockquote>
                 {% else %}
+                    {% if course.has_refused_payment %}
+                        <blockquote aria-live="polite"
+                                    role="alert">
+                            <strong>Payment Refused</strong>
+                            <p>
+                                Your previous payment was refused. Please try again.
+                            </p>
+                        </blockquote>
+                    {% endif %}
                     {% if course.price > 0 %}
                         <button onclick="document.getElementById('confirm-{{ course.id }}').showModal()">
                             Purchase for {{ course.price }} EUR

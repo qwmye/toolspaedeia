@@ -149,3 +149,6 @@ PWA_APP_ICONS = [
     {"src": STATIC_URL + "logo@2x.png", "sizes": "768x768", "type": "image/png"},
     {"src": STATIC_URL + "logo@4x.png", "sizes": "1536x1536", "type": "image/png"},
 ]
+
+STRIPE_SECRET_KEY = ""
+STRIPE_WEBHOOK_SECRET = ""

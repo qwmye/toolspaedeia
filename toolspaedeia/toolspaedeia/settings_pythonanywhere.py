@@ -14,6 +14,7 @@ DEBUG = False
 # --- Security -----------------------------------------------------------
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 STRIPE_SECRET_KEY = os.environ["STRIPE_SECRET_KEY"]
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 
 ALLOWED_HOSTS = [
     "qwmyee.pythonanywhere.com",

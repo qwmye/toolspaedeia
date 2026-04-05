@@ -22,6 +22,7 @@ from courses.service import calculate_final_grade
 from courses.service import get_attempt_questions
 from courses.service import get_quiz_and_course
 from toolspaedeia.mixins import TitledViewMixin
+from users.models import Purchase
 
 
 class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
@@ -32,6 +33,15 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
 
     def get_title(self):
         return self.get_object().name
+
+    def get_queryset(self) -> QuerySet[Course]:
+        queryset = super().get_queryset()
+        if self.request.user.is_superuser:
+            return queryset
+        return queryset.filter(
+            Q(publisher=self.request.user)
+            | Q(is_draft=False, purchases__user=self.request.user, purchases__state=Purchase.State.ACCEPTED)
+        ).distinct()
 
     def get_context_data(self, **kwargs):
         """Add the list of modules and progress to the context."""
@@ -66,7 +76,10 @@ class CourseUserListView(TitledViewMixin, LoginRequiredMixin, ListView):
     def get_queryset(self):
         if self.request.user.is_superuser:
             return Course.objects.exclude(publisher=self.request.user)
-        return Course.objects.filter(purchases__user=self.request.user).distinct()
+        return Course.objects.filter(
+            purchases__user=self.request.user,
+            purchases__state=Purchase.State.ACCEPTED,
+        ).distinct()
 
     def get_context_data(self, *args, **kwargs):
         """
@@ -96,8 +109,13 @@ class CourseBrowseListView(TitledViewMixin, LoginRequiredMixin, ListView):
         for course in context_data["courses"]:
             if self.request.user.is_superuser or course.publisher == self.request.user:
                 course.is_purchased = True
+                course.is_payment_pending = False
+                course.has_refused_payment = False
             else:
-                course.is_purchased = course.purchases.filter(user=self.request.user).exists()
+                user_purchases = course.purchases.filter(user=self.request.user)
+                course.is_purchased = user_purchases.filter(state=Purchase.State.ACCEPTED).exists()
+                course.is_payment_pending = user_purchases.filter(state=Purchase.State.PENDING).exists()
+                course.has_refused_payment = user_purchases.filter(state=Purchase.State.REFUSED).exists()
         return context_data
 
 
@@ -110,7 +128,13 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
 
     def get_queryset(self) -> QuerySet[Course]:
         """Return the course with the specified module, if it is not a draft."""
-        return super().get_queryset().filter(Q(is_draft=False) | Q(publisher=self.request.user))
+        queryset = super().get_queryset()
+        if self.request.user.is_superuser:
+            return queryset
+        return queryset.filter(
+            Q(publisher=self.request.user)
+            | Q(is_draft=False, purchases__user=self.request.user, purchases__state=Purchase.State.ACCEPTED)
+        ).distinct()
 
     def get_object(self, queryset=None) -> Course:
         course = super().get_object(queryset)
