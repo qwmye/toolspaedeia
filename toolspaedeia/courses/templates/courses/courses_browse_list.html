@@ -97,7 +97,8 @@
                                 {% endif %}
                             </p>
                             <footer>
-                                <form>
+                                <form action="{% url 'users:purchase_course' %}"
+                                      method="post">
                                     {% csrf_token %}
                                     <input type="hidden"
                                            name="course"
@@ -114,9 +115,7 @@
                                                 Purchase
                                             </button>
                                         {% else %}
-                                            <button type="submit"
-                                                    formaction="{% url 'users:purchase_course' %}"
-                                                    formmethod="post">
+                                            <button type="submit">
                                                 Enroll
                                             </button>
                                         {% endif %}

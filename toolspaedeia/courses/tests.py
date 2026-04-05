@@ -83,7 +83,7 @@ class CoursesWebTestBase(WebTest):
         """Log the student in via the login form and follow redirects."""
         self.app.reset()
         login_page = self.app.get(reverse("users:login"))
-        login_form = login_page.form
+        login_form = login_page.forms[1]
         login_form["username"] = self.student.username
         login_form["password"] = "student-pass"  # noqa: S105
         response = login_form.submit()
@@ -173,7 +173,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
 
         self.assertEqual(module_page.status_code, 200)
         self.assertIn("Quiz Module", module_page.text)
-        self.assertIn("Module Quiz", module_page.text)
+        self.assertIn("Loading quiz...", module_page.text)
         self.assertIn("Mark as Complete", module_page.text)
 
     def test_duplicate_purchase_is_idempotent(self):
@@ -310,7 +310,7 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
         self.assertTrue(
             ModuleProgression.objects.filter(user=self.student, module=self.module_intro, completed=True).exists()
         )
-        self.assertIn("Mark as Incomplete", response.text)
+        self.assertIn("Module marked as complete.", response.text)
 
     def test_mark_complete_toggles_back(self):
         """
@@ -333,9 +333,9 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
         second_response = self.app.post(mark_url)
 
         self.assertEqual(first_response.status_code, 200)
-        self.assertIn("Mark as Incomplete", first_response.text)
+        self.assertIn("Module marked as complete.", first_response.text)
         self.assertEqual(second_response.status_code, 200)
-        self.assertIn("Mark as Complete", second_response.text)
+        self.assertIn("Module marked as incomplete.", second_response.text)
         self.assertTrue(
             ModuleProgression.objects.filter(user=self.student, module=self.module_intro, completed=False).exists()
         )
@@ -470,7 +470,7 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
         # Other user marks complete
         self.app.reset()
         login_page = self.app.get(reverse("users:login"))
-        form = login_page.form
+        form = login_page.forms[1]
         form["username"] = "other"
         form["password"] = "other-pass"  # noqa: S105
         form.submit()
@@ -484,26 +484,26 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
         )
         self.assertEqual(ModuleProgression.objects.filter(module=self.module_intro).count(), 2)
 
-    def test_check_quiz_get_flow(self):
+    def test_attempt_quiz_get_flow(self):
         """
-        GET on the quiz check endpoint loads a fresh attempt.
+        GET on the quiz attempt endpoint loads a fresh attempt.
 
         Actions:
-            Login, GET the check URL.
+            Login, GET the attempt URL.
         Behaviour:
             Returns the quiz form in "check" mode (no results).
         Expectation:
-            "Check Quiz" button visible, "Retry Quiz" is not.
+            "Attempt Quiz" button visible, "Retry Quiz" is not.
         """
         self.login_through_form()
-        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
-        response = self.app.get(check_url)
+        attempt_url = reverse("courses:attempt_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
+        response = self.app.get(attempt_url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Check Quiz", response.text)
+        self.assertIn("Attempt Quiz", response.text)
         self.assertNotIn("Retry Quiz", response.text)
 
-    def test_check_quiz_post_correct_answer(self):
+    def test_attempt_quiz_post_correct_answer(self):
         """
         Submitting quiz answers and seeing results with final grade.
 
@@ -515,9 +515,9 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
             "Retry Quiz" button and "Final Grade: 100%" appear.
         """
         self.login_through_form()
-        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
+        attempt_url = reverse("courses:attempt_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
         response = self.app.post(
-            check_url,
+            attempt_url,
             params={
                 "question_ids": [str(self.question.id)],
                 f"answer_ids_{self.question.id}": [str(self.correct_answer.id), str(self.wrong_answer.id)],
@@ -529,7 +529,7 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
         self.assertIn("Retry Quiz", response.text)
         self.assertIn("Final Grade: 100.00%", response.text)
 
-    def test_check_quiz_post_wrong_answer(self):
+    def test_attempt_quiz_post_wrong_answer(self):
         """
         Submitting only the wrong answer produces a 0% grade.
 
@@ -541,9 +541,9 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
             Final grade is 0%.
         """
         self.login_through_form()
-        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
+        attempt_url = reverse("courses:attempt_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
         response = self.app.post(
-            check_url,
+            attempt_url,
             params={
                 "question_ids": [str(self.question.id)],
                 f"answer_ids_{self.question.id}": [str(self.correct_answer.id), str(self.wrong_answer.id)],
@@ -554,7 +554,7 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Final Grade: 0.00%", response.text)
 
-    def test_check_quiz_get_has_no_final_grade(self):
+    def test_attempt_quiz_get_has_no_final_grade(self):
         """
         A fresh quiz attempt shouldn't show any grade.
 
@@ -566,25 +566,25 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
             "Final Grade" text is absent.
         """
         self.login_through_form()
-        check_url = reverse("courses:check_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
-        response = self.app.get(check_url)
+        attempt_url = reverse("courses:attempt_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
+        response = self.app.get(attempt_url)
 
         self.assertEqual(response.status_code, 200)
         self.assertNotIn("Final Grade", response.text)
 
-    def test_check_quiz_wrong_course_id_returns_404(self):
+    def test_attempt_quiz_wrong_course_id_returns_404(self):
         """
-        Quiz check URL with mismatched course ID.
+        Quiz attempt URL with mismatched course ID.
 
         Actions:
-            Login, GET quiz check with a course_id that doesn't own this quiz.
+            Login, GET quiz attempt with a course_id that doesn't own this quiz.
         Behaviour:
             get_object_or_404 rejects the mismatch.
         Expectation:
             Raise 404.
         """
         self.login_through_form()
-        bad_url = reverse("courses:check_quiz", kwargs={"course_id": self.bug_course.id, "quiz_id": self.quiz.id})
+        bad_url = reverse("courses:attempt_quiz", kwargs={"course_id": self.bug_course.id, "quiz_id": self.quiz.id})
         resp = self.app.get(bad_url, expect_errors=True)
 
         self.assertEqual(resp.status_code, 404)
