@@ -62,7 +62,7 @@ class QuestionInlineAdmin(nested_admin.NestedStackedInline):
 
 @admin.register(Quiz)
 class QuizAdmin(nested_admin.NestedModelAdmin):
-    list_display = ["title", "module", "randomize_questions", "max_questions"]
+    list_display = ["title", "module", "randomize_questions", "max_questions", "max_attempts"]
     list_select_related = ["module"]
     inlines = [QuestionInlineAdmin]
 
