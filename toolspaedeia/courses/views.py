@@ -218,5 +218,6 @@ class AttemptQuizView(LoginRequiredMixin, View):
 
         quiz_data = build_quiz_data(questions, answers_by_question=answers_by_question)
         final_grade = calculate_final_grade(quiz_data)
-        QuizAttempt.objects.create(user=request.user, quiz=quiz, grade=str(final_grade))
+        if quiz.track_attempts:
+            QuizAttempt.objects.create(user=request.user, quiz=quiz, grade=str(final_grade))
         return self.render_quiz_section(request, quiz, course, quiz_data, final_grade=final_grade)

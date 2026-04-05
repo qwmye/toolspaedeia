@@ -512,7 +512,7 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
         Behaviour:
             Server evaluates and returns result mode with a grade.
         Expectation:
-            "Retry Quiz" button and "Final Grade: 100%" appear.
+            "Retry Quiz" button and "Grade: 100%" appear.
         """
         self.login_through_form()
         attempt_url = reverse("courses:attempt_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
@@ -527,7 +527,7 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Retry Quiz", response.text)
-        self.assertIn("Final Grade: 100.00%", response.text)
+        self.assertIn("Grade: 100.00%", response.text)
 
     def test_attempt_quiz_post_wrong_answer(self):
         """
@@ -538,7 +538,7 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
         Behaviour:
             Both choices are wrong (wrong ticked, correct unticked).
         Expectation:
-            Final grade is 0%.
+            Grade is 0%.
         """
         self.login_through_form()
         attempt_url = reverse("courses:attempt_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
@@ -552,7 +552,7 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Final Grade: 0.00%", response.text)
+        self.assertIn("Grade: 0.00%", response.text)
 
     def test_attempt_quiz_get_has_no_final_grade(self):
         """
@@ -563,14 +563,14 @@ class HtmxViewIntegrationTests(CoursesWebTestBase):
         Behaviour:
             Returns quiz form without results.
         Expectation:
-            "Final Grade" text is absent.
+            "Grade" text is absent.
         """
         self.login_through_form()
         attempt_url = reverse("courses:attempt_quiz", kwargs={"course_id": self.course.id, "quiz_id": self.quiz.id})
         response = self.app.get(attempt_url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertNotIn("Final Grade", response.text)
+        self.assertNotIn("Grade", response.text)
 
     def test_attempt_quiz_wrong_course_id_returns_404(self):
         """

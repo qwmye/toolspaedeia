@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
@@ -111,6 +112,7 @@ class Quiz(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     randomize_questions = models.BooleanField(default=False)
+    track_attempts = models.BooleanField(default=True)
     max_questions = models.PositiveIntegerField(null=True, blank=True)
     max_attempts = models.PositiveIntegerField(null=True, blank=True)
 
@@ -120,6 +122,13 @@ class Quiz(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+    def clean(self):
+        super().clean()
+        if self.track_attempts and not self.max_attempts:
+            raise ValidationError(
+                {"max_attempts": "Max attempts must be greater than 0 when attempt tracking is enabled."}
+            )
 
     def get_questions_for_attempt(self):
         """
