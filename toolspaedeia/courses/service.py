@@ -3,8 +3,8 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
+from courses.markdown import markdown_to_html
 from courses.models import Quiz
-from courses.utils import markdown_to_html
 
 
 def build_fresh_answers_data(question):

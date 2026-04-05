@@ -11,6 +11,7 @@ from django.views import View
 from django.views.generic import DetailView
 from django.views.generic import ListView
 
+from courses.markdown import markdown_to_html
 from courses.models import Course
 from courses.models import Module
 from courses.models import Quiz
@@ -20,7 +21,6 @@ from courses.service import calculate_final_grade
 from courses.service import get_attempt_questions
 from courses.service import get_quiz_and_course
 from courses.service import render_quiz_section
-from courses.utils import markdown_to_html
 from toolspaedeia.mixins import TitledViewMixin
 
 

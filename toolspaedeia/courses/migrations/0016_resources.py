@@ -5,7 +5,7 @@ import django.db.models.deletion
 from django.db import migrations
 from django.db import models
 
-import courses.utils
+import courses.markdown
 
 
 class Migration(migrations.Migration):
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 (
                     "file",
                     models.FileField(
-                        upload_to=courses.utils.resource_upload_path,
+                        upload_to=courses.markdown.resource_upload_path,
                         validators=[
                             django.core.validators.FileExtensionValidator(
                                 allowed_extensions=[
