@@ -180,12 +180,17 @@ class AttemptQuizView(LoginRequiredMixin, View):
     @staticmethod
     def render_quiz_section(request, quiz, course, quiz_data, final_grade=None):
         """Render quiz section partial HTML response."""
+        quiz_attempts = list(quiz.attempts.filter(user=request.user).order_by("-completion_date"))
+        best_quiz_attempt_grade = max(
+            (attempt.grade for attempt in quiz_attempts if attempt.grade is not None), default=None
+        )
         context = {
             "quiz": quiz,
             "course": course,
             "quiz_data": quiz_data,
             "final_grade": final_grade,
-            "quiz_attempts": list(quiz.attempts.filter(user=request.user).order_by("-completion_date")),
+            "quiz_attempts": quiz_attempts,
+            "best_quiz_attempt_grade": best_quiz_attempt_grade,
         }
         html = render_to_string("courses/partials/quiz_section.html", context, request=request)
         return HttpResponse(html)

@@ -9,56 +9,65 @@
             </p>
         {% endif %}
     </header>
-    <form id="quiz-form-{{ quiz.id }}"
-          hx-target="#quiz-{{ quiz.id }}"
-          hx-swap="outerHTML">
-        {% for item in quiz_data %}
-            {% with question=item.question %}
-                <input type="hidden"
-                       name="question_ids"
-                       value="{{ question.id }}" />
-                <fieldset>
-                    <legend>
-                        Question {{ forloop.counter }}
-                    </legend>
-                    <section>
-                        {{ item.question_html }}
-                    </section>
-                    {% for answer_data in item.answers_data %}
-                        {% with answer=answer_data.answer %}
-                            <p>
-                                <input type="hidden"
-                                       name="answer_ids_{{ question.id }}"
-                                       value="{{ answer.id }}" />
-                                <input type="checkbox"
-                                       name="question-{{ question.id }}"
-                                       id="answer-{{ answer.id }}"
-                                       value="{{ answer.id }}"
-                                       {% if final_grade is not None %}
-                                           disabled aria-invalid="{{ answer_data.is_correct_choice|yesno:'false,true' }}" aria-describedby="result-answer-{{ answer.id }}"
-                                       {% endif %}
-                                       {% if answer_data.was_selected %}
-                                           checked
-                                       {% endif %} />
-                                <label for="answer-{{ answer.id }}">
-                                    {{ answer.text }}
-                                </label>
-                            </p>
-                        {% endwith %}
-                    {% endfor %}
-                </fieldset>
-            {% endwith %}
-        {% endfor %}
-        {% if final_grade is not None %}
-            <section>
-                <h4>
-                    Final Grade: {{ final_grade|floatformat:2 }}%
-                </h4>
-                <progress value="{{ final_grade }}"
-                          max="100"></progress>
-            </section>
-        {% endif %}
-        {% if not quiz.max_attempts or quiz_attempts|length < quiz.max_attempts %}
+    {% if best_quiz_attempt_grade is not None %}
+        <section>
+            <h4>
+                Best Grade: {{ best_quiz_attempt_grade|floatformat:2 }}%
+            </h4>
+            <progress value="{{ best_quiz_attempt_grade }}"
+                      max="100"></progress>
+        </section>
+    {% endif %}
+    {% if not quiz.max_attempts or quiz_attempts|length < quiz.max_attempts %}
+        <form id="quiz-form-{{ quiz.id }}"
+              hx-target="#quiz-{{ quiz.id }}"
+              hx-swap="outerHTML">
+            {% for item in quiz_data %}
+                {% with question=item.question %}
+                    <input type="hidden"
+                           name="question_ids"
+                           value="{{ question.id }}" />
+                    <fieldset>
+                        <legend>
+                            Question {{ forloop.counter }}
+                        </legend>
+                        <section>
+                            {{ item.question_html }}
+                        </section>
+                        {% for answer_data in item.answers_data %}
+                            {% with answer=answer_data.answer %}
+                                <p>
+                                    <input type="hidden"
+                                           name="answer_ids_{{ question.id }}"
+                                           value="{{ answer.id }}" />
+                                    <input type="checkbox"
+                                           name="question-{{ question.id }}"
+                                           id="answer-{{ answer.id }}"
+                                           value="{{ answer.id }}"
+                                           {% if final_grade is not None %}
+                                               disabled aria-invalid="{{ answer_data.is_correct_choice|yesno:'false,true' }}" aria-describedby="result-answer-{{ answer.id }}"
+                                           {% endif %}
+                                           {% if answer_data.was_selected %}
+                                               checked
+                                           {% endif %} />
+                                    <label for="answer-{{ answer.id }}">
+                                        {{ answer.text }}
+                                    </label>
+                                </p>
+                            {% endwith %}
+                        {% endfor %}
+                    </fieldset>
+                {% endwith %}
+            {% endfor %}
+            {% if final_grade is not None %}
+                <section>
+                    <h4>
+                        Grade: {{ final_grade|floatformat:2 }}%
+                    </h4>
+                    <progress value="{{ final_grade }}"
+                              max="100"></progress>
+                </section>
+            {% endif %}
             <button type="button"
                     {% if final_grade is not None %}
                         hx-get="{% url 'courses:attempt_quiz' course.id quiz.id %}"
@@ -71,10 +80,10 @@
                     Attempt Quiz
                 {% endif %}
             </button>
-        {% else %}
-            <p>
-                You have reached the maximum number of attempts for this quiz.
-            </p>
-        {% endif %}
-    </form>
+        </form>
+    {% else %}
+        <p>
+            You have reached the maximum number of attempts for this quiz.
+        </p>
+    {% endif %}
 </article>
