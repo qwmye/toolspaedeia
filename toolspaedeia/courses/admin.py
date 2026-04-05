@@ -7,6 +7,7 @@ from .models import Module
 from .models import ModuleProgression
 from .models import Question
 from .models import Quiz
+from .models import QuizAttempt
 from .models import Resource
 
 
@@ -88,3 +89,16 @@ class ModuleProgressionAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return queryset
         return queryset.filter(module__course__publisher=request.user)
+
+
+@admin.register(QuizAttempt)
+class QuizAttemptAdmin(admin.ModelAdmin):
+    list_display = ["id", "user", "quiz", "grade", "completion_date"]
+    list_select_related = ["quiz"]
+    list_filter = ["completion_date"]
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        if request.user.is_superuser:
+            return queryset
+        return queryset.filter(quiz__module__course__publisher=request.user)

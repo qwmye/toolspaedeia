@@ -112,6 +112,7 @@ class Quiz(models.Model):
     description = models.TextField()
     randomize_questions = models.BooleanField(default=False)
     max_questions = models.PositiveIntegerField(null=True, blank=True)
+    max_attempts = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         verbose_name = "Quiz"
@@ -130,6 +131,25 @@ class Quiz(models.Model):
         if self.max_questions:
             questions = questions[: self.max_questions]
         return questions
+
+
+class QuizAttempt(models.Model):
+    """
+    Keep track of the attempts of a user on a quiz, including the score and
+    completion date.
+    """
+
+    user = models.ForeignKey(get_user_model(), related_name="quiz_attempts", on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, related_name="attempts", on_delete=models.CASCADE)
+    grade = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    completion_date = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Quiz Attempt"
+        verbose_name_plural = "Quiz Attempts"
+
+    def __str__(self) -> str:
+        return f"{self.user.username} - {self.quiz.title} - Attempt on {self.completion_date}"
 
 
 class Question(models.Model):
