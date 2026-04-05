@@ -15,12 +15,12 @@ from courses.markdown import markdown_to_html
 from courses.models import Course
 from courses.models import Module
 from courses.models import Quiz
+from courses.models import QuizAttempt
 from courses.service import build_checked_answers_data
 from courses.service import build_quiz_data
 from courses.service import calculate_final_grade
 from courses.service import get_attempt_questions
 from courses.service import get_quiz_and_course
-from courses.service import render_quiz_section
 from toolspaedeia.mixins import TitledViewMixin
 
 
@@ -150,9 +150,6 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
             module_quiz = None
 
         context["module_quiz"] = module_quiz
-        context["module_quiz_data"] = (
-            build_quiz_data(list(module_quiz.get_questions_for_attempt())) if module_quiz else []
-        )
 
         return context
 
@@ -177,14 +174,27 @@ class ModuleMarkCompleteView(LoginRequiredMixin, View):
         return HttpResponse(html)
 
 
-class CheckQuizView(LoginRequiredMixin, View):
+class AttemptQuizView(LoginRequiredMixin, View):
     login_url = "users:login"
+
+    @staticmethod
+    def render_quiz_section(request, quiz, course, quiz_data, final_grade=None):
+        """Render quiz section partial HTML response."""
+        context = {
+            "quiz": quiz,
+            "course": course,
+            "quiz_data": quiz_data,
+            "final_grade": final_grade,
+            "quiz_attempts": list(quiz.attempts.filter(user=request.user).order_by("-completion_date")),
+        }
+        html = render_to_string("courses/partials/quiz_section.html", context, request=request)
+        return HttpResponse(html)
 
     def get(self, request, course_id, quiz_id):
         quiz, course = get_quiz_and_course(course_id, quiz_id)
         questions = get_attempt_questions(quiz)
         quiz_data = build_quiz_data(questions)
-        return render_quiz_section(request, quiz, course, quiz_data)
+        return self.render_quiz_section(request, quiz, course, quiz_data)
 
     def post(self, request, course_id, quiz_id):
         """Check submitted quiz answers and return quiz with feedback."""
@@ -203,4 +213,5 @@ class CheckQuizView(LoginRequiredMixin, View):
 
         quiz_data = build_quiz_data(questions, answers_by_question=answers_by_question)
         final_grade = calculate_final_grade(quiz_data)
-        return render_quiz_section(request, quiz, course, quiz_data, final_grade=final_grade)
+        QuizAttempt.objects.create(user=request.user, quiz=quiz, grade=str(final_grade))
+        return self.render_quiz_section(request, quiz, course, quiz_data, final_grade=final_grade)

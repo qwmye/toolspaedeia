@@ -1,6 +1,4 @@
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
 from courses.markdown import markdown_to_html
@@ -108,15 +106,3 @@ def calculate_final_grade(quiz_data):
         return 0
     correct = sum(1 for a in all_answers if a["is_correct_choice"])
     return round(correct / len(all_answers) * 100, 2)
-
-
-def render_quiz_section(request, quiz, course, quiz_data, final_grade=None):
-    """Render quiz section partial HTML response."""
-    context = {
-        "quiz": quiz,
-        "course": course,
-        "quiz_data": quiz_data,
-        "final_grade": final_grade,
-    }
-    html = render_to_string("courses/partials/quiz_section.html", context, request=request)
-    return HttpResponse(html)

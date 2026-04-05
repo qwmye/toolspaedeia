@@ -58,17 +58,23 @@
                           max="100"></progress>
             </section>
         {% endif %}
-        <button type="button"
+        {% if not quiz.max_attempts or quiz_attempts|length < quiz.max_attempts %}
+            <button type="button"
+                    {% if final_grade is not None %}
+                        hx-get="{% url 'courses:attempt_quiz' course.id quiz.id %}"
+                    {% else %}
+                        hx-post="{% url 'courses:attempt_quiz' course.id quiz.id %}"
+                    {% endif %}>
                 {% if final_grade is not None %}
-                    hx-get="{% url 'courses:check_quiz' course.id quiz.id %}"
+                    Retry Quiz
                 {% else %}
-                    hx-post="{% url 'courses:check_quiz' course.id quiz.id %}"
-                {% endif %}>
-            {% if final_grade is not None %}
-                Retry Quiz
-            {% else %}
-                Check Quiz
-            {% endif %}
-        </button>
+                    Attempt Quiz
+                {% endif %}
+            </button>
+        {% else %}
+            <p>
+                You have reached the maximum number of attempts for this quiz.
+            </p>
+        {% endif %}
     </form>
 </article>

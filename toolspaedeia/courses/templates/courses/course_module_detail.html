@@ -26,7 +26,14 @@
             <h2>
                 Quiz
             </h2>
-            {% include "courses/partials/quiz_section.html" with quiz=module_quiz quiz_data=module_quiz_data %}
+            <div hx-get="{% url 'courses:attempt_quiz' course.id module_quiz.id %}"
+                 hx-trigger="load"
+                 hx-target="this"
+                 hx-swap="innerHTML">
+                <p>
+                    Loading quiz...
+                </p>
+            </div>
         </section>
         <hr />
     {% endif %}
