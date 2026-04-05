@@ -34,7 +34,7 @@ class UsersIntegrationWebTests(WebTest):
         """Log the student in via the login form and follow redirects."""
         self.app.reset()
         login_page = self.app.get(reverse("users:login"))
-        login_form = login_page.form
+        login_form = login_page.forms[1]
         login_form["username"] = self.student.username
         login_form["password"] = "student-pass"  # noqa: S105
         response = login_form.submit()
@@ -90,7 +90,7 @@ class UsersIntegrationWebTests(WebTest):
             visiting /preferences/ still bounces to login.
         """
         login_page = self.app.get(reverse("users:login"))
-        login_form = login_page.form
+        login_form = login_page.forms[1]
         login_form["username"] = self.student.username
         login_form["password"] = "wrong-pass"  # noqa: S105
         response = login_form.submit()
@@ -364,13 +364,13 @@ class UsersIntegrationWebTests(WebTest):
         Behaviour:
             Nav sidebar shows "Settings" link.
         Expectation:
-            "Settings" appears alongside "Site preferences".
+            "Settings" appears alongside "Preferences".
         """
         self.login_through_form()
         settings_page = self.app.get(reverse("users:settings"))
 
         self.assertIn("Settings", settings_page.text)
-        self.assertIn("Site preferences", settings_page.text)
+        self.assertIn("Preferences", settings_page.text)
 
     @staticmethod
     def get_account_form(account_page):
@@ -480,5 +480,5 @@ class UsersIntegrationWebTests(WebTest):
         account_page = self.app.get(reverse("users:account"))
 
         self.assertIn("Account", account_page.text)
-        self.assertIn("Site preferences", account_page.text)
+        self.assertIn("Preferences", account_page.text)
         self.assertIn("Settings", account_page.text)
