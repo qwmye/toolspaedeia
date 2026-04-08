@@ -17,6 +17,19 @@
     <ul>
         <li>
             <form>
+                {% if perms.courses.add_course %}
+                    <button formaction="{% url 'admin:index' %}"
+                            formmethod="get"
+                            type="submit"
+                            data-tooltip="Publisher Interface"
+                            data-placement="bottom">
+                        <i class="fi fi-sr-pencil"></i>
+                    </button>
+                {% endif %}
+            </form>
+        </li>
+        <li>
+            <form>
                 <button formaction="{% url 'courses:course_browse_list' %}"
                         formmethod="get"
                         type="submit"
