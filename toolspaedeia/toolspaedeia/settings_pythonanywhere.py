@@ -32,13 +32,6 @@ DATABASES = {
     },
 }
 
-# --- Static & media files -----------------------------------------------
-STATIC_URL = "/static/"
-STATIC_ROOT = str(BASE_DIR / "staticfiles")  # noqa: F405
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = str(BASE_DIR / "media")  # noqa: F405
-
 # --- HTTPS / cookie hardening -------------------------------------------
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
