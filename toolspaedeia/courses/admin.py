@@ -10,6 +10,10 @@ from .models import Quiz
 from .models import QuizAttempt
 from .models import Resource
 
+admin.site.site_title = "Toolspaedeia Publishing"
+admin.site.site_header = "Toolspaedeia Publishing"
+admin.site.index_title = "Toolspaedeia Publishing"
+
 
 class ResourceInline(nested_admin.NestedStackedInline):
     model = Resource
