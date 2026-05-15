@@ -6,8 +6,6 @@ Usage:
 """
 
 import os
-from urllib.parse import parse_qsl
-from urllib.parse import urlparse
 
 from toolspaedeia.settings import *  # noqa: F403
 
@@ -26,21 +24,11 @@ CSRF_TRUSTED_ORIGINS = [
     "https://qwmyee.pythonanywhere.com",
 ]
 
-# --- Database (Neon PostgreSQL) -----------------------------------------
-neon_url = urlparse(os.getenv("NEON_DATABASE_URL"))
-
+# --- Database ------------------
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": neon_url.path.replace("/", ""),
-        "USER": neon_url.username,
-        "PASSWORD": neon_url.password,
-        "HOST": neon_url.hostname,
-        "PORT": 5432,
-        "OPTIONS": dict(parse_qsl(neon_url.query)),
-        "MAX_CONNS": 20,
-        "CONN_MAX_AGE": 600,
-        "CONN_HEALTH_CHECKS": True,
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",  # noqa: F405
     }
 }
 
