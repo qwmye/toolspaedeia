@@ -6,8 +6,7 @@ Usage:
 """
 
 import os
-from urllib.parse import parse_qs
-from urllib.parse import unquote
+from urllib.parse import parse_qsl
 from urllib.parse import urlparse
 
 from toolspaedeia.settings import *  # noqa: F403
@@ -28,23 +27,21 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # --- Database (Neon PostgreSQL) -----------------------------------------
-neon_url = os.environ["NEON_DATABASE_URL"]
-parsed_db_url = urlparse(neon_url)
-query_params = parse_qs(parsed_db_url.query)
-sslmode = query_params.get("sslmode", ["require"])[0]
+neon_url = urlparse(os.getenv("NEON_DATABASE_URL"))
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": parsed_db_url.path.lstrip("/"),
-        "USER": unquote(parsed_db_url.username or ""),
-        "PASSWORD": unquote(parsed_db_url.password or ""),
-        "HOST": parsed_db_url.hostname,
-        "PORT": str(parsed_db_url.port or 5432),
-        "OPTIONS": {"sslmode": sslmode},
+        "NAME": neon_url.path.replace("/", ""),
+        "USER": neon_url.username,
+        "PASSWORD": neon_url.password,
+        "HOST": neon_url.hostname,
+        "PORT": 5432,
+        "OPTIONS": dict(parse_qsl(neon_url.query)),
+        "MAX_CONNS": 20,
         "CONN_MAX_AGE": 600,
         "CONN_HEALTH_CHECKS": True,
-    },
+    }
 }
 
 # --- HTTPS / cookie hardening -------------------------------------------
