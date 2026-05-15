@@ -6,6 +6,9 @@ Usage:
 """
 
 import os
+from urllib.parse import parse_qs
+from urllib.parse import unquote
+from urllib.parse import urlparse
 
 from toolspaedeia.settings import *  # noqa: F403
 
@@ -24,11 +27,23 @@ CSRF_TRUSTED_ORIGINS = [
     "https://qwmyee.pythonanywhere.com",
 ]
 
-# --- Database ------------------
+# --- Database (Neon PostgreSQL) -----------------------------------------
+neon_url = os.environ["NEON_DATABASE_URL"]
+parsed_db_url = urlparse(neon_url)
+query_params = parse_qs(parsed_db_url.query)
+sslmode = query_params.get("sslmode", ["require"])[0]
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",  # noqa: F405
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": parsed_db_url.path.lstrip("/"),
+        "USER": unquote(parsed_db_url.username or ""),
+        "PASSWORD": unquote(parsed_db_url.password or ""),
+        "HOST": parsed_db_url.hostname,
+        "PORT": str(parsed_db_url.port or 5432),
+        "OPTIONS": {"sslmode": sslmode},
+        "CONN_MAX_AGE": 600,
+        "CONN_HEALTH_CHECKS": True,
     },
 }
 
