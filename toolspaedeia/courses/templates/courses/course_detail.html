@@ -1,5 +1,16 @@
 {% extends "courses_base.html" %}
 
+{% block breadcrumb_items %}
+    ›
+    <li>
+        <a href="{% url 'courses:course_browse_list' %}">Browse Courses</a>
+    </li>
+    ›
+    <li>
+        {{ course.name }}
+    </li>
+{% endblock breadcrumb_items %}
+
 {% block content %}
     <h1>
         {{ course }}

@@ -8,3 +8,15 @@
         <a href="{% url 'courses:course_user_list' %}">My Courses</a>
     </h2>
 {% endblock module_nav %}
+
+{% block breadcrumbs %}
+    <nav aria-label="Breadcrumbs">
+        <ul>
+            <li>
+                <a href="{% url 'courses:course_browse_list' %}">Browse</a>
+            </li>
+            {% block breadcrumb_items %}
+            {% endblock breadcrumb_items %}
+        </ul>
+    </nav>
+{% endblock breadcrumbs %}
