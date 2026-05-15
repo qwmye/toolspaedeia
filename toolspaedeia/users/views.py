@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 from json import JSONDecodeError
 
 import stripe
@@ -6,6 +7,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.db.models import Count
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -15,9 +19,11 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView
+from django.views.generic import ListView
 from django.views.generic import UpdateView
 
 from courses.models import Course
+from toolspaedeia.mixins import TitledViewMixin
 from users.forms import AccountForm
 from users.models import Purchase
 from users.models import UserSettings
@@ -48,6 +54,39 @@ class UserSettingsView(LoginRequiredMixin, UpdateView):
     def get_object(self, _queryset=None):
         obj, _ = UserSettings.objects.get_or_create(user=self.request.user)
         return obj
+
+
+class PublisherIncomeView(TitledViewMixin, LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    context_object_name = "purchases"
+    title = "Income"
+    template_name = "users/publisher_income.html"
+    login_url = reverse_lazy("users:login")
+    permission_required = "courses.add_course"
+
+    def get_queryset(self):
+        return (
+            Purchase.objects.filter(
+                state=Purchase.State.ACCEPTED,
+                course__publisher=self.request.user,
+            )
+            .values("course_id", "course__name")
+            .annotate(
+                sales_count=Count("id"),
+                total_income=Sum("amount"),
+                income_percentage=Sum("amount") / Sum("course__price") * 100,
+            )
+            .order_by("-total_income", "course__name")
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        purchases = list(context["purchases"])
+        total_sales = sum(row["sales_count"] for row in purchases)
+        total_income = sum((row["total_income"] for row in purchases), start=Decimal("0.00"))
+        context["purchases"] = purchases
+        context["total_sales"] = total_sales
+        context["total_income"] = total_income
+        return context
 
 
 class PurchaseCourseView(LoginRequiredMixin, CreateView):

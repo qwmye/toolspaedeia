@@ -1,0 +1,62 @@
+{% extends "users_base.html" %}
+
+{% block content %}
+    <h1>
+        Income
+    </h1>
+    <div class="grid">
+        <article>
+            <header>
+                <strong>Total Income</strong>
+            </header>
+            <strong>{{ total_income }} EUR</strong>
+        </article>
+        <article>
+            <header>
+                <strong>Total Sales</strong>
+            </header>
+            <strong>{{ total_sales }}</strong>
+        </article>
+        <article>
+            <header>
+                <strong>Courses With Sales</strong>
+            </header>
+            <strong>{{ purchases|length }}</strong>
+        </article>
+    </div>
+
+    <article>
+        <header>
+            <strong>Income by Course</strong>
+        </header>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">
+                        <strong>Course</strong>
+                    </th>
+                    <th scope="col">
+                        <strong>Income (EUR)</strong>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in purchases %}
+                    <tr>
+                        <td>
+                            {{ row.course__name }}
+                        </td>
+                        <td>
+                            <sub>{{ row.sales_count }} EUR</sub>
+                            <sub> ({{ row.income_percentage|floatformat:2 }}%)</sub>
+                            <progress value="{{ row.sales_count }}"
+                                      max="{{ total_sales }}">
+                            </progress>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+
+{% endblock content %}
