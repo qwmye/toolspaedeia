@@ -9,7 +9,7 @@ from django.template.response import TemplateResponse
 from django.urls import path
 from django.urls import reverse
 
-from .imports import create_course_from_import
+from .import_export import create_course_from_import
 from .models import Answer
 from .models import Course
 from .models import Module
