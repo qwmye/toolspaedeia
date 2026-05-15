@@ -4,11 +4,14 @@ from django.contrib import admin
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.validators import FileExtensionValidator
+from django.http import Http404
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path
 from django.urls import reverse
 
+from .import_export import build_course_import_file
 from .import_export import create_course_from_import
 from .models import Answer
 from .models import Course
@@ -43,6 +46,7 @@ class CourseAdmin(nested_admin.NestedModelAdmin):
     list_filter = ["is_draft"]
     inlines = [ModuleInlineAdmin]
     change_list_template = "admin/courses/course/change_list.html"
+    change_form_template = "admin/courses/course/change_form.html"
 
     class CourseImportForm(forms.Form):
         markdown_file = forms.FileField(
@@ -53,9 +57,30 @@ class CourseAdmin(nested_admin.NestedModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-            path("import/", self.admin_site.admin_view(self.import_course_view), name="courses_course_import"),
+            path(
+                "<path:course_id>/download/",
+                self.admin_site.admin_view(self.download_course_view),
+                name="courses_download",
+            ),
+            path("import/", self.admin_site.admin_view(self.import_course_view), name="courses_import"),
         ]
         return custom_urls + urls
+
+    def download_course_view(self, request, course_id):
+        course = self.get_object(request, course_id)
+        if course is None:
+            raise Http404
+
+        if not self.has_view_or_change_permission(request, obj=course):
+            raise PermissionDenied
+
+        if not request.user.is_superuser and course.publisher_id != request.user.id:
+            raise PermissionDenied
+
+        filename, file_content = build_course_import_file(course)
+        response = HttpResponse(file_content, content_type="text/markdown; charset=utf-8")
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        return response
 
     def import_course_view(self, request):
         if not self.has_add_permission(request):

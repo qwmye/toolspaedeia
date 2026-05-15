@@ -2,6 +2,7 @@ import re
 from enum import StrEnum
 
 from django.db import transaction
+from django.utils.text import slugify
 
 from courses.models import Answer
 from courses.models import Course
@@ -135,3 +136,53 @@ def create_course_from_import(markdown_input, publisher):
                     answer.question = question
                     answer.save()
     return course
+
+
+def _render_tag_block(tag, inner_text):
+    return f"@start {tag.value}\n{inner_text}\n@end {tag.value}"
+
+
+def export_course_to_import_markdown(course):
+    course_blocks = [
+        _render_tag_block(Tag.NAME, course.name or ""),
+        _render_tag_block(Tag.DESCRIPTION, course.description or ""),
+    ]
+
+    modules = course.modules.order_by("order", "pk")
+    for module in modules:
+        module_blocks = [
+            _render_tag_block(Tag.TITLE, module.title or ""),
+            _render_tag_block(Tag.DESCRIPTION, module.description or ""),
+            _render_tag_block(Tag.CONTENT, module.content or ""),
+        ]
+
+        quiz = getattr(module, "quiz", None)
+        if quiz is not None:
+            quiz_blocks = [
+                _render_tag_block(Tag.TITLE, quiz.title or ""),
+                _render_tag_block(Tag.DESCRIPTION, quiz.description or ""),
+            ]
+
+            for question in quiz.questions.order_by("order", "pk"):
+                question_blocks = [_render_tag_block(Tag.TEXT, question.text or "")]
+                for answer in question.answers.order_by("pk"):
+                    answer_blocks = [
+                        _render_tag_block(Tag.TEXT, answer.text or ""),
+                        _render_tag_block(Tag.IS_CORRECT, str(bool(answer.is_correct)).lower()),
+                    ]
+                    question_blocks.append(_render_tag_block(Tag.ANSWER, "\n\n".join(answer_blocks)))
+
+                quiz_blocks.append(_render_tag_block(Tag.QUESTION, "\n\n".join(question_blocks)))
+
+            module_blocks.append(_render_tag_block(Tag.QUIZ, "\n\n".join(quiz_blocks)))
+
+        course_blocks.append(_render_tag_block(Tag.MODULE, "\n\n".join(module_blocks)))
+
+    return "\n\n".join(course_blocks).strip() + "\n"
+
+
+def build_course_import_file(course):
+    markdown_output = export_course_to_import_markdown(course)
+    base_name = slugify(course.name or "")
+    filename = f"{base_name}.md"
+    return filename, markdown_output.encode("utf-8")
