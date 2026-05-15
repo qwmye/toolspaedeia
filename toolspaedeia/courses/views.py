@@ -20,7 +20,6 @@ from courses.service import build_checked_answers_data
 from courses.service import build_quiz_data
 from courses.service import calculate_final_grade
 from courses.service import get_attempt_questions
-from courses.service import get_quiz_and_course
 from toolspaedeia.mixins import TitledViewMixin
 from users.models import Purchase
 
@@ -220,14 +219,24 @@ class AttemptQuizView(LoginRequiredMixin, View):
         return HttpResponse(html)
 
     def get(self, request, course_id, quiz_id):
-        quiz, course = get_quiz_and_course(course_id, quiz_id)
+        quiz = get_object_or_404(
+            Quiz.objects.select_related("module__course"),
+            id=quiz_id,
+            module__course_id=course_id,
+        )
+        course = quiz.module.course
         questions = get_attempt_questions(quiz)
         quiz_data = build_quiz_data(questions)
         return self.render_quiz_section(request, quiz, course, quiz_data)
 
     def post(self, request, course_id, quiz_id):
         """Check submitted quiz answers and return quiz with feedback."""
-        quiz, course = get_quiz_and_course(course_id, quiz_id)
+        quiz = get_object_or_404(
+            Quiz.objects.select_related("module__course"),
+            id=quiz_id,
+            module__course_id=course_id,
+        )
+        course = quiz.module.course
         questions = get_attempt_questions(quiz, request.POST.getlist("question_ids"))
 
         answers_by_question = {}

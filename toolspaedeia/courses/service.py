@@ -1,8 +1,6 @@
-from django.shortcuts import get_object_or_404
 from django.utils.safestring import mark_safe
 
 from courses.markdown import markdown_to_html
-from courses.models import Quiz
 
 
 def build_fresh_answers_data(question):
@@ -35,22 +33,6 @@ def build_quiz_data(questions, answers_by_question=None):
         )
 
     return quiz_data
-
-
-def get_quiz_and_course(course_id, quiz_id):
-    """
-    Return quiz and its course for the provided ids.
-
-    Validates that quiz belongs to the specified course; raises 404 if mismatch.
-    This prevents users from submitting answers to a quiz via a different course
-    URL.
-    """
-    quiz = get_object_or_404(
-        Quiz.objects.select_related("module__course"),
-        id=quiz_id,
-        module__course_id=course_id,
-    )
-    return quiz, quiz.module.course
 
 
 def get_attempt_questions(quiz, posted_question_ids=None):

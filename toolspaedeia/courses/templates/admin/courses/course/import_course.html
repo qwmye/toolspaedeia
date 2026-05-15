@@ -1,0 +1,33 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% translate "Home" %}</a>
+        › <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+        › <a href="{% url 'admin:courses_course_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+        › {{ title }}
+    </div>
+{% endblock breadcrumbs %}
+
+{% block content %}
+    <div id="content-main">
+        <form method="post"
+              enctype="multipart/form-data"
+              novalidate>
+            {% csrf_token %}
+            <fieldset class="module aligned">
+                <div class="form-row">
+                    {{ form.markdown_file.errors }}
+                    {{ form.markdown_file.label_tag }}
+                    {{ form.markdown_file }}
+                </div>
+            </fieldset>
+            <div class="submit-row">
+                <input type="submit"
+                       value="Import"
+                       class="default" />
+            </div>
+        </form>
+    </div>
+{% endblock content %}

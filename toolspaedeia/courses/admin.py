@@ -1,6 +1,15 @@
 import nested_admin
+from django import forms
 from django.contrib import admin
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied
+from django.core.validators import FileExtensionValidator
+from django.http import HttpResponseRedirect
+from django.template.response import TemplateResponse
+from django.urls import path
+from django.urls import reverse
 
+from .imports import create_course_from_import
 from .models import Answer
 from .models import Course
 from .models import Module
@@ -33,6 +42,54 @@ class CourseAdmin(nested_admin.NestedModelAdmin):
     list_display = ["name", "publisher", "is_draft"]
     list_filter = ["is_draft"]
     inlines = [ModuleInlineAdmin]
+    change_list_template = "admin/courses/course/change_list.html"
+
+    class CourseImportForm(forms.Form):
+        markdown_file = forms.FileField(
+            label="Markdown file",
+            validators=[FileExtensionValidator(allowed_extensions=["md", "markdown", "txt"])],
+        )
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path("import/", self.admin_site.admin_view(self.import_course_view), name="courses_course_import"),
+        ]
+        return custom_urls + urls
+
+    def import_course_view(self, request):
+        if not self.has_add_permission(request):
+            raise PermissionDenied
+
+        form = self.CourseImportForm(request.POST or None, request.FILES or None)
+
+        if request.method == "POST" and form.is_valid():
+            markdown_file = form.cleaned_data["markdown_file"]
+            try:
+                markdown_input = markdown_file.read().decode("utf-8")
+            except UnicodeDecodeError:
+                self.message_user(
+                    request,
+                    "Could not decode file as UTF-8. Please upload a UTF-8 markdown file.",
+                    level=messages.ERROR,
+                )
+            else:
+                try:
+                    course = create_course_from_import(markdown_input, request.user)
+                except ValueError as exc:
+                    self.message_user(request, str(exc), level=messages.ERROR)
+                else:
+                    self.message_user(request, "Course imported successfully.")
+                    change_url = reverse("admin:courses_course_change", args=[course.pk])
+                    return HttpResponseRedirect(change_url)
+
+        context = {
+            **self.admin_site.each_context(request),
+            "opts": self.opts,
+            "title": "Import course",
+            "form": form,
+        }
+        return TemplateResponse(request, "admin/courses/course/import_course.html", context)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
