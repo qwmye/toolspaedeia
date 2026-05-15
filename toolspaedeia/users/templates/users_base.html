@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 {% block module_nav %}
+    {% if perms.courses.add_course %}
+        <h2>
+            <a href="{% url 'users:publisher_income' %}">Income Dashboard</a>
+        </h2>
+    {% endif %}
     <h2>
         <a href="{% url 'users:preferences' %}">Preferences</a>
     </h2>
@@ -10,9 +15,4 @@
     <h2>
         <a href="{% url 'users:account' %}">Account</a>
     </h2>
-    {% if perms.courses.add_course %}
-        <h2>
-            <a href="{% url 'users:publisher_income' %}">Income</a>
-        </h2>
-    {% endif %}
 {% endblock module_nav %}

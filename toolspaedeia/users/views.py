@@ -37,7 +37,7 @@ class UserPreferencesView(LoginRequiredMixin, UpdateView):
     fields = ["color_theme", "theme_mode"]
     template_name = "users/preferences.html"
     success_url = reverse_lazy("users:preferences")
-    login_url = reverse_lazy("users:login")
+    login_url = "users:login"
 
     def get_object(self, _queryset=None):
         obj, _ = UserSitePreferences.objects.get_or_create(user=self.request.user)
@@ -49,7 +49,7 @@ class UserSettingsView(LoginRequiredMixin, UpdateView):
     fields = ["profile_picture", "receive_notifications"]
     template_name = "users/settings.html"
     success_url = reverse_lazy("users:settings")
-    login_url = reverse_lazy("users:login")
+    login_url = "users:login"
 
     def get_object(self, _queryset=None):
         obj, _ = UserSettings.objects.get_or_create(user=self.request.user)
@@ -60,7 +60,7 @@ class PublisherIncomeView(TitledViewMixin, LoginRequiredMixin, PermissionRequire
     context_object_name = "purchases"
     title = "Income"
     template_name = "users/publisher_income.html"
-    login_url = reverse_lazy("users:login")
+    login_url = "users:login"
     permission_required = "courses.add_course"
 
     def get_queryset(self):
@@ -93,7 +93,7 @@ class PurchaseCourseView(LoginRequiredMixin, CreateView):
     http_method_names = ["post"]
     model = Purchase
     fields = ["course"]
-    login_url = reverse_lazy("users:login")
+    login_url = "users:login"
     success_url = reverse_lazy("courses:course_browse_list")
 
     def form_valid(self, form):
@@ -111,7 +111,7 @@ class PurchaseCourseView(LoginRequiredMixin, CreateView):
 
 class CreateCheckoutSessionView(LoginRequiredMixin, View):
     http_method_names = ["post"]
-    login_url = reverse_lazy("users:login")
+    login_url = "users:login"
 
     def post(self, request):
         try:
@@ -229,7 +229,7 @@ class UserAccountView(LoginRequiredMixin, UpdateView):
     form_class = AccountForm
     template_name = "users/account.html"
     success_url = reverse_lazy("users:account")
-    login_url = reverse_lazy("users:login")
+    login_url = "users:login"
 
     def get_object(self, _queryset=None):
         return self.request.user
