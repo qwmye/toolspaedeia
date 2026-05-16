@@ -49,11 +49,6 @@
 {% block breadcrumbs %}
     <nav aria-label="Breadcrumbs">
         <ul>
-            {% block breadcrumb_root %}
-                <li>
-                    <a href="{% url 'courses:course_browse_list' %}">Browse</a>
-                </li>
-            {% endblock breadcrumb_root %}
             {% block breadcrumb_items %}
             {% endblock breadcrumb_items %}
             ›
