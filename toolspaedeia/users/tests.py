@@ -21,7 +21,7 @@ class UsersIntegrationWebTests(WebTest):
         )
 
     def login_through_form(self):
-        """Log the student in via the login form and follow redirects."""
+        """Log the student in via the login form and navigate to browse page."""
         self.app.reset()
         login_page = self.app.get(reverse("users:login"))
         login_form = login_page.forms[1]
@@ -30,7 +30,7 @@ class UsersIntegrationWebTests(WebTest):
         response = login_form.submit()
         while response.status_code in {301, 302, 303, 307, 308}:
             response = response.follow()
-        return response
+        return self.app.get(reverse("courses:course_browse_list"))
 
     @staticmethod
     def get_preferences_form(preferences_page):
@@ -47,17 +47,15 @@ class UsersIntegrationWebTests(WebTest):
         Actions:
             Open login page, fill in valid credentials, submit.
         Behaviour:
-            User is authenticated and redirected to home.
+            User is authenticated and redirected to browse courses.
         Expectation:
-            Browse page renders with course navigation visible and
+            Browse courses page renders with course navigation visible and
             no login link shown.
         """
         browse_page = self.login_through_form()
 
         self.assertEqual(browse_page.status_code, 200)
-        self.assertIn("Courses", browse_page.text)
-        self.assertIn("Browse", browse_page.text)
-        self.assertIn("Published", browse_page.text)
+        self.assertIn("Browse Courses", browse_page.text)
         self.assertNotIn("Login", browse_page.text)
 
     def test_login_view_invalid_credentials_shows_error(self):

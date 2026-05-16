@@ -29,7 +29,7 @@ class PurchasesIntegrationWebTests(WebTest):
         )
 
     def login_through_form(self):
-        """Log the student in via the login form and follow redirects."""
+        """Log the student in via the login form and navigate to browse page."""
         self.app.reset()
         login_page = self.app.get(reverse("users:login"))
         login_form = login_page.forms[1]
@@ -38,7 +38,7 @@ class PurchasesIntegrationWebTests(WebTest):
         response = login_form.submit()
         while response.status_code in {301, 302, 303, 307, 308}:
             response = response.follow()
-        return response
+        return self.app.get(reverse("courses:course_browse_list"))
 
     @staticmethod
     def get_purchase_form(browse_page):

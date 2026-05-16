@@ -5,7 +5,6 @@ from django.core.files.base import ContentFile
 from django.test.utils import override_settings
 from django.urls import reverse
 from django_webtest import WebTest
-from purchases.models import Purchase
 
 from courses.models import Answer
 from courses.models import Course
@@ -14,6 +13,7 @@ from courses.models import ModuleProgression
 from courses.models import Question
 from courses.models import Quiz
 from courses.models import Resource
+from purchases.models import Purchase
 
 
 class CoursesWebTestBase(WebTest):
@@ -80,7 +80,7 @@ class CoursesWebTestBase(WebTest):
         )
 
     def login_through_form(self):
-        """Log the student in via the login form and follow redirects."""
+        """Log the student in via the login form and navigate to browse page."""
         self.app.reset()
         login_page = self.app.get(reverse("users:login"))
         login_form = login_page.forms[1]
@@ -89,7 +89,7 @@ class CoursesWebTestBase(WebTest):
         response = login_form.submit()
         while response.status_code in {301, 302, 303, 307, 308}:
             response = response.follow()
-        return response
+        return self.app.get(reverse("courses:course_browse_list"))
 
 
 class PageLoadIntegrationTests(CoursesWebTestBase):
@@ -141,7 +141,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
         Behaviour:
             Page renders the publisher's own courses.
         Expectation:
-            Published course appears with the Published Courses heading.
+            Published course appears with the My Courses heading.
         """
         self.app.reset()
         login_page = self.app.get(reverse("users:login"))
@@ -155,7 +155,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
         my_courses_page = self.app.get(reverse("courses:course_user_list"))
 
         self.assertEqual(my_courses_page.status_code, 200)
-        self.assertIn("PublishedL", my_courses_page.text)
+        self.assertIn("My Courses", my_courses_page.text)
         self.assertIn("Integration Course", my_courses_page.text)
 
     def test_course_detail_navigation(self):

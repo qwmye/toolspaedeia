@@ -10,17 +10,17 @@ from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import DetailView
 from django.views.generic import ListView
-from purchases.models import Purchase
 
 from courses.markdown import markdown_to_html
 from courses.models import Course
 from courses.models import Module
 from courses.models import Quiz
 from courses.models import QuizAttempt
-from courses.service import build_checked_answers_data
-from courses.service import build_quiz_data
-from courses.service import calculate_final_grade
-from courses.service import get_attempt_questions
+from courses.quizzes import build_checked_answers_data
+from courses.quizzes import build_quiz_data
+from courses.quizzes import calculate_final_grade
+from courses.quizzes import get_attempt_questions
+from purchases.models import Purchase
 from toolspaedeia.mixins import TitledViewMixin
 
 
