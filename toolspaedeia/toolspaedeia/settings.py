@@ -66,6 +66,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.theme_preferences",
+                "purchases.context_processors.stripe_keys",
             ],
         },
     },
@@ -152,4 +153,5 @@ PWA_APP_ICONS = [
 ]
 
 STRIPE_SECRET_KEY = ""
+STRIPE_PUBLISHABLE_KEY = ""
 STRIPE_WEBHOOK_SECRET = ""
