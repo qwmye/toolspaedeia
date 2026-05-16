@@ -1,8 +1,5 @@
 """
 Production settings for PythonAnywhere deployment.
-
-Usage:
-    export DJANGO_SETTINGS_MODULE=toolspaedeia.settings_production
 """
 
 import os
