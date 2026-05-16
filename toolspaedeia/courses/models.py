@@ -39,6 +39,32 @@ class Course(models.Model):
         return self.name
 
 
+class CourseTag(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+    courses = models.ManyToManyField(Course, related_name="tags", blank=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "Course Tag"
+        verbose_name_plural = "Course Tags"
+
+    def __str__(self) -> str:
+        return self.name
+
+    def clean(self):
+        super().clean()
+        self.name = (self.name or "").strip().lower()
+
+        if not self.name:
+            raise ValidationError({"name": "Tag name cannot be empty."})
+
+        if len(self.name.split()) != 1:
+            raise ValidationError({"name": "Tag name must be a single word."})
+
+        if not self.name.isalnum():
+            raise ValidationError({"name": "Tag name must contain only lowercase letters and numbers."})
+
+
 class Module(models.Model):
     """
     Each course is made up of one or more modules, which are the main content

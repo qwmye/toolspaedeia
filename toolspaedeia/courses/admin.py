@@ -15,6 +15,7 @@ from .import_export import build_course_import_file
 from .import_export import create_course_from_import
 from .models import Answer
 from .models import Course
+from .models import CourseTag
 from .models import Module
 from .models import ModuleProgression
 from .models import Question
@@ -39,12 +40,18 @@ class ModuleInlineAdmin(nested_admin.NestedStackedInline):
     extra = 0
 
 
+class CourseTagInlineAdmin(nested_admin.NestedTabularInline):
+    model = CourseTag.courses.through
+    extra = 0
+    autocomplete_fields = ["coursetag"]
+
+
 @admin.register(Course)
 class CourseAdmin(nested_admin.NestedModelAdmin):
     search_fields = ["name"]
     list_display = ["name", "publisher", "is_draft"]
     list_filter = ["is_draft"]
-    inlines = [ModuleInlineAdmin]
+    inlines = [ModuleInlineAdmin, CourseTagInlineAdmin]
     change_list_template = "admin/courses/course/change_list.html"
     change_form_template = "admin/courses/course/change_form.html"
 
@@ -188,3 +195,9 @@ class QuizAttemptAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return queryset
         return queryset.filter(quiz__module__course__publisher=request.user)
+
+
+@admin.register(CourseTag)
+class CourseTagAdmin(admin.ModelAdmin):
+    search_fields = ["name"]
+    list_display = ["name"]
