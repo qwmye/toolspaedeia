@@ -1,0 +1,5 @@
+{% for course in courses %}
+    {% include "courses/partials/course_article.html" with course=course %}
+{% empty %}
+    <article>No courses available.</article>
+{% endfor %}

@@ -62,63 +62,14 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         return context_data
 
 
-class CoursePurchasedListView(TitledViewMixin, LoginRequiredMixin, ListView):
+class CourseBaseListView(TitledViewMixin, LoginRequiredMixin, ListView):
     model = Course
     pk_url_kwarg = "course_id"
     context_object_name = "courses"
-    title = "Purchased Courses"
-    template_name = "courses/courses_user_list.html"
     login_url = "users:login"
-
-    def get_queryset(self):
-        return Course.objects.filter(
-            purchases__user=self.request.user,
-            purchases__state=Purchase.State.ACCEPTED,
-        ).distinct()
+    template_name = "courses/course_list.html"
 
     def get_context_data(self, *args, **kwargs):
-        context_data = super().get_context_data(*args, **kwargs)
-        for course in context_data["courses"]:
-            course.is_purchased = True
-            course.is_payment_pending = False
-            course.has_refused_payment = False
-        return context_data
-
-
-class CoursePublishedListView(TitledViewMixin, LoginRequiredMixin, ListView):
-    model = Course
-    pk_url_kwarg = "course_id"
-    context_object_name = "courses"
-    title = "Published Courses"
-    template_name = "courses/courses_my_courses_list.html"
-    login_url = "users:login"
-
-    def get_queryset(self):
-        return Course.objects.filter(publisher=self.request.user)
-
-    def get_context_data(self, *args, **kwargs):
-        context_data = super().get_context_data(*args, **kwargs)
-        for course in context_data["courses"]:
-            course.is_purchased = True
-            course.is_payment_pending = False
-            course.has_refused_payment = False
-        return context_data
-
-
-class CourseBrowseListView(TitledViewMixin, LoginRequiredMixin, ListView):
-    model = Course
-    queryset = Course.objects.filter(is_draft=False)
-    pk_url_kwarg = "course_id"
-    context_object_name = "courses"
-    title = "Browse Courses"
-    template_name = "courses/courses_browse_list.html"
-    login_url = "users:login"
-
-    def get_context_data(self, *args, **kwargs):
-        """
-        Add a additional details to the course to indicating whether the user
-        has purchased it.
-        """
         context_data = super().get_context_data(*args, **kwargs)
         for course in context_data["courses"]:
             if course.publisher == self.request.user:
@@ -131,6 +82,28 @@ class CourseBrowseListView(TitledViewMixin, LoginRequiredMixin, ListView):
                 course.is_payment_pending = user_purchases.filter(state=Purchase.State.PENDING).exists()
                 course.has_refused_payment = user_purchases.filter(state=Purchase.State.REFUSED).exists()
         return context_data
+
+
+class CoursePurchasedListView(CourseBaseListView):
+    title = "Purchased Courses"
+
+    def get_queryset(self):
+        return Course.objects.filter(
+            purchases__user=self.request.user,
+            purchases__state=Purchase.State.ACCEPTED,
+        ).distinct()
+
+
+class CoursePublishedListView(CourseBaseListView):
+    title = "Published Courses"
+
+    def get_queryset(self):
+        return Course.objects.filter(publisher=self.request.user)
+
+
+class CourseBrowseListView(CourseBaseListView):
+    title = "Browse Courses"
+    queryset = Course.objects.filter(is_draft=False)
 
 
 class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
