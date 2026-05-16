@@ -4,7 +4,6 @@ from django_webtest import WebTest
 
 from courses.models import Course
 from users.models import Purchase
-from users.models import UserSettings
 from users.models import UserSitePreferences
 
 
@@ -316,7 +315,7 @@ class UsersIntegrationWebTests(WebTest):
         View and update user settings end-to-end.
 
         Actions:
-            Login, open /settings/, uncheck notifications, submit.
+            Login, open /preferences/, uncheck notifications, submit.
         Behaviour:
             Form saves and redirects back to the same page.
         Expectation:
@@ -324,10 +323,10 @@ class UsersIntegrationWebTests(WebTest):
             reflects the updated value.
         """
         self.login_through_form()
-        settings_page = self.app.get(reverse("users:settings"))
+        settings_page = self.app.get(reverse("users:preferences"))
 
         self.assertEqual(settings_page.status_code, 200)
-        self.assertIn("User Settings", settings_page.text)
+        self.assertIn("User Site Preferences", settings_page.text)
         self.assertIn(self.student.username, settings_page.text)
 
         settings_form = self.get_settings_form(settings_page)
@@ -335,22 +334,22 @@ class UsersIntegrationWebTests(WebTest):
         response = settings_form.submit().follow()
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("User Settings", response.text)
-        user_settings = UserSettings.objects.get(user=self.student)
-        self.assertFalse(user_settings.receive_notifications)
+        self.assertIn("User Site Preferences", response.text)
+        user_preferences = UserSitePreferences.objects.get(user=self.student)
+        self.assertFalse(user_preferences.receive_notifications)
 
     def test_settings_view_requires_login(self):
         """
         Unauthenticated access to /settings/ redirects to login.
 
         Actions:
-            GET /settings/ without logging in.
+            GET /preferences/ without logging in.
         Behaviour:
             302 to login with ?next= param.
         Expectation:
             Redirect to login page.
         """
-        response = self.app.get(reverse("users:settings"), expect_errors=True)
+        response = self.app.get(reverse("users:preferences"), expect_errors=True)
 
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse("users:login"), response.location)
@@ -360,16 +359,15 @@ class UsersIntegrationWebTests(WebTest):
         The settings link is visible in the users nav.
 
         Actions:
-            Login, open the settings page.
+            Login, open the preferences page.
         Behaviour:
-            Nav sidebar shows "Settings" link.
+            Nav sidebar shows "Preferences" link.
         Expectation:
-            "Settings" appears alongside "Preferences".
+            "Preferences" appears in the navigation.
         """
         self.login_through_form()
-        settings_page = self.app.get(reverse("users:settings"))
+        settings_page = self.app.get(reverse("users:preferences"))
 
-        self.assertIn("Settings", settings_page.text)
         self.assertIn("Preferences", settings_page.text)
 
     @staticmethod

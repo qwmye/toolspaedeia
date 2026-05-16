@@ -1,0 +1,77 @@
+<div>
+    <h3>
+        {{ title }}
+    </h3>
+    <ul>
+        {% for tag in page_obj.object_list %}
+            <li>
+                {% if list_role == "preferred" %}
+                    <input type="hidden"
+                           name="visible_preferred_tags"
+                           value="{{ tag.id }}" />
+                {% endif %}
+                <label>
+                    <input type="checkbox"
+                           name="{{ checkbox_name }}"
+                           value="{{ tag.id }}"
+                           {% if list_role == "preferred" %}
+                               checked
+                           {% endif %} />
+                    {{ tag.name }}
+                </label>
+            </li>
+        {% empty %}
+            <li>
+                {{ empty_message }}
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+        <nav aria-label="{{ pagination_label }}">
+            <ul>
+                {% if page_obj.has_previous %}
+                    <li>
+                        {% with page_query="?"|add:page_param|add:"="|add:page_obj.previous_page_number|stringformat:"s"|add:"&"|add:other_page_param|add:"="|add:other_page_number|stringformat:"s" %}
+                            {% if tag_query %}
+                                {% with page_query="?q="|add:tag_query|urlencode|add:"&"|add:page_param|add:"="|add:page_obj.previous_page_number|stringformat:"s"|add:"&"|add:other_page_param|add:"="|add:other_page_number|stringformat:"s" %}
+                                    <a href="{{ page_query }}"
+                                       hx-get="{{ page_query }}"
+                                       hx-target="#tags-lists"
+                                       hx-push-url="true">Previous</a>
+                                {% endwith %}
+                            {% else %}
+                                <a href="{{ page_query }}"
+                                   hx-get="{{ page_query }}"
+                                   hx-target="#tags-lists"
+                                   hx-push-url="true">Previous</a>
+                            {% endif %}
+                        {% endwith %}
+                    </li>
+                {% endif %}
+                <li>
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </li>
+                {% if page_obj.has_next %}
+                    <li>
+                        {% with page_query="?"|add:page_param|add:"="|add:page_obj.next_page_number|stringformat:"s"|add:"&"|add:other_page_param|add:"="|add:other_page_number|stringformat:"s" %}
+                            {% if tag_query %}
+                                {% with page_query="?q="|add:tag_query|urlencode|add:"&"|add:page_param|add:"="|add:page_obj.next_page_number|stringformat:"s"|add:"&"|add:other_page_param|add:"="|add:other_page_number|stringformat:"s" %}
+                                    <a href="{{ page_query }}"
+                                       hx-get="{{ page_query }}"
+                                       hx-target="#tags-lists"
+                                       hx-push-url="true">Next</a>
+                                {% endwith %}
+                            {% else %}
+                                <a href="{{ page_query }}"
+                                   hx-get="{{ page_query }}"
+                                   hx-target="#tags-lists"
+                                   hx-push-url="true">Next</a>
+                            {% endif %}
+                        {% endwith %}
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>

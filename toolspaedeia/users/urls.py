@@ -5,7 +5,6 @@ from users.views import PublisherIncomeView
 from users.views import PurchaseCourseView
 from users.views import UserAccountView
 from users.views import UserPreferencesView
-from users.views import UserSettingsView
 
 app_name = "users"
 
@@ -20,5 +19,4 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("preferences/", UserPreferencesView.as_view(), name="preferences"),
     path("purchase-course/", PurchaseCourseView.as_view(), name="purchase_course"),
-    path("settings/", UserSettingsView.as_view(), name="settings"),
 ]

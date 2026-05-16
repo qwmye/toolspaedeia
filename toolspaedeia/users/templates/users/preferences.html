@@ -5,10 +5,34 @@
         User Site Preferences - {{ request.user.get_full_name|default:request.user.username }}
     </h2>
     <hr />
+
+    <form method="get"
+          role="search"
+          hx-get="."
+          hx-target="#tags-lists"
+          hx-push-url="true"
+          hx-trigger="keyup changed delay:300ms from:input[name='q'], submit">
+        <input id="tag-search"
+               name="q"
+               type="search"
+               value="{{ tag_query }}"
+               placeholder="Search tags" />
+        <button type="submit">
+            Search
+        </button>
+    </form>
+
     <form method="post"
           enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div id="tags-lists">
+            {% include "users/partials/tags_lists.html" %}
+        </div>
+
+        {{ form.as_table }}
+
+        <hr />
+
         <button type="submit">
             Save Changes
         </button>

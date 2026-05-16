@@ -1,0 +1,4 @@
+<div class="grid">
+    {% include "users/partials/tag_list_column.html" with title="Available Tags" page_obj=available_tags_page_obj checkbox_name="available_tags" empty_message="No tags found." pagination_label="Available tags pagination" list_role="available" page_param="available_page" other_page_param="preferred_page" other_page_number=preferred_tags_page_obj.number %}
+    {% include "users/partials/tag_list_column.html" with title="Preferred Tags" page_obj=preferred_tags_page_obj checkbox_name="preferred_tags" empty_message="No preferred tags selected." pagination_label="Preferred tags pagination" list_role="preferred" page_param="preferred_page" other_page_param="available_page" other_page_number=available_tags_page_obj.number %}
+</div>

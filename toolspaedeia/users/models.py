@@ -37,6 +37,8 @@ class UserSitePreferences(models.Model):
     user = models.OneToOneField(get_user_model(), related_name="preferences", on_delete=models.CASCADE)
     theme_mode = models.CharField(max_length=20, blank=True, default="", choices=ThemeMode.choices)
     color_theme = models.CharField(max_length=20, default="pumpkin", blank=True, choices=ColorTheme.choices)
+    profile_picture = models.ImageField(upload_to="profile_pictures/", blank=True, null=True)
+    receive_notifications = models.BooleanField(default=True)
     preferred_tags = models.ManyToManyField(CourseTag, related_name="preferred_by_users", blank=True)
 
     class Meta:
@@ -45,21 +47,6 @@ class UserSitePreferences(models.Model):
 
     def __str__(self) -> str:
         return f"Preferences for {self.user.username}"
-
-
-class UserSettings(models.Model):
-    """Model to store user settings for the Paedeia system."""
-
-    user = models.OneToOneField(get_user_model(), related_name="settings", on_delete=models.CASCADE)
-    profile_picture = models.ImageField(upload_to="profile_pictures/", blank=True, null=True)
-    receive_notifications = models.BooleanField(default=True)
-
-    class Meta:
-        verbose_name = "User Settings"
-        verbose_name_plural = "User Settings"
-
-    def __str__(self) -> str:
-        return f"Settings for {self.user.username}"
 
 
 class Purchase(models.Model):
