@@ -35,8 +35,6 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
 
     def get_queryset(self) -> QuerySet[Course]:
         queryset = super().get_queryset()
-        if self.request.user.is_superuser:
-            return queryset
         return queryset.filter(
             Q(publisher=self.request.user)
             | Q(is_draft=False, purchases__user=self.request.user, purchases__state=Purchase.State.ACCEPTED)
@@ -60,7 +58,7 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         context_data["progress_percentage"] = (
             (context_data["progress"] / context_data["total_modules"] * 100) if modules else 0
         )
-        context_data["user_is_publisher"] = self.request.user == self.object.publisher or self.request.user.is_superuser
+        context_data["user_is_publisher"] = self.request.user == self.object.publisher
         return context_data
 
 
@@ -73,12 +71,18 @@ class CoursePurchasedListView(TitledViewMixin, LoginRequiredMixin, ListView):
     login_url = "users:login"
 
     def get_queryset(self):
-        if self.request.user.is_superuser:
-            return Course.objects.exclude(publisher=self.request.user)
         return Course.objects.filter(
             purchases__user=self.request.user,
             purchases__state=Purchase.State.ACCEPTED,
         ).distinct()
+
+    def get_context_data(self, *args, **kwargs):
+        context_data = super().get_context_data(*args, **kwargs)
+        for course in context_data["courses"]:
+            course.is_purchased = True
+            course.is_payment_pending = False
+            course.has_refused_payment = False
+        return context_data
 
 
 class CoursePublishedListView(TitledViewMixin, LoginRequiredMixin, ListView):
@@ -91,6 +95,14 @@ class CoursePublishedListView(TitledViewMixin, LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Course.objects.filter(publisher=self.request.user)
+
+    def get_context_data(self, *args, **kwargs):
+        context_data = super().get_context_data(*args, **kwargs)
+        for course in context_data["courses"]:
+            course.is_purchased = True
+            course.is_payment_pending = False
+            course.has_refused_payment = False
+        return context_data
 
 
 class CourseBrowseListView(TitledViewMixin, LoginRequiredMixin, ListView):
@@ -109,7 +121,7 @@ class CourseBrowseListView(TitledViewMixin, LoginRequiredMixin, ListView):
         """
         context_data = super().get_context_data(*args, **kwargs)
         for course in context_data["courses"]:
-            if self.request.user.is_superuser or course.publisher == self.request.user:
+            if course.publisher == self.request.user:
                 course.is_purchased = True
                 course.is_payment_pending = False
                 course.has_refused_payment = False
@@ -131,8 +143,6 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
     def get_queryset(self) -> QuerySet[Course]:
         """Return the course with the specified module, if it is not a draft."""
         queryset = super().get_queryset()
-        if self.request.user.is_superuser:
-            return queryset
         return queryset.filter(
             Q(publisher=self.request.user)
             | Q(is_draft=False, purchases__user=self.request.user, purchases__state=Purchase.State.ACCEPTED)
@@ -149,13 +159,13 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
 
     def get_title(self) -> str:
         course = self.get_object()
-        return f"{course.module.title} | {course.name}"
+        return f"{course.module.title}"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         course = self.get_object()
         module = course.module
-        context["user_is_publisher"] = self.request.user == course.publisher or self.request.user.is_superuser
+        context["user_is_publisher"] = self.request.user == course.publisher
         previous_module = self.object.modules.filter(order__lt=module.order).order_by("-order").first()
         next_module = self.object.modules.filter(order__gt=module.order).order_by("order").first()
         if previous_module:

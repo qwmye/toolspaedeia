@@ -1,31 +1,12 @@
 {% extends "courses_base.html" %}
 
-{% block breadcrumb_items %}
-    ›
-    <li>
-        Purchased Courses
-    </li>
-{% endblock breadcrumb_items %}
-
 {% block content %}
     <h1>
-        Purchased Courses
+        {{ title }}
     </h1>
+    <hr />
     {% for course in courses %}
-        {% if forloop.first %}
-            <hr />
-        {% endif %}
-        <article>
-            <header>
-                <h2>
-                    {{ course.name }}
-                </h2>
-            </header>
-            {{ course.description }}
-            <footer>
-                <a href="{% url 'courses:course_detail' course.id %}">Go to Course</a>
-            </footer>
-        </article>
+        {% include "courses/partials/course_article.html" with course=course %}
     {% empty %}
         <article>No courses purchased yet.</article>
     {% endfor %}

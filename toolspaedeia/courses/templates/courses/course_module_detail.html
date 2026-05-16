@@ -17,10 +17,6 @@
     <li>
         <a href="{% url 'courses:course_detail' course.id %}">{{ course.name }}</a>
     </li>
-    ›
-    <li>
-        {{ module.title }}
-    </li>
 {% endblock breadcrumb_items %}
 
 {% block head %}

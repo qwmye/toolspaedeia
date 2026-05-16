@@ -1,5 +1,39 @@
 {% extends "base.html" %}
 
+{% block head %}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe("pk_test_51TD9RnL174jy09JDqU7eFdTs7D7MfrEKC53DT1X1R3tTBqmn1BVEpY7h1ZfqQ4aTib87v8n50b1g267aGxVUqrVq00XSVFxoHM");
+        async function redirectToCheckout(courseId, price) {
+            try {
+                const response = await fetch("/courses/create-checkout-session/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || ''
+                    },
+                    body: JSON.stringify({
+                        course_id: courseId
+                    })
+                });
+                const data = await response.json();
+                if (data.id) {
+                    const result = await stripe.redirectToCheckout({
+                        sessionId: data.id
+                    });
+                    if (result.error) {
+                        alert(result.error.message);
+                    }
+                } else {
+                    alert(data.error || "Failed to create Stripe session.");
+                }
+            } catch (e) {
+                alert("Error: " + e);
+            }
+        }
+    </script>
+{% endblock head %}
+
 {% block module_nav %}
     <h2>
         <a href="{% url 'courses:course_browse_list' %}">Browse Courses</a>
@@ -22,6 +56,10 @@
             {% endblock breadcrumb_root %}
             {% block breadcrumb_items %}
             {% endblock breadcrumb_items %}
+            ›
+            <li>
+                {{ title }}
+            </li>
         </ul>
     </nav>
 {% endblock breadcrumbs %}

@@ -1,34 +1,12 @@
 {% extends "courses_base.html" %}
 
-{% block breadcrumb_items %}
-    ›
-    <li>
-        My Courses
-    </li>
-{% endblock breadcrumb_items %}
-
 {% block content %}
     <h1>
-        My Courses
+        {{ title }}
     </h1>
+    <hr />
     {% for course in courses %}
-        {% if forloop.first %}
-            <hr />
-        {% endif %}
-        <article>
-            <header>
-                <h2>
-                    {{ course.name }}
-                    {% if course.is_draft %}
-                        - <kbd>Draft</kbd>
-                    {% endif %}
-                </h2>
-            </header>
-            {{ course.description }}
-            <footer>
-                <a href="{% url 'courses:course_detail' course.id %}">Go to Course</a>
-            </footer>
-        </article>
+        {% include "courses/partials/course_article.html" with course=course %}
     {% empty %}
         <article>No courses published yet.</article>
     {% endfor %}
