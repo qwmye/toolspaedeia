@@ -59,6 +59,9 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
             (context_data["progress"] / context_data["total_modules"] * 100) if modules else 0
         )
         context_data["user_is_publisher"] = self.request.user == self.object.publisher
+        context_data["course_tags"] = {
+            tag.name: tag.preferred_by_users.filter(id=self.request.user.id).exists() for tag in self.object.tags.all()
+        }
         return context_data
 
 
@@ -112,6 +115,9 @@ class CourseBaseListView(TitledViewMixin, LoginRequiredMixin, ListView):
                 course.is_purchased = user_purchases.filter(state=Purchase.State.ACCEPTED).exists()
                 course.is_payment_pending = user_purchases.filter(state=Purchase.State.PENDING).exists()
                 course.has_refused_payment = user_purchases.filter(state=Purchase.State.REFUSED).exists()
+            course.course_tags = {
+                tag.name: tag.preferred_by_users.filter(id=self.request.user.id).exists() for tag in course.tags.all()
+            }
         return context_data
 
 
