@@ -134,14 +134,14 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
 
     def test_published_courses_page_navigation(self):
         """
-        My Courses page lists courses published by the current user.
+        Published Courses page lists courses published by the current user.
 
         Actions:
-            Login as the publisher and open My Courses.
+            Login as the publisher and open Published Courses.
         Behaviour:
             Page renders the publisher's own courses.
         Expectation:
-            Published course appears with the My Courses heading.
+            Published course appears with the Published Courses heading.
         """
         self.app.reset()
         login_page = self.app.get(reverse("users:login"))
@@ -155,7 +155,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
         my_courses_page = self.app.get(reverse("courses:course_user_list"))
 
         self.assertEqual(my_courses_page.status_code, 200)
-        self.assertIn("My Courses", my_courses_page.text)
+        self.assertIn("Published Courses", my_courses_page.text)
         self.assertIn("Integration Course", my_courses_page.text)
 
     def test_course_detail_navigation(self):
@@ -163,7 +163,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
         Course detail page shows modules and a progress bar.
 
         Actions:
-            Login, go to My Courses, click into the course.
+            Login, go to Published Courses, click into the course.
         Behaviour:
             Detail page renders module list with progress summary.
         Expectation:

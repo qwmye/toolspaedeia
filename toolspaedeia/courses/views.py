@@ -89,7 +89,7 @@ class CoursePublishedListView(TitledViewMixin, LoginRequiredMixin, ListView):
     model = Course
     pk_url_kwarg = "course_id"
     context_object_name = "courses"
-    title = "My Courses"
+    title = "Published Courses"
     template_name = "courses/courses_my_courses_list.html"
     login_url = "users:login"
 

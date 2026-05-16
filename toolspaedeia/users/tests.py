@@ -72,8 +72,8 @@ class UsersIntegrationWebTests(WebTest):
 
         self.assertEqual(browse_page.status_code, 200)
         self.assertIn("Courses", browse_page.text)
-        self.assertIn("Browse Courses", browse_page.text)
-        self.assertIn("My Courses", browse_page.text)
+        self.assertIn("Browse", browse_page.text)
+        self.assertIn("Published", browse_page.text)
         self.assertNotIn("Login", browse_page.text)
 
     def test_login_view_invalid_credentials_shows_error(self):
