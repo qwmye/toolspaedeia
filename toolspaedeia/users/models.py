@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from courses.models import CourseTag
+
 
 class UserSitePreferences(models.Model):
     """Model to store user preferences for the Paedeia system."""
@@ -35,6 +37,7 @@ class UserSitePreferences(models.Model):
     user = models.OneToOneField(get_user_model(), related_name="preferences", on_delete=models.CASCADE)
     theme_mode = models.CharField(max_length=20, blank=True, default="", choices=ThemeMode.choices)
     color_theme = models.CharField(max_length=20, default="pumpkin", blank=True, choices=ColorTheme.choices)
+    preferred_tags = models.ManyToManyField(CourseTag, related_name="preferred_by_users", blank=True)
 
     class Meta:
         verbose_name = "User Preference"

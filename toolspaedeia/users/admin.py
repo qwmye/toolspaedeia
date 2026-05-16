@@ -7,7 +7,7 @@ from .models import UserSitePreferences
 
 @admin.register(UserSitePreferences)
 class UserSitePreferencesAdmin(admin.ModelAdmin):
-    pass
+    filter_horizontal = ["preferred_tags"]
 
 
 @admin.register(Purchase)
