@@ -1,15 +1,15 @@
 import operator
 from functools import cache
 
-import spacy
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 from courses.models import CourseTag
 
 
 @cache
-def _get_nlp_model():
-    """Return the shared spaCy model instance, loading on first call."""
-    return spacy.load("en_core_web_sm")
+def _get_vectorizer():
+    """Return the shared TfidfVectorizer instance, creating on first call."""
+    return TfidfVectorizer(lowercase=True, stop_words="english", max_features=5000)
 
 
 def suggest_tags(course, top_k: int = 5) -> list[tuple]:
@@ -28,12 +28,16 @@ def suggest_tags(course, top_k: int = 5) -> list[tuple]:
         ],
     )
 
-    nlp = _get_nlp_model()
-    course_doc = nlp(course_text)
+    vectorizer = _get_vectorizer()
     tag_names = [tag.name for tag in all_tags]
-    tag_docs = [nlp(tag_name) for tag_name in tag_names]
 
-    scores = [course_doc.similarity(tag_doc) for tag_doc in tag_docs]
+    texts = [course_text, *tag_names]
+    tfidf_matrix = vectorizer.fit_transform(texts)
+
+    course_vector = tfidf_matrix[0]
+    tag_vectors = tfidf_matrix[1:]
+
+    scores = course_vector.dot(tag_vectors.T).toarray().flatten()
 
     results = [(all_tags[i], float(scores[i])) for i in range(len(all_tags))]
     return sorted(results, key=operator.itemgetter(1), reverse=True)[:top_k]
