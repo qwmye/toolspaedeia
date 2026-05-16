@@ -5,6 +5,7 @@ from django.core.files.base import ContentFile
 from django.test.utils import override_settings
 from django.urls import reverse
 from django_webtest import WebTest
+from purchases.models import Purchase
 
 from courses.models import Answer
 from courses.models import Course
@@ -13,7 +14,6 @@ from courses.models import ModuleProgression
 from courses.models import Question
 from courses.models import Quiz
 from courses.models import Resource
-from users.models import Purchase
 
 
 class CoursesWebTestBase(WebTest):
@@ -155,7 +155,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
         my_courses_page = self.app.get(reverse("courses:course_user_list"))
 
         self.assertEqual(my_courses_page.status_code, 200)
-        self.assertIn("Published Courses", my_courses_page.text)
+        self.assertIn("PublishedL", my_courses_page.text)
         self.assertIn("Integration Course", my_courses_page.text)
 
     def test_course_detail_navigation(self):
@@ -217,7 +217,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
             form
             for form in browse_page.forms.values()
             if (
-                form.action.endswith(reverse("users:purchase_course"))
+                form.action.endswith(reverse("purchases:purchase_course"))
                 and form.fields.get("course")
                 and str(form["course"].value) == str(self.bug_course.id)
             )
@@ -225,7 +225,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
 
         purchase_form.submit().follow()
 
-        purchase_url = reverse("users:purchase_course")
+        purchase_url = reverse("purchases:purchase_course")
 
         self.app.post(purchase_url, params={"course": str(self.bug_course.id)})
         self.app.post(purchase_url, params={"course": str(self.bug_course.id)})

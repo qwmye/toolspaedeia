@@ -17,6 +17,7 @@ urlpatterns = [
     path("", RedirectView.as_view(pattern_name="courses:course_browse_list"), name="home"),
     path("admin/", admin.site.urls),
     path("courses/", include("courses.urls")),
+    path("purchases/", include("purchases.urls")),
     path("users/", include("users.urls")),
 ]
 if settings.DEBUG:

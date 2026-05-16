@@ -1,8 +1,5 @@
 from django.urls import path
 
-from users.views import CreateCheckoutSessionView
-from users.views import StripeWebhookView
-
 from .views import AttemptQuizView
 from .views import CourseBrowseListView
 from .views import CourseDetailView
@@ -29,6 +26,4 @@ urlpatterns = [
         AttemptQuizView.as_view(),
         name="attempt_quiz",
     ),
-    path("create-checkout-session/", CreateCheckoutSessionView.as_view(), name="create_checkout_session"),
-    path("stripe/webhook/", StripeWebhookView.as_view(), name="stripe_webhook"),
 ]

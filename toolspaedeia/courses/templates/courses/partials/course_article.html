@@ -71,7 +71,7 @@
                         {% endif %}
                     </p>
                     <footer>
-                        <form action="{% url 'users:purchase_course' %}"
+                        <form action="{% url 'purchases:purchase_course' %}"
                               method="post">
                             {% csrf_token %}
                             <input type="hidden"

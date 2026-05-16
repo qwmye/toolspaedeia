@@ -6,7 +6,7 @@
         const stripe = Stripe("pk_test_51TD9RnL174jy09JDqU7eFdTs7D7MfrEKC53DT1X1R3tTBqmn1BVEpY7h1ZfqQ4aTib87v8n50b1g267aGxVUqrVq00XSVFxoHM");
         async function redirectToCheckout(courseId, price) {
             try {
-                const response = await fetch("/courses/create-checkout-session/", {
+                const response = await fetch("{% url 'purchases:create_checkout_session' %}", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

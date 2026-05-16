@@ -10,6 +10,7 @@ from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import DetailView
 from django.views.generic import ListView
+from purchases.models import Purchase
 
 from courses.markdown import markdown_to_html
 from courses.models import Course
@@ -21,7 +22,6 @@ from courses.service import build_quiz_data
 from courses.service import calculate_final_grade
 from courses.service import get_attempt_questions
 from toolspaedeia.mixins import TitledViewMixin
-from users.models import Purchase
 
 
 class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
@@ -96,7 +96,7 @@ class CourseBaseListView(TitledViewMixin, LoginRequiredMixin, ListView):
         return Course.objects.none()
 
     def get_queryset(self):
-        return self.apply_search(self.get_base_queryset())
+        return self.apply_search(self.get_base_queryset()).order_by("id")
 
     def get_context_data(self, *args, **kwargs):
         context_data = super().get_context_data(*args, **kwargs)

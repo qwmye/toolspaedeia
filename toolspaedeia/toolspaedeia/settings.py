@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "pwa",
     "courses",
     "users",
+    "purchases",
 ]
 
 MIDDLEWARE = [
