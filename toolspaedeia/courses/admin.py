@@ -7,6 +7,7 @@ from django.core.validators import FileExtensionValidator
 from django.http import Http404
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.urls import path
 from django.urls import reverse
@@ -22,6 +23,7 @@ from .models import Question
 from .models import Quiz
 from .models import QuizAttempt
 from .models import Resource
+from .suggestions import suggest_tags
 
 admin.site.site_title = "Toolspaedeia Publishing"
 admin.site.site_header = "Toolspaedeia Publishing"
@@ -70,6 +72,11 @@ class CourseAdmin(nested_admin.NestedModelAdmin):
                 name="courses_download",
             ),
             path("import/", self.admin_site.admin_view(self.import_course_view), name="courses_import"),
+            path(
+                "<int:course_id>/suggest-tags/",
+                self.admin_site.admin_view(self.suggest_tags_view),
+                name="courses_suggest_tags",
+            ),
         ]
         return custom_urls + urls
 
@@ -122,6 +129,30 @@ class CourseAdmin(nested_admin.NestedModelAdmin):
             "form": form,
         }
         return TemplateResponse(request, "admin/courses/course/import_course.html", context)
+
+    def suggest_tags_view(self, request, course_id):
+        course = self.get_object(request, course_id)
+        if course is None:
+            raise Http404
+
+        if not self.has_view_or_change_permission(request, obj=course):
+            raise PermissionDenied
+
+        suggestions_with_scores = suggest_tags(course)
+
+        suggestions = [
+            {
+                "tag": tag,
+                "score_percent": round(float(score) * 100, 1),
+            }
+            for tag, score in suggestions_with_scores
+        ]
+
+        html = render_to_string(
+            "admin/courses/partials/tag_suggestions.html",
+            {"suggestions": suggestions},
+        )
+        return HttpResponse(html)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

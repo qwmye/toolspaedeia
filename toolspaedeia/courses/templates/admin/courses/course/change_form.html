@@ -1,5 +1,13 @@
 {% extends "admin/change_form.html" %}
 
+{% block extrahead %}
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
+            integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
+            crossorigin="anonymous"
+            defer></script>
+{% endblock extrahead %}
+
 {% block object-tools-items %}
     {% if original and original.pk %}
         <li>
@@ -9,3 +17,20 @@
     {% endif %}
     {{ block.super }}
 {% endblock object-tools-items %}
+
+{% block after_related_objects %}
+    {% if original and original.pk %}
+        <fieldset>
+            <button type="button"
+                    class="button"
+                    hx-get="{% url 'admin:courses_suggest_tags' original.pk %}"
+                    hx-target="#tag-suggestions-results"
+                    hx-swap="innerHTML">
+                Suggest Tags
+            </button>
+
+            <div id="tag-suggestions-results">
+            </div>
+        </fieldset>
+    {% endif %}
+{% endblock after_related_objects %}

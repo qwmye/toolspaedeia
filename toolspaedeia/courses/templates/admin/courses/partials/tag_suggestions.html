@@ -1,0 +1,18 @@
+<div id="tag-suggestions-results">
+    <p>
+        <strong>Suggestions:</strong>
+    </p>
+    {% if suggestions %}
+        <ul>
+            {% for item in suggestions %}
+                <li>
+                    {{ item.tag.name }} ({{ item.score_percent }}%)
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>
+            <em>No suggestions found. Add more content to the course first.</em>
+        </p>
+    {% endif %}
+</div>
