@@ -1,16 +1,15 @@
 import operator
 from functools import cache
 
-from sentence_transformers import SentenceTransformer
-from sentence_transformers.util import cos_sim
+import spacy
 
 from courses.models import CourseTag
 
 
 @cache
-def _get_embedding_model():
-    """Return the shared SentenceTransformer instance, loading on first call."""
-    return SentenceTransformer("sentence-transformers/paraphrase-MiniLM-L3-v2")
+def _get_nlp_model():
+    """Return the shared spaCy model instance, loading on first call."""
+    return spacy.load("en_core_web_sm")
 
 
 def suggest_tags(course, top_k: int = 5) -> list[tuple]:
@@ -29,13 +28,12 @@ def suggest_tags(course, top_k: int = 5) -> list[tuple]:
         ],
     )
 
-    model = _get_embedding_model()
+    nlp = _get_nlp_model()
+    course_doc = nlp(course_text)
     tag_names = [tag.name for tag in all_tags]
+    tag_docs = [nlp(tag_name) for tag_name in tag_names]
 
-    course_embedding = model.encode(course_text, convert_to_tensor=True)
-    tag_embeddings = model.encode(tag_names, convert_to_tensor=True)
-
-    scores = cos_sim(course_embedding, tag_embeddings)[0]
+    scores = [course_doc.similarity(tag_doc) for tag_doc in tag_docs]
 
     results = [(all_tags[i], float(scores[i])) for i in range(len(all_tags))]
     return sorted(results, key=operator.itemgetter(1), reverse=True)[:top_k]
