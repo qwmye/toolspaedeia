@@ -12,7 +12,7 @@ def _get_vectorizer():
     return TfidfVectorizer(lowercase=True, stop_words="english", max_features=5000)
 
 
-def suggest_tags(course, top_k: int = 5) -> list[tuple]:
+def suggest_tags(course, min_score: float = 0.01) -> list[tuple]:
     """Return the top k semantically relevant CourseTag objects for a course."""
     all_tags = list(CourseTag.objects.all())
     if not all_tags:
@@ -39,5 +39,5 @@ def suggest_tags(course, top_k: int = 5) -> list[tuple]:
 
     scores = course_vector.dot(tag_vectors.T).toarray().flatten()
 
-    results = [(all_tags[i], float(scores[i])) for i in range(len(all_tags))]
-    return sorted(results, key=operator.itemgetter(1), reverse=True)[:top_k]
+    results = [(all_tags[i], float(scores[i])) for i in range(len(all_tags)) if scores[i] >= min_score]
+    return sorted(results, key=operator.itemgetter(1), reverse=True)
