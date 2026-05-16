@@ -68,9 +68,38 @@ class CourseBaseListView(TitledViewMixin, LoginRequiredMixin, ListView):
     context_object_name = "courses"
     login_url = "users:login"
     template_name = "courses/course_list.html"
+    htmx_template_name = "courses/partials/course_article_list.html"
+    empty_message = "No courses available."
+
+    def get_template_names(self):
+        if self.request.headers.get("HX-Request") == "true":
+            return [self.htmx_template_name]
+        return [self.template_name]
+
+    def get_search_query(self):
+        return self.request.GET.get("q", "").strip()
+
+    def apply_search(self, queryset):
+        query = self.get_search_query()
+        if not query:
+            return queryset
+        return queryset.filter(
+            Q(name__icontains=query)
+            | Q(description__icontains=query)
+            | Q(publisher__first_name__icontains=query)
+            | Q(publisher__last_name__icontains=query)
+        ).distinct()
+
+    def get_base_queryset(self):
+        return Course.objects.none()
+
+    def get_queryset(self):
+        return self.apply_search(self.get_base_queryset())
 
     def get_context_data(self, *args, **kwargs):
         context_data = super().get_context_data(*args, **kwargs)
+        context_data["query"] = self.get_search_query()
+        context_data["empty_message"] = self.empty_message
         for course in context_data["courses"]:
             if course.publisher == self.request.user:
                 course.is_purchased = True
@@ -86,24 +115,27 @@ class CourseBaseListView(TitledViewMixin, LoginRequiredMixin, ListView):
 
 class CoursePurchasedListView(CourseBaseListView):
     title = "Purchased Courses"
+    empty_message = "No courses purchased yet."
 
-    def get_queryset(self):
+    def get_base_queryset(self):
         return Course.objects.filter(
-            purchases__user=self.request.user,
-            purchases__state=Purchase.State.ACCEPTED,
+            purchases__user=self.request.user, purchases__state=Purchase.State.ACCEPTED
         ).distinct()
 
 
 class CoursePublishedListView(CourseBaseListView):
-    title = "Published Courses"
+    title = "My Courses"
+    empty_message = "No courses published yet."
 
-    def get_queryset(self):
+    def get_base_queryset(self):
         return Course.objects.filter(publisher=self.request.user)
 
 
 class CourseBrowseListView(CourseBaseListView):
     title = "Browse Courses"
-    queryset = Course.objects.filter(is_draft=False)
+
+    def get_base_queryset(self):
+        return Course.objects.filter(is_draft=False)
 
 
 class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):

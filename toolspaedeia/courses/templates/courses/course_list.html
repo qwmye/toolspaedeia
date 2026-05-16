@@ -4,6 +4,24 @@
     <h1>
         {{ title }}
     </h1>
+    <form method="get"
+          role="search"
+          hx-get="."
+          hx-target="#course-list"
+          hx-push-url="true"
+          hx-trigger="keyup changed delay:300ms from:input[name='q'], submit">
+        <input id="course-search"
+               name="q"
+               type="search"
+               placeholder="Search by name, description, or publisher"
+               value="{{ query }}"
+               autocomplete="off" />
+        <button type="submit">
+            Search
+        </button>
+    </form>
     <hr />
-    {% include "courses/partials/course_article_list.html" with courses=courses %}
+    <div id="course-list">
+        {% include "courses/partials/course_article_list.html" with courses=courses %}
+    </div>
 {% endblock content %}
