@@ -10,11 +10,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include
 from django.urls import path
-from django.views.generic import RedirectView
+
+from toolspaedeia.views import HomeView
 
 urlpatterns = [
     path("", include("pwa.urls")),
-    path("", RedirectView.as_view(pattern_name="courses:course_browse_list"), name="home"),
+    path("", HomeView.as_view(), name="home"),
     path("admin/", admin.site.urls),
     path("courses/", include("courses.urls")),
     path("purchases/", include("purchases.urls")),

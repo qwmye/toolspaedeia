@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <article>
+        <header>
+            <h1>
+                Welcome to ToolsPaedeia
+            </h1>
+        </header>
+        <p>
+            ToolsPaedeia is a collaborative learning platform where students
+            explore practical courses and teachers publish structured,
+            interactive educational content in a standardized format.
+        </p>
+        <p>
+            The project is built around accessibility, customization, and
+            a feedback loop that keeps learning dynamic.
+        </p>
+    </article>
+
+    <section>
+        <div class="grid">
+            <article>
+                <header>
+                    Courses
+                </header>
+                <sub>Over {{ courses_over_k }} high quality courses</sub>
+                <progress value="{{ courses_over_k }}"
+                          max="{{ 100 }}"></progress>
+            </article>
+            <article>
+                <header>
+                    Active community
+                </header>
+                <sub>
+                    {{ enrolled_students_count }} students / {{ publishers_count }} publishers
+                </sub>
+            </article>
+            <article>
+                <header>
+                    Average Completion Rate
+                </header>
+                <sub>{{ completion_rate|floatformat:2 }}%</sub>
+                <progress value="{{ completion_rate }}"
+                          max="100"></progress>
+            </article>
+        </div>
+    </section>
+
+    <section>
+        <article>
+            <header>
+                <h2>
+                    Top 5 Courses
+                </h2>
+            </header>
+            {% if top_categories %}
+                {% for category in top_categories %}
+                    <div class="grid">
+                        <div>
+                            {{ forloop.counter }}.
+                            <a href="{% url 'courses:course_browse_list' %}?q={{ category.name }}">{{ category.name }}</a>
+                        </div>
+                        <div>
+                            <sub>
+                                {{ category.enrolled_students }} enrollment{{ category.enrolled_students|pluralize }}
+                            </sub>
+                            <progress value="{{ category.enrolled_students }}"
+                                      max="{% if enrollments_count %}
+                                               {{ enrollments_count }}
+                                           {% else %}
+                                               1
+                                           {% endif %}">
+                            </progress>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>
+                    No category activity yet.
+                </p>
+            {% endif %}
+        </article>
+    </section>
+{% endblock content %}
