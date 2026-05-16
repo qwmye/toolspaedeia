@@ -1,7 +1,6 @@
 {% extends "courses_base.html" %}
 
 {% block breadcrumb_items %}
-    ›
     {% if user_is_publisher %}
         <li>
             <a href="{% url 'courses:course_user_list' %}">Published Courses</a>
@@ -11,7 +10,6 @@
             <a href="{% url 'courses:course_purchased_list' %}">Purchased Courses</a>
         </li>
     {% endif %}
-    ›
     <li>
         <a href="{% url 'courses:course_detail' course.id %}">{{ course.name }}</a>
     </li>
