@@ -29,7 +29,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 class PublisherIncomeView(TitledViewMixin, LoginRequiredMixin, PermissionRequiredMixin, ListView):
     context_object_name = "purchases"
     title = "Income"
-    template_name = "users/publisher_income.html"
+    template_name = "purchases/publisher_income.html"
     login_url = "users:login"
     permission_required = "courses.add_course"
 
