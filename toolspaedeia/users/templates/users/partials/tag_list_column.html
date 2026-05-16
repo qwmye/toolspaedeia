@@ -32,21 +32,17 @@
             <ul>
                 {% if page_obj.has_previous %}
                     <li>
-                        {% with page_query="?"|add:page_param|add:"="|add:page_obj.previous_page_number|stringformat:"s"|add:"&"|add:other_page_param|add:"="|add:other_page_number|stringformat:"s" %}
-                            {% if tag_query %}
-                                {% with page_query="?q="|add:tag_query|urlencode|add:"&"|add:page_param|add:"="|add:page_obj.previous_page_number|stringformat:"s"|add:"&"|add:other_page_param|add:"="|add:other_page_number|stringformat:"s" %}
-                                    <a href="{{ page_query }}"
-                                       hx-get="{{ page_query }}"
-                                       hx-target="#tags-lists"
-                                       hx-push-url="true">Previous</a>
-                                {% endwith %}
-                            {% else %}
-                                <a href="{{ page_query }}"
-                                   hx-get="{{ page_query }}"
-                                   hx-target="#tags-lists"
-                                   hx-push-url="true">Previous</a>
-                            {% endif %}
-                        {% endwith %}
+                        {% if tag_query %}
+                            <a href="?q={{ tag_query }}&{{ page_param }}={{ page_obj.previous_page_number }}&{{ other_page_param }}={{ other_page_number }}"
+                               hx-get="?q={{ tag_query }}&{{ page_param }}={{ page_obj.previous_page_number }}&{{ other_page_param }}={{ other_page_number }}"
+                               hx-target="#tags-lists"
+                               hx-push-url="true">Previous</a>
+                        {% else %}
+                            <a href="?{{ page_param }}={{ page_obj.previous_page_number }}&{{ other_page_param }}={{ other_page_number }}"
+                               hx-get="?{{ page_param }}={{ page_obj.previous_page_number }}&{{ other_page_param }}={{ other_page_number }}"
+                               hx-target="#tags-lists"
+                               hx-push-url="true">Previous</a>
+                        {% endif %}
                     </li>
                 {% endif %}
                 <li>
@@ -54,21 +50,17 @@
                 </li>
                 {% if page_obj.has_next %}
                     <li>
-                        {% with page_query="?"|add:page_param|add:"="|add:page_obj.next_page_number|stringformat:"s"|add:"&"|add:other_page_param|add:"="|add:other_page_number|stringformat:"s" %}
-                            {% if tag_query %}
-                                {% with page_query="?q="|add:tag_query|urlencode|add:"&"|add:page_param|add:"="|add:page_obj.next_page_number|stringformat:"s"|add:"&"|add:other_page_param|add:"="|add:other_page_number|stringformat:"s" %}
-                                    <a href="{{ page_query }}"
-                                       hx-get="{{ page_query }}"
-                                       hx-target="#tags-lists"
-                                       hx-push-url="true">Next</a>
-                                {% endwith %}
-                            {% else %}
-                                <a href="{{ page_query }}"
-                                   hx-get="{{ page_query }}"
-                                   hx-target="#tags-lists"
-                                   hx-push-url="true">Next</a>
-                            {% endif %}
-                        {% endwith %}
+                        {% if tag_query %}
+                            <a href="?q={{ tag_query }}&{{ page_param }}={{ page_obj.next_page_number }}&{{ other_page_param }}={{ other_page_number }}"
+                               hx-get="?q={{ tag_query }}&{{ page_param }}={{ page_obj.next_page_number }}&{{ other_page_param }}={{ other_page_number }}"
+                               hx-target="#tags-lists"
+                               hx-push-url="true">Next</a>
+                        {% else %}
+                            <a href="?{{ page_param }}={{ page_obj.next_page_number }}&{{ other_page_param }}={{ other_page_number }}"
+                               hx-get="?{{ page_param }}={{ page_obj.next_page_number }}&{{ other_page_param }}={{ other_page_number }}"
+                               hx-target="#tags-lists"
+                               hx-push-url="true">Next</a>
+                        {% endif %}
                     </li>
                 {% endif %}
             </ul>
