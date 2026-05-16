@@ -3,3 +3,20 @@
 {% empty %}
     <article>{{ empty_message }}</article>
 {% endfor %}
+
+{% if page_obj.has_next %}
+    <article hx-get="?
+                     {% if query %}
+                         q={{ query|urlencode }}&
+                     {% endif %}
+                     page={{ page_obj.next_page_number }}"
+             hx-trigger="revealed"
+             hx-swap="outerHTML"
+             aria-live="polite">
+        <p>
+            Loading more courses...
+        </p>
+        <progress value="60"
+                  max="100"></progress>
+    </article>
+{% endif %}

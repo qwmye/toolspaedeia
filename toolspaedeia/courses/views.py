@@ -70,6 +70,7 @@ class CourseBaseListView(TitledViewMixin, LoginRequiredMixin, ListView):
     template_name = "courses/course_list.html"
     htmx_template_name = "courses/partials/course_article_list.html"
     empty_message = "No courses available."
+    paginate_by = 5
 
     def get_template_names(self):
         if self.request.headers.get("HX-Request") == "true":
