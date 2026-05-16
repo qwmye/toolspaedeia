@@ -1,10 +1,18 @@
 {% extends "courses_base.html" %}
 
+{% block breadcrumb_root %}
+    {% if user_is_publisher %}
+        <li>
+            <a href="{% url 'courses:course_user_list' %}">My Courses</a>
+        </li>
+    {% else %}
+        <li>
+            <a href="{% url 'courses:course_purchased_list' %}">Purchased Courses</a>
+        </li>
+    {% endif %}
+{% endblock breadcrumb_root %}
+
 {% block breadcrumb_items %}
-    ›
-    <li>
-        <a href="{% url 'courses:course_browse_list' %}">Browse Courses</a>
-    </li>
     ›
     <li>
         <a href="{% url 'courses:course_detail' course.id %}">{{ course.name }}</a>

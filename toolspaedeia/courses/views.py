@@ -64,11 +64,11 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         return context_data
 
 
-class CourseUserListView(TitledViewMixin, LoginRequiredMixin, ListView):
+class CoursePurchasedListView(TitledViewMixin, LoginRequiredMixin, ListView):
     model = Course
     pk_url_kwarg = "course_id"
     context_object_name = "courses"
-    title = "My Courses"
+    title = "Purchased Courses"
     template_name = "courses/courses_user_list.html"
     login_url = "users:login"
 
@@ -80,14 +80,17 @@ class CourseUserListView(TitledViewMixin, LoginRequiredMixin, ListView):
             purchases__state=Purchase.State.ACCEPTED,
         ).distinct()
 
-    def get_context_data(self, *args, **kwargs):
-        """
-        Add the list of published courses and permission to publish course to
-        the context.
-        """
-        context_data = super().get_context_data(*args, **kwargs)
-        context_data["published_courses"] = Course.objects.filter(publisher=self.request.user)
-        return context_data
+
+class CoursePublishedListView(TitledViewMixin, LoginRequiredMixin, ListView):
+    model = Course
+    pk_url_kwarg = "course_id"
+    context_object_name = "courses"
+    title = "My Courses"
+    template_name = "courses/courses_my_courses_list.html"
+    login_url = "users:login"
+
+    def get_queryset(self):
+        return Course.objects.filter(publisher=self.request.user)
 
 
 class CourseBrowseListView(TitledViewMixin, LoginRequiredMixin, ListView):
@@ -152,6 +155,7 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         course = self.get_object()
         module = course.module
+        context["user_is_publisher"] = self.request.user == course.publisher or self.request.user.is_superuser
         previous_module = self.object.modules.filter(order__lt=module.order).order_by("-order").first()
         next_module = self.object.modules.filter(order__gt=module.order).order_by("order").first()
         if previous_module:

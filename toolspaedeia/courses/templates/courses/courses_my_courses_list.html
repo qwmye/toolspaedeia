@@ -3,13 +3,13 @@
 {% block breadcrumb_items %}
     ›
     <li>
-        Purchased Courses
+        My Courses
     </li>
 {% endblock breadcrumb_items %}
 
 {% block content %}
     <h1>
-        Purchased Courses
+        My Courses
     </h1>
     {% for course in courses %}
         {% if forloop.first %}
@@ -19,6 +19,9 @@
             <header>
                 <h2>
                     {{ course.name }}
+                    {% if course.is_draft %}
+                        - <kbd>Draft</kbd>
+                    {% endif %}
                 </h2>
             </header>
             {{ course.description }}
@@ -27,6 +30,6 @@
             </footer>
         </article>
     {% empty %}
-        <article>No courses purchased yet.</article>
+        <article>No courses published yet.</article>
     {% endfor %}
 {% endblock content %}

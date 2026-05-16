@@ -115,24 +115,48 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
 
     def test_course_user_list_navigation(self):
         """
-        My Courses page shows purchased and published sections.
+        Purchased Courses page shows enrolled courses only.
 
         Actions:
-            Login, click the "My Courses" nav link.
+            Login, click the "Purchased Courses" nav link.
         Behaviour:
-            Page renders with separate purchased/published headings.
+            Page renders purchased courses list.
         Expectation:
-            Student sees the purchased course listed; the empty
-            published section shows a placeholder message.
+            Student sees the purchased course listed.
         """
         browse_page = self.login_through_form()
-        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        my_courses_page = browse_page.click(href=reverse("courses:course_purchased_list"))
 
         self.assertEqual(my_courses_page.status_code, 200)
         self.assertIn("Purchased Courses", my_courses_page.text)
         self.assertIn("Integration Course", my_courses_page.text)
-        self.assertIn("Published Courses", my_courses_page.text)
-        self.assertIn("No courses published yet.", my_courses_page.text)
+        self.assertNotIn("Published Courses", my_courses_page.text)
+
+    def test_published_courses_page_navigation(self):
+        """
+        My Courses page lists courses published by the current user.
+
+        Actions:
+            Login as the publisher and open My Courses.
+        Behaviour:
+            Page renders the publisher's own courses.
+        Expectation:
+            Published course appears with the My Courses heading.
+        """
+        self.app.reset()
+        login_page = self.app.get(reverse("users:login"))
+        login_form = login_page.forms[1]
+        login_form["username"] = self.publisher.username
+        login_form["password"] = "publisher-pass"  # noqa: S105
+        response = login_form.submit()
+        while response.status_code in {301, 302, 303, 307, 308}:
+            response = response.follow()
+
+        my_courses_page = self.app.get(reverse("courses:course_user_list"))
+
+        self.assertEqual(my_courses_page.status_code, 200)
+        self.assertIn("My Courses", my_courses_page.text)
+        self.assertIn("Integration Course", my_courses_page.text)
 
     def test_course_detail_navigation(self):
         """
@@ -146,7 +170,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
             Both module names are visible and progress starts at 0 out of 2.
         """
         browse_page = self.login_through_form()
-        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        my_courses_page = browse_page.click(href=reverse("courses:course_purchased_list"))
         detail_page = my_courses_page.click("Go to Course")
 
         self.assertEqual(detail_page.status_code, 200)
@@ -167,7 +191,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
             Module title and quiz heading are visible.
         """
         browse_page = self.login_through_form()
-        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        my_courses_page = browse_page.click(href=reverse("courses:course_purchased_list"))
         detail_page = my_courses_page.click("Go to Course")
         module_page = detail_page.click("Start", index=1)
 
@@ -255,7 +279,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
             "Mark as Complete" button is present; "Module marked as" is absent.
         """
         browse_page = self.login_through_form()
-        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        my_courses_page = browse_page.click(href=reverse("courses:course_purchased_list"))
         detail_page = my_courses_page.click("Go to Course")
         module_page = detail_page.click("Start", index=0)
 
@@ -276,7 +300,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
         ModuleProgression.objects.create(user=self.student, module=self.module_intro, completed=True)
 
         browse_page = self.login_through_form()
-        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        my_courses_page = browse_page.click(href=reverse("courses:course_purchased_list"))
         detail_page = my_courses_page.click("Go to Course")
         module_page = detail_page.click("Start", index=0)
 
@@ -612,7 +636,7 @@ class ResourceIntegrationTests(CoursesWebTestBase):
         resource = self._attach_resource(self.module_intro, "Lecture Notes")
 
         browse_page = self.login_through_form()
-        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        my_courses_page = browse_page.click(href=reverse("courses:course_purchased_list"))
         detail_page = my_courses_page.click("Go to Course")
         module_page = detail_page.click("Start", index=0)
 
@@ -633,7 +657,7 @@ class ResourceIntegrationTests(CoursesWebTestBase):
             "Resources" heading is absent from the page.
         """
         browse_page = self.login_through_form()
-        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        my_courses_page = browse_page.click(href=reverse("courses:course_purchased_list"))
         detail_page = my_courses_page.click("Go to Course")
         module_page = detail_page.click("Start", index=0)
 
@@ -657,7 +681,7 @@ class ResourceIntegrationTests(CoursesWebTestBase):
         resource = self._attach_resource(self.module_intro, "Summary", "summary.pdf")
 
         browse_page = self.login_through_form()
-        my_courses_page = browse_page.click(href=reverse("courses:course_user_list"))
+        my_courses_page = browse_page.click(href=reverse("courses:course_purchased_list"))
         detail_page = my_courses_page.click("Go to Course")
         module_page = detail_page.click("Start", index=0)
 
