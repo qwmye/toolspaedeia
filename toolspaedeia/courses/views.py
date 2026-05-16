@@ -89,6 +89,7 @@ class CourseBaseListView(TitledViewMixin, LoginRequiredMixin, ListView):
             | Q(description__icontains=query)
             | Q(publisher__first_name__icontains=query)
             | Q(publisher__last_name__icontains=query)
+            | Q(tags__name__icontains=query)
         ).distinct()
 
     def get_base_queryset(self):
