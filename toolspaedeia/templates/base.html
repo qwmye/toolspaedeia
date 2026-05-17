@@ -1,5 +1,70 @@
 {% extends "superbase.html" %}
 
+{% block head %}
+    {{ block.super }}
+    <script>
+        async function warmPurchasedContentCache() {
+            if (!("serviceWorker" in navigator)) {
+                return;
+            }
+
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                const response = await fetch("{% url 'purchases:offline_map' %}", {
+                    credentials: "same-origin",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                });
+
+                const contentType = response.headers.get("content-type") || "";
+                if (!response.ok || !contentType.includes("application/json")) {
+                    return;
+                }
+
+                const payload = await response.json();
+                const urls = Array.isArray(payload.urls) ? payload.urls : [];
+                if (!urls.length || !registration.active) {
+                    return;
+                }
+
+                registration.active.postMessage({
+                    type: "WARM_PURCHASED_CONTENT",
+                    urls: urls
+                });
+            } catch (_error) {
+                // Non-fatal: app remains functional even if background warming fails.
+            }
+        }
+
+        function attachLogoutCacheClear() {
+            const logoutForm = document.getElementById("logout-form");
+            if (!logoutForm || !("serviceWorker" in navigator)) {
+                return;
+            }
+
+            logoutForm.addEventListener("submit", () => {
+                navigator.serviceWorker.ready
+                    .then((registration) => {
+                        if (registration.active) {
+                            registration.active.postMessage({
+                                type: "CLEAR_PRIVATE_CACHE"
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        // Ignore failure; logout should proceed regardless.
+                    });
+            });
+        }
+
+        window.addEventListener("load", () => {
+            warmPurchasedContentCache();
+            attachLogoutCacheClear();
+        });
+    </script>
+{% endblock head %}
+
 {% block nav %}
     <ul>
         <li>
@@ -43,7 +108,7 @@
         </li>
         <li>
             <form>
-                <button formaction="{% url 'courses:course_browse_list' %}"
+                <button formaction="{% url 'courses:course_purchased_list' %}"
                         formmethod="get"
                         type="submit"
                         data-tooltip="Browse courses"
@@ -64,7 +129,7 @@
             </form>
         </li>
         <li>
-            <form>
+            <form id="logout-form">
                 {% csrf_token %}
                 <button formaction="{% url 'users:logout' %}"
                         formmethod="post"

@@ -34,8 +34,33 @@
 
         {% block head %}
         {% endblock head %}
+
+        <script type="module" defer>
+            const updateConnectivityBanner = async () => {
+                const banner = document.getElementById("connectivity-banner");
+                try {
+                    const response = await fetch(window.location.href, {
+                        method: "HEAD",
+                        cache: "no-store"
+                    });
+                    banner.hidden = response.ok;
+                } catch (_error) {
+                    banner.hidden = false;
+                }
+            }
+
+            window.addEventListener("online", updateConnectivityBanner);
+            window.addEventListener("offline", updateConnectivityBanner);
+            window.addEventListener("load", updateConnectivityBanner);
+        </script>
     </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        <aside id="connectivity-banner"
+               class="container"
+               aria-live="polite"
+               hidden>
+            You are currently offline.
+        </aside>
         <header class="container">
             <form>
                 <button formaction="{% url 'home' %}"

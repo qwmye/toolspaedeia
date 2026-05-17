@@ -1,5 +1,23 @@
 {% extends "superbase.html" %}
 
+{% block head %}
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.ready
+                .then((registration) => {
+                    if (registration.active) {
+                        registration.active.postMessage({
+                            type: "CLEAR_PRIVATE_CACHE"
+                        });
+                    }
+                })
+                .catch(() => {
+                    // Ignore failures and continue rendering the login page.
+                });
+        }
+    </script>
+{% endblock head %}
+
 {% block content %}
     {% if form.errors %}
         <p>

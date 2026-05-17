@@ -12,6 +12,7 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -143,6 +144,34 @@ class CreateCheckoutSessionView(LoginRequiredMixin, View):
         purchase.stripe_checkout_session_id = session.id
         purchase.save(update_fields=["stripe_checkout_session_id"])
         return JsonResponse({"id": session.id})
+
+
+class PurchasedContentOfflineMapView(LoginRequiredMixin, View):
+    http_method_names = ["get"]
+    login_url = "users:login"
+
+    def get(self, request):
+        purchases = (
+            Purchase.objects.filter(user=request.user, state=Purchase.State.ACCEPTED)
+            .select_related("course")
+            .prefetch_related("course__modules")
+        )
+
+        urls = []
+        for purchase in purchases:
+            course = purchase.course
+            urls.append(reverse("courses:course_detail", kwargs={"course_id": course.id}))
+
+            urls.extend(
+                reverse(
+                    "courses:module_detail",
+                    kwargs={"course_id": course.id, "module_id": module.id},
+                )
+                for module in course.modules.filter(is_draft=False).order_by("order")
+            )
+
+        unique_urls = list(dict.fromkeys(urls))
+        return JsonResponse({"urls": unique_urls})
 
 
 @method_decorator(csrf_exempt, name="dispatch")

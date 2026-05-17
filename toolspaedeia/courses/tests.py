@@ -113,7 +113,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
         self.assertIn("Duplicate Purchase Course", browse_page.text)
         self.assertIn("Purchase for", browse_page.text)
 
-    def test_course_user_list_navigation(self):
+    def test_course_published_list_navigation(self):
         """
         Purchased Courses page shows enrolled courses only.
 
@@ -152,7 +152,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
         while response.status_code in {301, 302, 303, 307, 308}:
             response = response.follow()
 
-        my_courses_page = self.app.get(reverse("courses:course_user_list"))
+        my_courses_page = self.app.get(reverse("courses:course_published_list"))
 
         self.assertEqual(my_courses_page.status_code, 200)
         self.assertIn("My Courses", my_courses_page.text)

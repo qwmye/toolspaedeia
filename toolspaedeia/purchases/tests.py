@@ -3,6 +3,7 @@ from django.urls import reverse
 from django_webtest import WebTest
 
 from courses.models import Course
+from courses.models import Module
 from purchases.models import Purchase
 
 
@@ -26,6 +27,37 @@ class PurchasesIntegrationWebTests(WebTest):
             price=12.50,
             is_draft=False,
             publisher=self.publisher,
+        )
+        self.module_public = Module.objects.create(
+            course=self.course,
+            title="Public Module",
+            description="Visible module",
+            content="Content",
+            order=1,
+            is_draft=False,
+        )
+        self.module_draft = Module.objects.create(
+            course=self.course,
+            title="Draft Module",
+            description="Draft module",
+            content="Draft",
+            order=2,
+            is_draft=True,
+        )
+        self.pending_course = Course.objects.create(
+            name="Pending Candidate",
+            description="Course with non-accepted purchase",
+            price=8.50,
+            is_draft=False,
+            publisher=self.publisher,
+        )
+        self.pending_module = Module.objects.create(
+            course=self.pending_course,
+            title="Pending Module",
+            description="Pending module",
+            content="Pending",
+            order=1,
+            is_draft=False,
         )
 
     def login_through_form(self):
@@ -124,3 +156,46 @@ class PurchasesIntegrationWebTests(WebTest):
         self.assertIn("Please login to see this page.", login_page.text)
 
         self.assertFalse(Purchase.objects.filter(user=self.student, course=self.course).exists())
+
+    def test_offline_map_requires_login(self):
+        response = self.app.get(reverse("purchases:offline_map"), expect_errors=True)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("users:login"), response.location)
+
+    def test_offline_map_contains_only_accepted_course_pages(self):
+        Purchase.objects.create(
+            user=self.student,
+            course=self.course,
+            amount=self.course.price,
+            state=Purchase.State.ACCEPTED,
+        )
+        Purchase.objects.create(
+            user=self.student,
+            course=self.pending_course,
+            amount=self.pending_course.price,
+            state=Purchase.State.PENDING,
+        )
+
+        self.app.reset()
+        self.app.set_user(self.student.username)
+        response = self.app.get(reverse("purchases:offline_map"))
+        payload = response.json
+
+        expected_course_url = reverse("courses:course_detail", kwargs={"course_id": self.course.id})
+        expected_module_url = reverse(
+            "courses:module_detail",
+            kwargs={"course_id": self.course.id, "module_id": self.module_public.id},
+        )
+        draft_module_url = reverse(
+            "courses:module_detail",
+            kwargs={"course_id": self.course.id, "module_id": self.module_draft.id},
+        )
+        pending_course_url = reverse("courses:course_detail", kwargs={"course_id": self.pending_course.id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("urls", payload)
+        self.assertIn(expected_course_url, payload["urls"])
+        self.assertIn(expected_module_url, payload["urls"])
+        self.assertNotIn(draft_module_url, payload["urls"])
+        self.assertNotIn(pending_course_url, payload["urls"])

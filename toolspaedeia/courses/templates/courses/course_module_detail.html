@@ -3,7 +3,7 @@
 {% block breadcrumb_items %}
     {% if user_is_publisher %}
         <li>
-            <a href="{% url 'courses:course_user_list' %}">Published Courses</a>
+            <a href="{% url 'courses:course_published_list' %}">Published Courses</a>
         </li>
     {% else %}
         <li>

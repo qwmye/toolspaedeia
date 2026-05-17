@@ -143,6 +143,7 @@ X_FRAME_OPTIONS = "SAMEORIGIN"
 PWA_APP_NAME = "Toolspaedeia"
 PWA_APP_SHORT_NAME = "Toolspaedeia"
 PWA_APP_DESCRIPTION = "A collection of tools and courses."
+PWA_SERVICE_WORKER_PATH = BASE_DIR / "static" / "serviceworker.js"
 PWA_APP_THEME_COLOR = "#000000"
 PWA_APP_DISPLAY = "standalone"
 PWA_APP_ICONS = [
