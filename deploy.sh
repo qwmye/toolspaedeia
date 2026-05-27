@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-# Post-pull deployment script for PythonAnywhere.
-#
-# Usage (from the repo root on PythonAnywhere):
-#   git pull && bash deploy.sh
-#
 set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"

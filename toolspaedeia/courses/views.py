@@ -41,7 +41,6 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         ).distinct()
 
     def get_context_data(self, **kwargs):
-        """Add the list of modules and progress to the context."""
         context_data = super().get_context_data(**kwargs)
         if self.request.user == self.object.publisher:
             modules = list(self.object.modules.order_by("order"))
@@ -154,7 +153,6 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
     template_name = "courses/course_module_detail.html"
 
     def get_queryset(self) -> QuerySet[Course]:
-        """Return the course with the specified module, if it is not a draft."""
         queryset = super().get_queryset()
         return queryset.filter(
             Q(publisher=self.request.user)
@@ -209,7 +207,6 @@ class ModuleMarkCompleteView(LoginRequiredMixin, View):
     login_url = "users:login"
 
     def post(self, request, course_id, module_id):
-        """Toggle the completion status of the module for the user."""
         module = get_object_or_404(Module, pk=module_id)
         progression, _ = module.progressions.get_or_create(user=request.user)
         progression.completed = not progression.completed
@@ -229,7 +226,6 @@ class AttemptQuizView(LoginRequiredMixin, View):
 
     @staticmethod
     def render_quiz_section(request, quiz, course, quiz_data, final_grade=None):
-        """Render quiz section partial HTML response."""
         quiz_attempts = list(quiz.attempts.filter(user=request.user).order_by("-completion_date"))
         best_quiz_attempt_grade = max(
             (attempt.grade for attempt in quiz_attempts if attempt.grade is not None), default=None
@@ -257,7 +253,6 @@ class AttemptQuizView(LoginRequiredMixin, View):
         return self.render_quiz_section(request, quiz, course, quiz_data)
 
     def post(self, request, course_id, quiz_id):
-        """Check submitted quiz answers and return quiz with feedback."""
         quiz = get_object_or_404(
             Quiz.objects.select_related("module__course"),
             id=quiz_id,

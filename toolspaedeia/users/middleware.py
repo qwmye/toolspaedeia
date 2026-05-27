@@ -4,20 +4,9 @@ from users.models import UserSitePreferences
 
 
 class ThemeCookieMiddleware(MiddlewareMixin):
-    """
-    Middleware to set theme cookies only when necessary.
-
-    Sets cookies only if:
-    - No cookie exists, or
-    - Existing cookie differs from user's current preference
-
-    This keeps cookies in sync with database while minimizing cookie updates.
-    """
-
-    THEME_COOKIE_MAX_AGE = 365 * 24 * 60 * 60  # 1 year in seconds
+    THEME_COOKIE_MAX_AGE = 365 * 24 * 60 * 60  # 1 year
 
     def process_response(self, request, response):
-        """Synchronize theme cookies with user preferences when needed."""
         if request.user.is_authenticated:
             try:
                 preferences = UserSitePreferences.objects.get(user=request.user)

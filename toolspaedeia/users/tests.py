@@ -21,7 +21,6 @@ class UsersIntegrationWebTests(WebTest):
         )
 
     def login_through_form(self):
-        """Log the student in via the login form and navigate to browse page."""
         self.app.reset()
         login_page = self.app.get(reverse("users:login"))
         login_form = login_page.forms[1]
@@ -41,17 +40,6 @@ class UsersIntegrationWebTests(WebTest):
         return next(form for form in settings_page.forms.values() if form.fields.get("receive_notifications"))
 
     def test_login_view_form_flow(self):
-        """
-        Happy path login via the form.
-
-        Actions:
-            Open login page, fill in valid credentials, submit.
-        Behaviour:
-            User is authenticated and redirected to browse courses.
-        Expectation:
-            Browse courses page renders with course navigation visible and
-            no login link shown.
-        """
         browse_page = self.login_through_form()
 
         self.assertEqual(browse_page.status_code, 200)
@@ -59,18 +47,6 @@ class UsersIntegrationWebTests(WebTest):
         self.assertNotIn("Login", browse_page.text)
 
     def test_login_view_invalid_credentials_shows_error(self):
-        """
-        Wrong password keeps the user on the login page with an error.
-
-        Actions:
-            Go to login, enter valid username but wrong password,
-            submit.
-        Behaviour:
-            Login page re-renders with the "didn't match" message.
-        Expectation:
-            Error text is visible, login form is still there, and
-            visiting /preferences/ still bounces to login.
-        """
         login_page = self.app.get(reverse("users:login"))
         login_form = login_page.forms[1]
         login_form["username"] = self.student.username
@@ -86,16 +62,6 @@ class UsersIntegrationWebTests(WebTest):
         self.assertIn(reverse("users:login"), preferences_response.location)
 
     def test_login_view_get_when_authenticated_redirects(self):
-        """
-        Already logged-in user hitting /login/ gets redirected to home.
-
-        Actions:
-            Login normally, then GET the login URL a second time.
-        Behaviour:
-            Server responds with a redirect chain ending at browse.
-        Expectation:
-            Final page is 200 and shows course content.
-        """
         self.login_through_form()
 
         response = self.app.get(reverse("users:login"), expect_errors=True)
@@ -110,17 +76,6 @@ class UsersIntegrationWebTests(WebTest):
         self.assertIn("Courses", redirected_page.text)
 
     def test_preferences_view_get_and_post_flow(self):
-        """
-        View and update site preferences end-to-end.
-
-        Actions:
-            Login, open /preferences/, pick blue+dark, submit.
-        Behaviour:
-            Form saves and redirects back to the same page.
-        Expectation:
-            Page shows the preferences heading and the DB row
-            reflects the new values.
-        """
         self.login_through_form()
         preferences_page = self.app.get(reverse("users:preferences"))
 
@@ -140,16 +95,6 @@ class UsersIntegrationWebTests(WebTest):
         self.assertEqual(preference.theme_mode, "dark")
 
     def test_preferences_view_post_invalid_choice_shows_validation_error(self):
-        """
-        Invalid color_theme value triggers a validation error.
-
-        Actions:
-            Login, POST preferences with color_theme="not-a-valid-color".
-        Behaviour:
-            Form re-renders with a "Select a valid choice" error.
-        Expectation:
-            Error message shown, DB still has the defaults (pumpkin, system).
-        """
         self.login_through_form()
         response = self.app.post(
             reverse("users:preferences"),
@@ -165,16 +110,6 @@ class UsersIntegrationWebTests(WebTest):
         self.assertEqual(preference.color_theme, "pumpkin")
 
     def test_logout_view_post_flow(self):
-        """
-        Normal logout flow.
-
-        Actions:
-            Login, POST the logout endpoint.
-        Behaviour:
-            Session is cleared, user lands on the login page.
-        Expectation:
-            Trying to visit /preferences/ afterwards redirects to login.
-        """
         self.login_through_form()
         logout_response = self.app.post(reverse("users:logout"), expect_errors=True)
 
@@ -190,16 +125,6 @@ class UsersIntegrationWebTests(WebTest):
         self.assertIn(reverse("users:login"), after_logout_preferences.location)
 
     def test_logout_view_post_twice_remains_logged_out(self):
-        """
-        Double logout (e.g. two stale tabs) doesn't raise an exception.
-
-        Actions:
-            Login, POST logout twice in a row.
-        Behaviour:
-            Both POSTs redirect to login without errors.
-        Expectation:
-            User stays logged out; /preferences/ still requires auth.
-        """
         self.login_through_form()
 
         first_logout_response = self.app.post(reverse("users:logout"), expect_errors=True)
@@ -215,17 +140,6 @@ class UsersIntegrationWebTests(WebTest):
         self.assertIn(reverse("users:login"), preferences_after_second_logout.location)
 
     def test_settings_view_get_and_post_flow(self):
-        """
-        View and update user settings end-to-end.
-
-        Actions:
-            Login, open /preferences/, uncheck notifications, submit.
-        Behaviour:
-            Form saves and redirects back to the same page.
-        Expectation:
-            Page shows the settings heading and the DB row
-            reflects the updated value.
-        """
         self.login_through_form()
         settings_page = self.app.get(reverse("users:preferences"))
 
@@ -243,32 +157,12 @@ class UsersIntegrationWebTests(WebTest):
         self.assertFalse(user_preferences.receive_notifications)
 
     def test_settings_view_requires_login(self):
-        """
-        Unauthenticated access to /settings/ redirects to login.
-
-        Actions:
-            GET /preferences/ without logging in.
-        Behaviour:
-            302 to login with ?next= param.
-        Expectation:
-            Redirect to login page.
-        """
         response = self.app.get(reverse("users:preferences"), expect_errors=True)
 
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse("users:login"), response.location)
 
     def test_settings_nav_link_visible(self):
-        """
-        The settings link is visible in the users nav.
-
-        Actions:
-            Login, open the preferences page.
-        Behaviour:
-            Nav sidebar shows "Preferences" link.
-        Expectation:
-            "Preferences" appears in the navigation.
-        """
         self.login_through_form()
         settings_page = self.app.get(reverse("users:preferences"))
 
@@ -279,16 +173,6 @@ class UsersIntegrationWebTests(WebTest):
         return next(form for form in account_page.forms.values() if form.fields.get("username"))
 
     def test_account_view_get_and_post_flow(self):
-        """
-        View and update account details end-to-end.
-
-        Actions:
-            Login, open /account/, change username + email, submit.
-        Behaviour:
-            Form saves and redirects back to the same page.
-        Expectation:
-            Page shows the account heading and the DB reflects new values.
-        """
         self.login_through_form()
         account_page = self.app.get(reverse("users:account"))
 
@@ -308,16 +192,6 @@ class UsersIntegrationWebTests(WebTest):
         self.assertEqual(self.student.email, "new_student@example.com")
 
     def test_account_view_password_change_flow(self):
-        """
-        Changing password keeps the user logged in.
-
-        Actions:
-            Login, open /account/, fill in matching passwords, submit.
-        Behaviour:
-            Password is updated and session remains valid.
-        Expectation:
-            User can still access the account page after submission.
-        """
         self.login_through_form()
         account_page = self.app.get(reverse("users:account"))
         account_form = self.get_account_form(account_page)
@@ -331,16 +205,6 @@ class UsersIntegrationWebTests(WebTest):
         self.assertTrue(self.student.check_password("S3cur3Pa$$w0rd!"))
 
     def test_account_view_mismatched_passwords_shows_error(self):
-        """
-        Mismatched passwords re-render the form with a validation error.
-
-        Actions:
-            Login, open /account/, enter two different passwords, submit.
-        Behaviour:
-            Form re-renders with "Passwords do not match" error.
-        Expectation:
-            Error text visible, password unchanged in DB.
-        """
         self.login_through_form()
         account_page = self.app.get(reverse("users:account"))
         account_form = self.get_account_form(account_page)
@@ -352,32 +216,12 @@ class UsersIntegrationWebTests(WebTest):
         self.assertIn("Passwords do not match", response.text)
 
     def test_account_view_requires_login(self):
-        """
-        Unauthenticated access to /account/ redirects to login.
-
-        Actions:
-            GET /account/ without logging in.
-        Behaviour:
-            302 to login with ?next= param.
-        Expectation:
-            Redirect to login page.
-        """
         response = self.app.get(reverse("users:account"), expect_errors=True)
 
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse("users:login"), response.location)
 
     def test_account_nav_link_visible(self):
-        """
-        The account link is visible in the users nav.
-
-        Actions:
-            Login, open the account page.
-        Behaviour:
-            Nav sidebar shows "Account" link.
-        Expectation:
-            "Account" appears alongside "Site preferences" and "Settings".
-        """
         self.login_through_form()
         account_page = self.app.get(reverse("users:account"))
 

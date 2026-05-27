@@ -4,7 +4,6 @@ from courses.markdown import markdown_to_html
 
 
 def build_fresh_answers_data(question):
-    """Build answer render data for a fresh quiz attempt."""
     return [
         {
             "answer": answer,
@@ -16,7 +15,6 @@ def build_fresh_answers_data(question):
 
 
 def build_quiz_data(questions, answers_by_question=None):
-    """Build question/answer render data for a quiz section."""
     answers_by_question = answers_by_question or {}
     quiz_data = []
 
@@ -36,13 +34,6 @@ def build_quiz_data(questions, answers_by_question=None):
 
 
 def get_attempt_questions(quiz, posted_question_ids=None):
-    """
-    Return the questions to the user in the same order as they were posted
-    (if any were posted), or in a fresh randomized order if not. This ensures
-    that when a user retries a quiz, they see the same questions in the same
-    order as they did in the previous attempt, even if the quiz has
-    randomization enabled.
-    """
     posted_question_ids = posted_question_ids or []
     if posted_question_ids:
         question_map = {str(question.id): question for question in quiz.questions.filter(id__in=posted_question_ids)}
@@ -51,13 +42,6 @@ def get_attempt_questions(quiz, posted_question_ids=None):
 
 
 def get_answers_in_display_order(question, posted_answer_ids):
-    """
-    Similarly to the questions, preserve the order of the answers as they were
-    posted by the user, if any, or return them in a fresh randomized order if
-    not. This ensures that when a user retries a quiz, they see the same answers
-    in the same order as they did in the previous attempt, even if the quiz has
-    randomization enabled.
-    """
     if posted_answer_ids:
         answer_map = {str(answer.id): answer for answer in question.answers.filter(id__in=posted_answer_ids)}
         ordered_answers = [answer_map[answer_id] for answer_id in posted_answer_ids if answer_id in answer_map]
@@ -67,7 +51,6 @@ def get_answers_in_display_order(question, posted_answer_ids):
 
 
 def build_checked_answers_data(question, submitted_answer_ids, posted_answer_ids):
-    """Build answer render data for a checked quiz attempt."""
     answers_data = []
     for answer in get_answers_in_display_order(question, posted_answer_ids):
         was_selected = str(answer.id) in submitted_answer_ids
@@ -82,7 +65,6 @@ def build_checked_answers_data(question, submitted_answer_ids, posted_answer_ids
 
 
 def calculate_final_grade(quiz_data):
-    """Return the overall grade as a percentage across all questions."""
     all_answers = [a for item in quiz_data for a in item["answers_data"]]
     if not all_answers:
         return 0

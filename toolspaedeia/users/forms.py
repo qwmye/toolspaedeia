@@ -4,8 +4,6 @@ from django.contrib.auth import password_validation
 
 
 class AccountForm(forms.ModelForm):
-    """Extends the built-in User model form with optional password change."""
-
     new_password = forms.CharField(required=False, widget=forms.PasswordInput)
     confirm_password = forms.CharField(required=False, widget=forms.PasswordInput)
 

@@ -87,8 +87,6 @@ class UserPreferencesView(LoginRequiredMixin, UpdateView):
 
 
 class UserAccountView(LoginRequiredMixin, UpdateView):
-    """Lets authenticated users change their credentials & personal details."""
-
     model = get_user_model()
     form_class = AccountForm
     template_name = "users/account.html"

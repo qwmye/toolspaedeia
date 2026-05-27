@@ -5,8 +5,6 @@ from courses.models import CourseTag
 
 
 class UserSitePreferences(models.Model):
-    """Model to store user preferences for the Paedeia system."""
-
     class ColorTheme(models.TextChoices):
         RED = "red", "Red"
         PINK = "pink", "Pink"

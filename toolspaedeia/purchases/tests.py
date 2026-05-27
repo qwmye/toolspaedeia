@@ -61,7 +61,6 @@ class PurchasesIntegrationWebTests(WebTest):
         )
 
     def login_through_form(self):
-        """Log the student in via the login form and navigate to browse page."""
         self.app.reset()
         login_page = self.app.get(reverse("users:login"))
         login_form = login_page.forms[1]
@@ -79,16 +78,6 @@ class PurchasesIntegrationWebTests(WebTest):
         )
 
     def test_purchase_course_post_flow(self):
-        """
-        Buying a course from the browse page.
-
-        Actions:
-            Login, find the purchase button on browse, submit it.
-        Behaviour:
-            Redirects back to browse; button changes to "Go to Course".
-        Expectation:
-            Exactly one Purchase row exists for the student+course.
-        """
         browse_page = self.login_through_form()
         self.assertIn("Purchase for", browse_page.text)
         purchase_form = self.get_purchase_form(browse_page)
@@ -100,18 +89,6 @@ class PurchasesIntegrationWebTests(WebTest):
         self.assertEqual(Purchase.objects.filter(user=self.student, course=self.course).count(), 1)
 
     def test_purchase_course_post_flow_prevents_duplicate_purchase(self):
-        """
-        Two opened tabs scenario: submitting the same purchase twice is safe.
-
-        Actions:
-            Login, grab the purchase form twice (simulating two tabs),
-            submit both.
-        Behaviour:
-            Second POST is silently ignored (get_or_create).
-        Expectation:
-            Still only one Purchase row; second response redirects to browse and
-            shows "Go to Course".
-        """
         browse_page = self.login_through_form()
 
         first_tab_purchase_form = self.get_purchase_form(browse_page)
@@ -131,17 +108,6 @@ class PurchasesIntegrationWebTests(WebTest):
         self.assertEqual(Purchase.objects.filter(user=self.student, course=self.course).count(), 1)
 
     def test_purchase_after_logout_redirects_to_login(self):
-        """
-        Stale purchase form submitted after logging out.
-
-        Actions:
-            Login, grab purchase form, logout, then submit the stale
-            form.
-        Behaviour:
-            Redirects to login with "please login" message.
-        Expectation:
-            No Purchase row created.
-        """
         browse_page = self.login_through_form()
         purchase_form = self.get_purchase_form(browse_page)
 

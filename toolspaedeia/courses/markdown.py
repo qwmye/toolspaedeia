@@ -15,10 +15,6 @@ ALLOWED_RESOURCE_EXTENSIONS = sorted(
 
 
 def resource_upload_path(instance, filename):
-    """
-    Store resources under resources/<publisher_username>/<filename>,
-    so each publisher's uploads stay in their own directory.
-    """
     publisher = instance.module.course.publisher
     return f"resources/{publisher.username}/{filename}"
 
@@ -46,10 +42,6 @@ def _render_resource_html(title, url):
 
 
 def resource_plugin(resources):
-    """
-    Custom plugin that renderes `resource:<title>` into embedded HTML
-    (images, video, audio, PDFs) or download links, depending on the file type.
-    """
     resource_map = {r.title: r.file.url for r in resources}
 
     titles_alt = "|".join(re.escape(t) for t in sorted(resource_map, key=len, reverse=True))

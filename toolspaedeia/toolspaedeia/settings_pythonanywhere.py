@@ -1,7 +1,3 @@
-"""
-Production settings for PythonAnywhere deployment.
-"""
-
 import os
 
 from toolspaedeia.settings import *  # noqa: F403

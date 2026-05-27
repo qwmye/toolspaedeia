@@ -3,8 +3,6 @@ from django.db import models
 
 
 class Purchase(models.Model):
-    """Model to represent a purchase made by a user."""
-
     class State(models.TextChoices):
         PENDING = "PENDING", "Pending"
         ACCEPTED = "ACCEPTED", "Accepted"
