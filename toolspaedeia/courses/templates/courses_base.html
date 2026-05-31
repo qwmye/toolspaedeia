@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block head %}
-    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://js.stripe.com/dahlia/stripe.js"></script>
     <script>
         const stripe = Stripe("{{ stripe_publishable_key }}");
         async function redirectToCheckout(courseId, price) {
