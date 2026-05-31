@@ -13,8 +13,6 @@ from courses.markdown import resource_upload_path
 class Course(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
-    start_date = models.DateField(null=True, blank=True)
-    end_date = models.DateField(null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal("0.00"))
     publisher = models.ForeignKey(
         get_user_model(), related_name="published_courses", on_delete=models.SET_NULL, null=True
