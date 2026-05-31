@@ -57,7 +57,6 @@ self.addEventListener("message", (event) => {
                         await cache.put(new URL(url, self.location.origin).pathname, response.clone());
                     }
                 } catch (_error) {
-                    // Ignore per-URL failures so other content can still be warmed.
                 }
             }
         })

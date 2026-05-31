@@ -80,9 +80,9 @@
         </li>
     </ul>
     <ul>
-        <li>
-            <form>
-                {% if perms.courses.add_course %}
+        {% if perms.courses.add_course %}
+            <li>
+                <form>
                     <button formaction="{% url 'admin:index' %}"
                             formmethod="get"
                             type="submit"
@@ -90,12 +90,12 @@
                             data-placement="bottom">
                         <i class="fi fi-sr-pencil"></i>
                     </button>
-                {% endif %}
-            </form>
-        </li>
-        <li>
-            <form>
-                {% if perms.courses.add_course %}
+                </form>
+            </li>
+        {% endif %}
+        {% if perms.courses.add_course %}
+            <li>
+                <form>
                     <button formaction="{% url 'purchases:publisher_income' %}"
                             formmethod="get"
                             type="submit"
@@ -103,9 +103,9 @@
                             data-placement="bottom">
                         <i class="fi fi-sr-chart-simple"></i>
                     </button>
-                {% endif %}
-            </form>
-        </li>
+                </form>
+            </li>
+        {% endif %}
         <li>
             <form>
                 <button formaction="{% url 'courses:course_purchased_list' %}"
@@ -128,17 +128,19 @@
                 </button>
             </form>
         </li>
-        <li>
-            <form id="logout-form">
-                {% csrf_token %}
-                <button formaction="{% url 'users:logout' %}"
-                        formmethod="post"
-                        type="submit"
-                        data-tooltip="Logout"
-                        data-placement="bottom">
-                    <i class="fi fi-br-power"></i>
-                </button>
-            </form>
-        </li>
+        {% if request.user.is_authenticated %}
+            <li>
+                <form id="logout-form">
+                    {% csrf_token %}
+                    <button formaction="{% url 'users:logout' %}"
+                            formmethod="post"
+                            type="submit"
+                            data-tooltip="Logout"
+                            data-placement="bottom">
+                        <i class="fi fi-br-power"></i>
+                    </button>
+                </form>
+            </li>
+        {% endif %}
     </ul>
 {% endblock nav %}
