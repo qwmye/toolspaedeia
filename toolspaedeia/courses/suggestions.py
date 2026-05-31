@@ -8,7 +8,7 @@ from courses.models import CourseTag
 
 @cache
 def _get_vectorizer():
-    return TfidfVectorizer(lowercase=True, stop_words="english", max_features=5000)
+    return TfidfVectorizer(strip_accents="unicode", lowercase=True)
 
 
 def suggest_tags(course, min_score: float = 0.01) -> list[tuple]:
