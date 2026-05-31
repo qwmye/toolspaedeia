@@ -11,7 +11,7 @@ class Purchase(models.Model):
     user = models.ForeignKey(get_user_model(), related_name="purchases", on_delete=models.CASCADE)
     course = models.ForeignKey("courses.Course", related_name="purchases", on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    stripe_checkout_session_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
+    stripe_payment_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
     state = models.CharField(max_length=20, choices=State.choices, default=State.ACCEPTED)
     purchase_date = models.DateTimeField(auto_now_add=True)
 

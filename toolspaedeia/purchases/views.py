@@ -74,7 +74,7 @@ class PurchaseCourseView(LoginRequiredMixin, CreateView):
             defaults={
                 "amount": form.instance.course.price,
                 "state": Purchase.State.ACCEPTED,
-                "stripe_checkout_session_id": None,
+                "stripe_payment_id": None,
             },
         )
         return redirect(self.request.META.get("HTTP_REFERER", self.success_url))
@@ -105,16 +105,6 @@ class CreateCheckoutSessionView(LoginRequiredMixin, View):
 
         amount = int(float(course.price) * 100)
 
-        purchase, _ = Purchase.objects.update_or_create(
-            user=request.user,
-            course=course,
-            defaults={
-                "amount": course.price,
-                "state": Purchase.State.PENDING,
-                "stripe_checkout_session_id": None,
-            },
-        )
-
         try:
             session = stripe.checkout.Session.create(
                 payment_method_types=["card"],
@@ -130,19 +120,15 @@ class CreateCheckoutSessionView(LoginRequiredMixin, View):
                     }
                 ],
                 mode="payment",
-                success_url=request.build_absolute_uri("/courses/browse/?success"),
-                cancel_url=request.build_absolute_uri("/courses/browse/?canceled"),
+                success_url=request.build_absolute_uri("/courses/browse/"),
+                cancel_url=request.build_absolute_uri("/courses/browse/"),
                 metadata={
-                    "purchase_id": str(purchase.id),
                     "course_id": str(course.id),
                     "user_id": str(request.user.id),
                 },
             )
         except Exception as exc:  # noqa: BLE001
             return JsonResponse({"error": str(exc)}, status=400)
-
-        purchase.stripe_checkout_session_id = session.id
-        purchase.save(update_fields=["stripe_checkout_session_id"])
         return JsonResponse({"id": session.id})
 
 
@@ -178,44 +164,37 @@ class PurchasedContentOfflineMapView(LoginRequiredMixin, View):
 class StripeWebhookView(View):
     http_method_names = ["post"]
 
-    @staticmethod
-    def _get_purchase_from_session(session_data):
-        session_id = session_data.get("id")
-        if session_id:
-            purchase = Purchase.objects.filter(stripe_checkout_session_id=session_id).first()
-            if purchase:
-                return purchase
-
-        metadata = session_data.get("metadata") or {}
-        purchase_id = metadata.get("purchase_id")
-        if purchase_id:
-            return Purchase.objects.filter(id=purchase_id).first()
-        return None
+    PAYMENT_COMPLETE_EVENTS = {"checkout.session.completed", "checkout.session.async_payment_succeeded"}
+    PAYMENT_FAILED_EVENTS = {"checkout.session.async_payment_failed", "checkout.session.expired"}
 
     def post(self, request):
         payload = request.body
         signature = request.META.get("HTTP_STRIPE_SIGNATURE", "")
-        webhook_secret = getattr(settings, "STRIPE_WEBHOOK_SECRET", "")
+        webhook_secret = settings.STRIPE_WEBHOOK_SECRET
 
         try:
-            if webhook_secret:
-                event = stripe.Webhook.construct_event(payload, signature, webhook_secret)
-            else:
-                event = json.loads(payload.decode("utf-8"))
+            event = stripe.Webhook.construct_event(payload, signature, webhook_secret)
         except Exception:  # noqa: BLE001
             return HttpResponse(status=400)
 
         event_type = event.get("type")
         session_data = (event.get("data") or {}).get("object") or {}
-        purchase = self._get_purchase_from_session(session_data)
+        metadata = session_data.get("metadata") or {}
+        course_id = metadata.get("course_id")
+        user_id = metadata.get("user_id")
+        state = None
+        if event_type in self.PAYMENT_COMPLETE_EVENTS:
+            state = Purchase.State.ACCEPTED
+        elif event_type in self.PAYMENT_FAILED_EVENTS:
+            state = Purchase.State.REFUSED
 
-        if purchase:
-            if event_type == "checkout.session.completed":
-                purchase.state = Purchase.State.ACCEPTED
-                purchase.save(update_fields=["state"])
-            elif event_type in {"checkout.session.async_payment_failed", "checkout.session.expired"}:
-                if purchase.state != Purchase.State.ACCEPTED:
-                    purchase.state = Purchase.State.REFUSED
-                    purchase.save(update_fields=["state"])
-
+        Purchase.objects.update_or_create(
+            user_id=user_id,
+            course_id=course_id,
+            defaults={
+                "amount": session_data.get("amount"),
+                "state": state,
+                "stripe_payment_id": session_data.get("id"),
+            },
+        )
         return HttpResponse(status=200)
