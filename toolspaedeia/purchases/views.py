@@ -185,7 +185,7 @@ class StripeWebhookView(View):
             user_id=user_id,
             course_id=course_id,
             defaults={
-                "amount": webhook_event.data.object.amount,
+                "amount": webhook_event.data.object.amount_total,
                 "state": state,
                 "stripe_payment_id": webhook_event.data.object.payment_intent,
             },
