@@ -8,7 +8,6 @@ export DJANGO_SETTINGS_MODULE="toolspaedeia.settings_pythonanywhere"
 
 echo "==> Installing / syncing dependencies…"
 cd "$PROJECT_DIR"
-export UV_LINK_MODE=symlink
 uv sync --no-cache
 
 echo "==> Applying database migrations…"
