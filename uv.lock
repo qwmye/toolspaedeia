@@ -528,15 +528,15 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "coverage", marker = "extra == 'dev'", specifier = ">=7.14.1" },
-    { name = "django", specifier = ">=6.0.5" },
-    { name = "django-nested-admin", specifier = ">=4.1.6" },
-    { name = "django-pwa", specifier = ">=2.0.1" },
-    { name = "django-webtest", marker = "extra == 'dev'", specifier = ">=1.9.14" },
-    { name = "mistune", specifier = ">=3.2.1" },
-    { name = "pillow", specifier = ">=12.2.0" },
-    { name = "scikit-learn", specifier = ">=1.8.0" },
-    { name = "stripe", specifier = ">=15.2.0" },
+    { name = "coverage", marker = "extra == 'dev'", specifier = "==7.14.1" },
+    { name = "django", specifier = "==6.0.5" },
+    { name = "django-nested-admin", specifier = "==4.1.6" },
+    { name = "django-pwa", specifier = "==2.0.1" },
+    { name = "django-webtest", marker = "extra == 'dev'", specifier = "==1.9.14" },
+    { name = "mistune", specifier = "==3.2.1" },
+    { name = "pillow", specifier = "==12.2.0" },
+    { name = "scikit-learn", specifier = "==1.8.0" },
+    { name = "stripe", specifier = "==15.2.0" },
 ]
 provides-extras = ["dev"]
 
