@@ -172,29 +172,22 @@ class StripeWebhookView(View):
         signature = request.META.get("HTTP_STRIPE_SIGNATURE", "")
         webhook_secret = settings.STRIPE_WEBHOOK_SECRET
 
-        try:
-            event = stripe.Webhook.construct_event(payload, signature, webhook_secret)
-        except Exception:  # noqa: BLE001
-            return HttpResponse(status=400)
-
-        event_type = event.get("type")
-        session_data = (event.get("data") or {}).get("object") or {}
-        metadata = session_data.get("metadata") or {}
-        course_id = metadata.get("course_id")
-        user_id = metadata.get("user_id")
+        webhook_event = stripe.Webhook.construct_event(payload, signature, webhook_secret)
+        course_id = webhook_event.data.metadata.course_id
+        user_id = webhook_event.data.metadata.user_id
         state = None
-        if event_type in self.PAYMENT_COMPLETE_EVENTS:
+        if webhook_event.type in self.PAYMENT_COMPLETE_EVENTS:
             state = Purchase.State.ACCEPTED
-        elif event_type in self.PAYMENT_FAILED_EVENTS:
+        elif webhook_event.type in self.PAYMENT_FAILED_EVENTS:
             state = Purchase.State.REFUSED
 
         Purchase.objects.update_or_create(
             user_id=user_id,
             course_id=course_id,
             defaults={
-                "amount": session_data.get("amount"),
+                "amount": webhook_event.data.amount,
                 "state": state,
-                "stripe_payment_id": session_data.get("id"),
+                "stripe_payment_id": webhook_event.data.id,
             },
         )
         return HttpResponse(status=200)
