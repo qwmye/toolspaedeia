@@ -173,8 +173,8 @@ class StripeWebhookView(View):
         webhook_secret = settings.STRIPE_WEBHOOK_SECRET
 
         webhook_event = stripe.Webhook.construct_event(payload, signature, webhook_secret)
-        course_id = webhook_event.data.metadata.course_id
-        user_id = webhook_event.data.metadata.user_id
+        course_id = webhook_event.data.object.metadata.course_id
+        user_id = webhook_event.data.object.metadata.user_id
         state = None
         if webhook_event.type in self.PAYMENT_COMPLETE_EVENTS:
             state = Purchase.State.ACCEPTED
@@ -185,9 +185,9 @@ class StripeWebhookView(View):
             user_id=user_id,
             course_id=course_id,
             defaults={
-                "amount": webhook_event.data.amount,
+                "amount": webhook_event.data.object.amount,
                 "state": state,
-                "stripe_payment_id": webhook_event.data.id,
+                "stripe_payment_id": webhook_event.data.object.payment_intent,
             },
         )
         return HttpResponse(status=200)
