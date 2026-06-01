@@ -7,7 +7,6 @@ DEBUG = False
 # --- Security -----------------------------------------------------------
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 STRIPE_SECRET_KEY = os.environ["STRIPE_SECRET_KEY"]
-STRIPE_PUBLISHABLE_KEY = os.environ["STRIPE_PUBLISHABLE_KEY"]
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 
 ALLOWED_HOSTS = [
@@ -21,8 +20,10 @@ CSRF_TRUSTED_ORIGINS = [
 # --- Database ------------------
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",  # noqa: F405
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "toolspaedeia",
+        "HOST": os.environ.get("POSTGRESQL_HOST"),
+        "PORT": os.environ.get("POSTGRESQL_PORT"),
     }
 }
 

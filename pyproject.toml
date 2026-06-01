@@ -11,7 +11,8 @@ dependencies = [
     "django-nested-admin==4.1.6",
     "django-pwa==2.0.1",
     "stripe==15.2.0",
-    "scikit-learn==1.8.0",
+    "sentence-transformers==5.5.1",
+    "psycopg2-binary==2.9.12",
 ]
 
 [project.optional-dependencies]
