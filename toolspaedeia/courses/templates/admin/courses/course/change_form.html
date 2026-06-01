@@ -21,6 +21,7 @@
 {% block after_related_objects %}
     {% if original and original.pk %}
         <fieldset>
+            <br />
             <button type="button"
                     class="button"
                     hx-get="{% url 'admin:courses_suggest_tags' original.pk %}"
@@ -32,5 +33,7 @@
             <div id="tag-suggestions-results">
             </div>
         </fieldset>
+        <hr />
+        <br />
     {% endif %}
 {% endblock after_related_objects %}
