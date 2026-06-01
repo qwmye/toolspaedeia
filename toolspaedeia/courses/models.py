@@ -71,6 +71,12 @@ class Module(models.Model):
     def __str__(self) -> str:
         return self.title
 
+    def save(self, *args, **kwargs):
+        existing_orders = self.course.modules.exclude(pk=self.pk).values_list("order")
+        if self.order in existing_orders:
+            self.order = max(existing_orders) + 1
+        super().save(*args, **kwargs)
+
 
 class ModuleProgression(models.Model):
     user = models.ForeignKey(get_user_model(), related_name="module_progressions", on_delete=models.CASCADE)
