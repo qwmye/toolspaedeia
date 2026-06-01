@@ -185,8 +185,12 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         course = self.get_object()
         module = course.module
         context["user_is_publisher"] = self.request.user == course.publisher
-        previous_module = self.object.modules.filter(order__lt=module.order).order_by("-order").first()
-        next_module = self.object.modules.filter(order__gt=module.order).order_by("order").first()
+        previous_module = (
+            self.object.modules.filter(order__lte=module.order).exclude(id=module.id).order_by("-order", "-pk").first()
+        )
+        next_module = (
+            self.object.modules.filter(order__gte=module.order).exclude(id=module.id).order_by("order", "pk").first()
+        )
         if previous_module:
             context["previous_module"] = previous_module
         if next_module:
