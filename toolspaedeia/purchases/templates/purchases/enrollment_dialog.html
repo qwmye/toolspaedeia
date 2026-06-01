@@ -1,0 +1,63 @@
+<dialog id="confirm-{{ course.id }}"
+        open>
+    <article>
+        <header>
+            <button aria-label="Close"
+                    rel="prev"
+                    onclick="this.closest('dialog').close()">
+            </button>
+            {% if course.price > 0 %}
+                <h3>
+                    Confirm Purchase
+                </h3>
+            {% else %}
+                <h3>
+                    Confirm Enrollment
+                </h3>
+            {% endif %}
+        </header>
+        <p>
+            {% if course.price > 0 %}
+                Are you sure you want to purchase
+                <strong>{{ course.name }}</strong>
+                for {{ course.price }} EUR?
+            {% else %}
+                Are you sure you want to enroll in
+                <strong>{{ course.name }}</strong>?
+            {% endif %}
+        </p>
+        <footer>
+            {% if course.price > 0 %}
+                <div role="group">
+                    <button type="button"
+                            class="secondary"
+                            onclick="this.closest('dialog').close()">
+                        Cancel
+                    </button>
+                    <a href="{{ payment_link }}"
+                       role="button">
+                        Purchase
+                    </a>
+                </div>
+            {% else %}
+                <form action="{% url 'purchases:enroll_course' %}"
+                      method="post">
+                    {% csrf_token %}
+                    <input type="hidden"
+                           name="course"
+                           value="{{ course.id }}" />
+                    <div role="group">
+                        <button type="button"
+                                class="secondary"
+                                onclick="this.closest('dialog').close()">
+                            Cancel
+                        </button>
+                        <button type="submit">
+                            Enroll
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
+        </footer>
+    </article>
+</dialog>

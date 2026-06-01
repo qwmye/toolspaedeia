@@ -1,6 +1,4 @@
-import json
 from decimal import Decimal
-from json import JSONDecodeError
 
 import stripe
 from django.conf import settings
@@ -12,6 +10,7 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -78,58 +77,6 @@ class EnrollCourseView(LoginRequiredMixin, CreateView):
             },
         )
         return redirect(self.request.META.get("HTTP_REFERER", self.success_url))
-
-
-class CreateCheckoutSessionView(LoginRequiredMixin, View):
-    http_method_names = ["post"]
-    login_url = "users:login"
-
-    def post(self, request):
-        try:
-            data = json.loads(request.body.decode("utf-8"))
-        except JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON payload."}, status=400)
-
-        course_id = data.get("course_id")
-        if not course_id:
-            return JsonResponse({"error": "Missing course_id."}, status=400)
-
-        course = get_object_or_404(Course, id=course_id, is_draft=False)
-
-        if Purchase.objects.filter(
-            user=request.user,
-            course=course,
-            state=Purchase.State.ACCEPTED,
-        ).exists():
-            return JsonResponse({"error": "Course already purchased."}, status=400)
-
-        amount = int(float(course.price) * 100)
-
-        try:
-            session = stripe.checkout.Session.create(
-                payment_method_types=["card"],
-                customer_email=request.user.email,
-                line_items=[
-                    {
-                        "price_data": {
-                            "currency": "eur",
-                            "product_data": {"name": course.name},
-                            "unit_amount": amount,
-                        },
-                        "quantity": 1,
-                    }
-                ],
-                mode="payment",
-                success_url=request.build_absolute_uri("/courses/browse/"),
-                cancel_url=request.build_absolute_uri("/courses/browse/"),
-                metadata={
-                    "course_id": str(course.id),
-                    "user_id": str(request.user.id),
-                },
-            )
-        except Exception as exc:  # noqa: BLE001
-            return JsonResponse({"error": str(exc)}, status=400)
-        return JsonResponse({"id": session.id})
 
 
 class CreateRefundView(LoginRequiredMixin, View):
@@ -208,3 +155,57 @@ class StripeWebhookView(View):
             },
         )
         return HttpResponse(status=200)
+
+
+class EnrollmentDialogView(LoginRequiredMixin, View):
+    http_method_names = ["get"]
+    login_url = "users:login"
+
+    def get(self, request):
+        course_id = request.GET.get("course_id")
+        if not course_id:
+            return HttpResponse("Missing course_id", status=400)
+
+        course = get_object_or_404(Course, id=course_id, is_draft=False)
+
+        if Purchase.objects.filter(
+            user=request.user,
+            course=course,
+            state=Purchase.State.ACCEPTED,
+        ).exists():
+            return HttpResponse("Course already purchased", status=400)
+
+        payment_link = None
+        if course.price > 0:
+            try:
+                session = stripe.checkout.Session.create(
+                    payment_method_types=["card"],
+                    customer_email=request.user.email,
+                    line_items=[
+                        {
+                            "price_data": {
+                                "currency": "eur",
+                                "product_data": {"name": course.name},
+                                "unit_amount": int(float(course.price) * 100),
+                            },
+                            "quantity": 1,
+                        }
+                    ],
+                    mode="payment",
+                    success_url=request.build_absolute_uri("/courses/browse/"),
+                    cancel_url=request.build_absolute_uri("/courses/browse/"),
+                    metadata={
+                        "course_id": str(course.id),
+                        "user_id": str(request.user.id),
+                    },
+                )
+                payment_link = session.url
+            except Exception as exc:  # noqa: BLE001
+                return HttpResponse(f"Error creating payment link: {exc!s}", status=400)
+
+        context = {
+            "course": course,
+            "payment_link": payment_link,
+        }
+        html = render_to_string("purchases/enrollment_dialog.html", context, request=request)
+        return HttpResponse(html)

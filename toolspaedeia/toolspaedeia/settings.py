@@ -48,7 +48,6 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.theme_preferences",
-                "purchases.context_processors.stripe_keys",
             ],
         },
     },

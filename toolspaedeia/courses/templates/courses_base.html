@@ -1,39 +1,5 @@
 {% extends "base.html" %}
 
-{% block head %}
-    <script src="https://js.stripe.com/v3/"></script>
-    <script>
-        const stripe = Stripe("{{ stripe_publishable_key }}");
-        async function redirectToCheckout(courseId, price) {
-            try {
-                const response = await fetch("{% url 'purchases:create_checkout_session' %}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || ''
-                    },
-                    body: JSON.stringify({
-                        course_id: courseId
-                    })
-                });
-                const data = await response.json();
-                if (data.id) {
-                    const result = await stripe.redirectToCheckout({
-                        sessionId: data.id
-                    });
-                    if (result.error) {
-                        alert(result.error.message);
-                    }
-                } else {
-                    alert(data.error || "Failed to create Stripe session.");
-                }
-            } catch (e) {
-                alert("Error: " + e);
-            }
-        }
-    </script>
-{% endblock head %}
-
 {% block module_nav %}
     <h2>
         <a href="{% url 'courses:course_browse_list' %}">Browse</a>

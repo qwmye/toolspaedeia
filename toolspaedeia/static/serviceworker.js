@@ -64,7 +64,7 @@ self.addEventListener("message", (event) => {
 });
 
 function isSensitiveMutationPath(pathname) {
-    return pathname.includes("/create-checkout-session/")
+    return pathname.includes("/enrollment-dialog/")
         || pathname.includes("/stripe/webhook/")
         || pathname.includes("/mark-complete/")
         || pathname.includes("/attempt/")

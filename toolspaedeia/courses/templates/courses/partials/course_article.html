@@ -54,70 +54,17 @@
                     </p>
                 </blockquote>
             {% endif %}
-            {% if course.price > 0 %}
-                <button onclick="document.getElementById('confirm-{{ course.id }}').showModal()">
+            <button hx-get="{% url 'purchases:enrollment_dialog' %}?course_id={{ course.id }}"
+                    hx-target="#confirm-{{ course.id }}"
+                    hx-swap="innerHTML">
+                {% if course.price > 0 %}
                     Purchase for {{ course.price }} EUR
-                </button>
-            {% else %}
-                <button onclick="document.getElementById('confirm-{{ course.id }}').showModal()">
+                {% else %}
                     Enroll for Free
-                </button>
-            {% endif %}
-            <dialog id="confirm-{{ course.id }}">
-                <article>
-                    <header>
-                        <button aria-label="Close"
-                                rel="prev"
-                                onclick="this.closest('dialog').close()">
-                        </button>
-                        {% if course.price > 0 %}
-                            <h3>
-                                Confirm Purchase
-                            </h3>
-                        {% else %}
-                            <h3>
-                                Confirm Enrollment
-                            </h3>
-                        {% endif %}
-                    </header>
-                    <p>
-                        {% if course.price > 0 %}
-                            Are you sure you want to purchase
-                            <strong>{{ course.name }}</strong>
-                            for {{ course.price }} EUR?
-                        {% else %}
-                            Are you sure you want to enroll in
-                            <strong>{{ course.name }}</strong>?
-                        {% endif %}
-                    </p>
-                    <footer>
-                        <form action="{% url 'purchases:enroll_course' %}"
-                              method="post">
-                            {% csrf_token %}
-                            <input type="hidden"
-                                   name="course"
-                                   value="{{ course.id }}" />
-                            <div role="group">
-                                <button type="button"
-                                        class="secondary"
-                                        onclick="this.closest('dialog').close()">
-                                    Cancel
-                                </button>
-                                {% if course.price > 0 %}
-                                    <button type="button"
-                                            onclick="redirectToCheckout('{{ course.id }}', '{{ course.price }}')">
-                                        Purchase
-                                    </button>
-                                {% else %}
-                                    <button type="submit">
-                                        Enroll
-                                    </button>
-                                {% endif %}
-                            </div>
-                        </form>
-                    </footer>
-                </article>
-            </dialog>
+                {% endif %}
+            </button>
+            <div id="confirm-{{ course.id }}">
+            </div>
         {% endif %}
     </footer>
 </article>
