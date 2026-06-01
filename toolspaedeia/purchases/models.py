@@ -27,7 +27,9 @@ class Purchase(models.Model):
         verbose_name_plural = "Purchases"
 
     def __str__(self) -> str:
-        return f"{self.state} purchase of {self.course.name} by {self.user.username} on {self.purchase_date}"
+        if self.course:
+            return f"{self.state} purchase of {self.course.name} by {self.user.username} on {self.purchase_date}"
+        return f"{self.state} purchase by {self.user.username} on {self.purchase_date}"
 
     def delete(self, *args, **kwargs):
         if self.state == self.State.ACCEPTED and self.stripe_payment_id:
