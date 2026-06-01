@@ -4,8 +4,6 @@ import stripe
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.db.models import Count
-from django.db.models import Sum
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -39,33 +37,29 @@ class PublisherIncomeView(TitledViewMixin, LoginRequiredMixin, PermissionRequire
                 state=Purchase.State.ACCEPTED,
                 course__publisher=self.request.user,
             )
-            .values("course_id", "course__name")
-            .annotate(
-                sales_count=Count("id"),
-                total_income=Sum("amount"),
-            )
-            .order_by("-total_income", "course__name")
+            .values("course_id", "course__name", "amount")
+            .order_by("-amount", "course__name")
         )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         purchases = []
         total_enrollments = 0
-        total_sales = 0
         total_income = 0
+        distinct_courses = set()
 
         for purchase in context["purchases"]:
-            total_sales += purchase["sales_count"]
-            total_income += purchase["total_income"]
+            total_income += purchase["amount"]
             total_enrollments += 1
-            if purchase["total_income"] > 0:
+            if purchase["amount"] > 0:
+                distinct_courses.add(purchase["course_id"])
                 purchases.append(purchase)
-                purchase["income_percentage"] = purchase["total_income"] / total_income * 100
+                purchase["income_percentage"] = purchase["amount"] / total_income * 100
 
         context["purchases"] = purchases
         context["total_enrollments"] = total_enrollments
-        context["total_sales"] = total_sales
         context["total_income"] = total_income
+        context["distinct_courses"] = distinct_courses
         return context
 
 

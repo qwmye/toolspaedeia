@@ -15,13 +15,13 @@
             <header>
                 <strong>Total Sales</strong>
             </header>
-            <strong>{{ total_sales }}</strong>
+            <strong>{{ purchases|length }}</strong>
         </article>
         <article>
             <header>
                 <strong>Courses With Sales</strong>
             </header>
-            <strong>{{ purchases|length }}</strong>
+            <strong>{{ distinct_courses|length }}</strong>
         </article>
         <article>
             <header>
@@ -53,9 +53,9 @@
                             {{ row.course__name }}
                         </td>
                         <td>
-                            <sub>{{ row.total_income }} EUR</sub>
+                            <sub>{{ row.amount }} EUR</sub>
                             <sub> ({{ row.income_percentage|floatformat:2 }}%)</sub>
-                            <progress value="{{ row.total_income }}"
+                            <progress value="{{ row.amount }}"
                                       max="{{ total_income }}">
                             </progress>
                         </td>
