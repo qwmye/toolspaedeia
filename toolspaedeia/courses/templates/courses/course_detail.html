@@ -66,4 +66,20 @@
             </footer>
         </article>
     {% endfor %}
+    {% if not user_is_publisher %}
+        <form>
+            {% csrf_token %}
+            <input hidden
+                   name="course_id"
+                   value="{{ course.id }}" />
+            <p>
+                Not what you expected?
+                <u hx-post="{% url 'purchases:create_refund' %}"
+                   hx-confirm="Are you sure you want to refund the course?"
+                   hx-trigger="click">
+                    Click here to Refund
+                </u>
+            </p>
+        </form>
+    {% endif %}
 {% endblock content %}

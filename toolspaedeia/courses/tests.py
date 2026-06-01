@@ -150,7 +150,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
             form
             for form in browse_page.forms.values()
             if (
-                form.action.endswith(reverse("purchases:purchase_course"))
+                form.action.endswith(reverse("purchases:enroll_course"))
                 and form.fields.get("course")
                 and str(form["course"].value) == str(self.bug_course.id)
             )
@@ -158,7 +158,7 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
 
         purchase_form.submit().follow()
 
-        purchase_url = reverse("purchases:purchase_course")
+        purchase_url = reverse("purchases:enroll_course")
 
         self.app.post(purchase_url, params={"course": str(self.bug_course.id)})
         self.app.post(purchase_url, params={"course": str(self.bug_course.id)})

@@ -60,7 +60,7 @@ class PublisherIncomeView(TitledViewMixin, LoginRequiredMixin, PermissionRequire
         return context
 
 
-class PurchaseCourseView(LoginRequiredMixin, CreateView):
+class EnrollCourseView(LoginRequiredMixin, CreateView):
     http_method_names = ["post"]
     model = Purchase
     fields = ["course"]
@@ -132,6 +132,23 @@ class CreateCheckoutSessionView(LoginRequiredMixin, View):
         return JsonResponse({"id": session.id})
 
 
+class CreateRefundView(LoginRequiredMixin, View):
+    http_method_names = ["post"]
+    login_url = "users:login"
+
+    def post(self, request):
+        course_id = request.POST.get("course_id")
+        if not course_id:
+            return JsonResponse({"error": "Missing course_id."}, status=400)
+
+        purchase = Purchase.objects.get(user=request.user, course_id=course_id, state=Purchase.State.ACCEPTED)
+
+        refund = stripe.Refund.create(payment_intent=purchase.stripe_payment_id)
+        if refund.status == "succeeded":
+            purchase.delete()
+        return HttpResponse(status=201, headers={"HX-Redirect": reverse("courses:course_purchased_list")})
+
+
 class PurchasedContentOfflineMapView(LoginRequiredMixin, View):
     http_method_names = ["get"]
     login_url = "users:login"
@@ -185,7 +202,7 @@ class StripeWebhookView(View):
             user_id=user_id,
             course_id=course_id,
             defaults={
-                "amount": webhook_event.data.object.amount_total,
+                "amount": webhook_event.data.object.amount_total / 100.0,
                 "state": state,
                 "stripe_payment_id": webhook_event.data.object.payment_intent,
             },

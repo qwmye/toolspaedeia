@@ -1,3 +1,4 @@
+import stripe
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -8,8 +9,8 @@ class Purchase(models.Model):
         ACCEPTED = "ACCEPTED", "Accepted"
         REFUSED = "REFUSED", "Refused"
 
-    user = models.ForeignKey(get_user_model(), related_name="purchases", on_delete=models.CASCADE)
-    course = models.ForeignKey("courses.Course", related_name="purchases", on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), null=True, related_name="purchases", on_delete=models.SET_NULL)
+    course = models.ForeignKey("courses.Course", null=True, related_name="purchases", on_delete=models.SET_NULL)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     stripe_payment_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
     state = models.CharField(max_length=20, choices=State.choices, default=State.ACCEPTED)
@@ -25,3 +26,8 @@ class Purchase(models.Model):
 
     def __str__(self) -> str:
         return f"{self.state} purchase of {self.course.name} by {self.user.username} on {self.purchase_date}"
+
+    def delete(self, *args, **kwargs):
+        if self.state == self.State.ACCEPTED and self.stripe_payment_id:
+            stripe.Refund.create(payment_intent=self.stripe_payment_id)
+        return super().delete(*args, **kwargs)

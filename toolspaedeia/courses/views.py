@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -6,6 +7,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import DetailView
@@ -51,6 +53,9 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
             module.is_completed = module.progressions.filter(user=self.request.user, completed=True).exists()
             if module.is_completed:
                 progress += 1
+        purchase: Purchase = Purchase.objects.get(user=self.request.user, course=self.object)
+        is_purchase_refundable = purchase.purchase_date - timedelta(days=1) < timezone.now()
+
         context_data["modules"] = modules
         context_data["total_modules"] = len(modules)
         context_data["progress"] = progress
@@ -58,6 +63,7 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
             (context_data["progress"] / context_data["total_modules"] * 100) if modules else 0
         )
         context_data["user_is_publisher"] = self.request.user == self.object.publisher
+        context_data["user_can_refund"] = not context_data["user_is_publisher"] and is_purchase_refundable
         context_data["course_tags"] = {
             tag.name: tag.preferred_by_users.filter(id=self.request.user.id).exists() for tag in self.object.tags.all()
         }

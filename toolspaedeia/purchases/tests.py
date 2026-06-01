@@ -74,10 +74,10 @@ class PurchasesIntegrationWebTests(WebTest):
     @staticmethod
     def get_purchase_form(browse_page):
         return next(
-            form for form in browse_page.forms.values() if form.action.endswith(reverse("purchases:purchase_course"))
+            form for form in browse_page.forms.values() if form.action.endswith(reverse("purchases:enroll_course"))
         )
 
-    def test_purchase_course_post_flow(self):
+    def enroll_course_post_flow(self):
         browse_page = self.login_through_form()
         self.assertIn("Purchase for", browse_page.text)
         purchase_form = self.get_purchase_form(browse_page)
@@ -88,7 +88,7 @@ class PurchasesIntegrationWebTests(WebTest):
         self.assertTrue(Purchase.objects.filter(user=self.student, course=self.course).exists())
         self.assertEqual(Purchase.objects.filter(user=self.student, course=self.course).count(), 1)
 
-    def test_purchase_course_post_flow_prevents_duplicate_purchase(self):
+    def enroll_course_post_flow_prevents_duplicate_purchase(self):
         browse_page = self.login_through_form()
 
         first_tab_purchase_form = self.get_purchase_form(browse_page)
