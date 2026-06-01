@@ -1,6 +1,4 @@
 import os
-from urllib.parse import parse_qsl
-from urllib.parse import urlparse
 
 from toolspaedeia.settings import *  # noqa: F403
 
@@ -20,17 +18,14 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # --- Database ------------------
-postgres_db_url = urlparse(os.environ["DATABASE_URL"])
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": postgres_db_url.path.replace("/", ""),
-        "USER": postgres_db_url.username,
-        "PASSWORD": postgres_db_url.password,
-        "HOST": postgres_db_url.hostname,
-        "PORT": 5432,
-        "OPTIONS": dict(parse_qsl(postgres_db_url.query)),
+        "ENGINE": os.environ["DATABASE_ENGINE"],
+        "NAME": os.environ["DATABASE_NAME"],
+        "USER": os.environ["DATABASE_USER"],
+        "PASSWORD": os.environ["DATABASE_PASSWORD"],
+        "HOST": os.environ["DATABASE_HOST"],
+        "PORT": os.environ["DATABASE_POST"],
     }
 }
 
