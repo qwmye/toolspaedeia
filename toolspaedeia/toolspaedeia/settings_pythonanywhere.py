@@ -24,6 +24,8 @@ DATABASES = {
         "NAME": "toolspaedeia",
         "HOST": os.environ.get("POSTGRESQL_HOST"),
         "PORT": os.environ.get("POSTGRESQL_PORT"),
+        "USER": os.environ.get("POSTGRESQL_USER"),
+        "PASSWORD": os.environ.get("POSTGRESQL_PASSWORD"),
     }
 }
 
