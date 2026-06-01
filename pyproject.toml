@@ -20,7 +20,6 @@ dev = [
     "django-webtest==1.9.14",
 ]
 pythonanywhere = [
-    "psycopg2-binary==2.9.12",
     "mysqlclient==2.2.8",
 ]
 
