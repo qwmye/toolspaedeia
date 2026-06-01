@@ -1,5 +1,4 @@
 import contextlib
-from decimal import Decimal
 
 import stripe
 from django.conf import settings
@@ -52,17 +51,16 @@ class PublisherIncomeView(TitledViewMixin, LoginRequiredMixin, PermissionRequire
         context = super().get_context_data(**kwargs)
         purchases = []
         total_enrollments = 0
-        total_sales = Decimal("0.0")
+        total_sales = 0
         total_income = 0
 
         for purchase in context["purchases"]:
             total_sales += purchase["sales_count"]
             total_income += purchase["total_income"]
-            if purchase["sales_count"] == 0:
-                total_enrollments += 1
-            else:
+            total_enrollments += 1
+            if purchase["total_income"] > 0:
                 purchases.append(purchase)
-            purchase["income_percentage"] = purchase["sales_count"] / purchase["total_income"]
+                purchase["income_percentage"] = purchase["total_income"] / total_income * 100
 
         context["purchases"] = purchases
         context["total_enrollments"] = total_enrollments

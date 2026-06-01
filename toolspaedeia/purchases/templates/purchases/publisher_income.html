@@ -53,10 +53,10 @@
                             {{ row.course__name }}
                         </td>
                         <td>
-                            <sub>{{ row.sales_count }} EUR</sub>
+                            <sub>{{ row.total_income }} EUR</sub>
                             <sub> ({{ row.income_percentage|floatformat:2 }}%)</sub>
-                            <progress value="{{ row.sales_count }}"
-                                      max="{{ total_sales }}">
+                            <progress value="{{ row.total_income }}"
+                                      max="{{ total_income }}">
                             </progress>
                         </td>
                     </tr>
