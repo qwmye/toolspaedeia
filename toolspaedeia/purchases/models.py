@@ -1,3 +1,5 @@
+import contextlib
+
 import stripe
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -29,5 +31,6 @@ class Purchase(models.Model):
 
     def delete(self, *args, **kwargs):
         if self.state == self.State.ACCEPTED and self.stripe_payment_id:
-            stripe.Refund.create(payment_intent=self.stripe_payment_id)
+            with contextlib.suppress(stripe.InvalidRequestError):
+                stripe.Refund.create(payment_intent=self.stripe_payment_id)
         return super().delete(*args, **kwargs)

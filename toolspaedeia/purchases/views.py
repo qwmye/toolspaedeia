@@ -1,3 +1,4 @@
+import contextlib
 from decimal import Decimal
 
 import stripe
@@ -90,9 +91,9 @@ class CreateRefundView(LoginRequiredMixin, View):
 
         purchase = Purchase.objects.get(user=request.user, course_id=course_id, state=Purchase.State.ACCEPTED)
 
-        refund = stripe.Refund.create(payment_intent=purchase.stripe_payment_id)
-        if refund.status == "succeeded":
-            purchase.delete()
+        with contextlib.suppress(stripe.InvalidRequestError):
+            stripe.Refund.create(payment_intent=purchase.stripe_payment_id)
+        purchase.delete()
         return HttpResponse(status=201, headers={"HX-Redirect": reverse("courses:course_purchased_list")})
 
 
