@@ -8,7 +8,7 @@ export DJANGO_SETTINGS_MODULE="toolspaedeia.settings_pythonanywhere"
 
 echo "==> Installing / syncing dependencies…"
 cd "$PROJECT_DIR"
-uv sync --no-cache
+uv sync --extra pythonanywhere --no-cache
 
 echo "==> Applying database migrations…"
 uv run python "$MANAGE" migrate --noinput
