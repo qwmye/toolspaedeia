@@ -43,22 +43,23 @@ class PublisherIncomeView(TitledViewMixin, LoginRequiredMixin, PermissionRequire
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        purchases = []
         total_enrollments = 0
         total_income = 0
-        distinct_courses = set()
+        total_sales = 0
+        distinct_courses = {}
 
         for purchase in context["purchases"]:
             total_income += purchase["amount"]
             total_enrollments += 1
             if purchase["amount"] > 0:
-                distinct_courses.add(purchase["course_id"])
-                purchases.append(purchase)
-                purchase["income_percentage"] = purchase["amount"] / total_income * 100
+                total_sales += 1
+                if purchase["course__name"] not in distinct_courses:
+                    distinct_courses[purchase["course__name"]] = 0
+                distinct_courses[purchase["course__name"]] += purchase["amount"]
 
-        context["purchases"] = purchases
         context["total_enrollments"] = total_enrollments
         context["total_income"] = total_income
+        context["total_sales"] = total_sales
         context["distinct_courses"] = distinct_courses
         return context
 
