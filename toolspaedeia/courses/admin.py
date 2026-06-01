@@ -28,6 +28,7 @@ from .suggestions import suggest_tags
 admin.site.site_title = "Toolspaedeia Publishing"
 admin.site.site_header = "Toolspaedeia Publishing"
 admin.site.index_title = "Toolspaedeia Publishing"
+admin.site.disable_action("delete_selected")
 
 
 class ResourceInline(nested_admin.NestedStackedInline):
