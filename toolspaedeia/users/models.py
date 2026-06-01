@@ -1,4 +1,3 @@
-from PIL import Image
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -46,22 +45,3 @@ class UserSitePreferences(models.Model):
 
     def __str__(self) -> str:
         return f"Preferences for {self.user.username}"
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        profile_image = Image.open(self.profile_picture.path)
-        image_width, image_height = profile_image.size
-        max_full_size = 300
-        max_thumbnail_size = 48
-        if image_width > max_full_size or image_height > max_full_size:
-            profile_image = profile_image.crop(
-                (
-                    (image_width - max_full_size) // 2,
-                    (image_height - max_full_size) // 2,
-                    (image_width + max_full_size) // 2,
-                    (image_height + max_full_size) // 2,
-                )
-            )
-        if image_width > max_thumbnail_size or image_height > max_thumbnail_size:
-            profile_image.thumbnail((max_thumbnail_size, max_thumbnail_size))
-        profile_image.save(self.profile_picture.path)
