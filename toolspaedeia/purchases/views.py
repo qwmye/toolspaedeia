@@ -44,17 +44,28 @@ class PublisherIncomeView(TitledViewMixin, LoginRequiredMixin, PermissionRequire
             .annotate(
                 sales_count=Count("id"),
                 total_income=Sum("amount"),
-                income_percentage=Sum("amount") / Sum("course__price") * 100,
             )
             .order_by("-total_income", "course__name")
         )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        purchases = list(context["purchases"])
-        total_sales = sum(row["sales_count"] for row in purchases)
-        total_income = sum((row["total_income"] for row in purchases), start=Decimal("0.00"))
+        purchases = []
+        total_enrollments = 0
+        total_sales = Decimal("0.0")
+        total_income = 0
+
+        for purchase in context["purchases"]:
+            total_sales += purchase["sales_count"]
+            total_income += purchase["total_income"]
+            if purchase["sales_count"] == 0:
+                total_enrollments += 1
+            else:
+                purchases.append(purchase)
+            purchase["income_percentage"] = purchase["sales_count"] / purchase["total_income"]
+
         context["purchases"] = purchases
+        context["total_enrollments"] = total_enrollments
         context["total_sales"] = total_sales
         context["total_income"] = total_income
         return context
@@ -193,8 +204,8 @@ class EnrollmentDialogView(LoginRequiredMixin, View):
                         }
                     ],
                     mode="payment",
-                    success_url=request.build_absolute_uri("/courses/browse/"),
-                    cancel_url=request.build_absolute_uri("/courses/browse/"),
+                    success_url=request.build_absolute_uri("/courses/purchased-courses/"),
+                    cancel_url=request.build_absolute_uri("/courses/purchased-courses/"),
                     metadata={
                         "course_id": str(course.id),
                         "user_id": str(request.user.id),
