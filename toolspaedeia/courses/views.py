@@ -53,8 +53,10 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
             module.is_completed = module.progressions.filter(user=self.request.user, completed=True).exists()
             if module.is_completed:
                 progress += 1
-        purchase: Purchase = Purchase.objects.get(user=self.request.user, course=self.object)
-        is_purchase_refundable = purchase.purchase_date - timedelta(days=1) < timezone.now()
+        is_purchase_refundable = False
+        purchase: Purchase = Purchase.objects.filter(user=self.request.user, course=self.object).first()
+        if purchase:
+            is_purchase_refundable = purchase.purchase_date - timedelta(days=1) < timezone.now()
 
         context_data["modules"] = modules
         context_data["total_modules"] = len(modules)
