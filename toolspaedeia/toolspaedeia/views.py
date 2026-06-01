@@ -66,3 +66,8 @@ class HomeView(TitledViewMixin, TemplateView):
             }
         )
         return context
+
+
+class NoInternetView(TitledViewMixin, TemplateView):
+    template_name = "no-internet.html"
+    title = "Mod Offline Limitat"

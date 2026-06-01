@@ -5,10 +5,12 @@ from django.urls import include
 from django.urls import path
 
 from toolspaedeia.views import HomeView
+from toolspaedeia.views import NoInternetView
 
 urlpatterns = [
     path("", include("pwa.urls")),
     path("", HomeView.as_view(), name="home"),
+    path("no-internet/", NoInternetView.as_view(), name="no_internet"),
     path("admin/", admin.site.urls),
     path("courses/", include("courses.urls")),
     path("purchases/", include("purchases.urls")),

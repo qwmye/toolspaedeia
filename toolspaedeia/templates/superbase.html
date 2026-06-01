@@ -31,8 +31,6 @@
                 integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
                 crossorigin="anonymous"
                 defer></script>
-        <link href=" https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@3.3.1/css/all/all.min.css "
-              rel="stylesheet" />
 
         {% progressive_web_app_meta %}
 
@@ -59,13 +57,15 @@
         </script>
     </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-        <aside id="connectivity-banner"
-               class="container"
-               aria-live="polite"
-               hidden>
-            You are currently offline.
-        </aside>
         <header class="container">
+            <button id="connectivity-banner"
+                    type="submit"
+                    class="outline contrast">
+                You are currently offline.
+                <a href="{% url 'no_internet' %}">
+                    Click here for more details.
+                </a>
+            </button>
             <form>
                 <button formaction="{% url 'home' %}"
                         formmethod="get"

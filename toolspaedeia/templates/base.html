@@ -1,4 +1,5 @@
 {% extends "superbase.html" %}
+{% load static %}
 
 {% block head %}
     {{ block.super }}
@@ -74,7 +75,10 @@
                         type="submit"
                         data-tooltip="ToolsPaedeia"
                         data-placement="bottom">
-                    <i class="fi fi-sr-house-chimney"></i>
+                    <img src="{% static 'icons/home.svg' %}"
+                         alt="Home"
+                         width="20"
+                         height="20" />
                 </button>
             </form>
         </li>
@@ -88,7 +92,10 @@
                             type="submit"
                             data-tooltip="Publisher Interface"
                             data-placement="bottom">
-                        <i class="fi fi-sr-pencil"></i>
+                        <img src="{% static 'icons/pencil.svg' %}"
+                             alt="Edit"
+                             width="20"
+                             height="20" />
                     </button>
                 </form>
             </li>
@@ -101,7 +108,10 @@
                             type="submit"
                             data-tooltip="Income Dashboard"
                             data-placement="bottom">
-                        <i class="fi fi-sr-chart-simple"></i>
+                        <img src="{% static 'icons/chart.svg' %}"
+                             alt="Income"
+                             width="20"
+                             height="20" />
                     </button>
                 </form>
             </li>
@@ -113,7 +123,10 @@
                         type="submit"
                         data-tooltip="Courses"
                         data-placement="bottom">
-                    <i class="fi fi-sr-books"></i>
+                    <img src="{% static 'icons/books.svg' %}"
+                         alt="Courses"
+                         width="20"
+                         height="20" />
                 </button>
             </form>
         </li>
@@ -124,7 +137,10 @@
                         type="submit"
                         data-tooltip="Settings"
                         data-placement="bottom">
-                    <i class="fi fi-br-gears"></i>
+                    <img src="{% static 'icons/settings.svg' %}"
+                         alt="Settings"
+                         width="20"
+                         height="20" />
                 </button>
             </form>
         </li>
@@ -137,7 +153,10 @@
                             type="submit"
                             data-tooltip="Logout"
                             data-placement="bottom">
-                        <i class="fi fi-br-power"></i>
+                        <img src="{% static 'icons/power.svg' %}"
+                             alt="Logout"
+                             width="20"
+                             height="20" />
                     </button>
                 </form>
             </li>

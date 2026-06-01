@@ -3,6 +3,7 @@ const PRIVATE_CONTENT_CACHE = "toolspaedeia-private-content-v3";
 
 const SHELL_URLS = [
     "/",
+    "/no-internet/",
     "/courses/purchased-courses/",
     "/courses/published-courses/"
 ];

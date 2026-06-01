@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="grid">
+        <article>
+            <header>
+                <h2>
+                    Limited Offline Mode
+                </h2>
+                <p>
+                    You are currently offline. To ensure a continuous experience,
+                    Toolspaedeia uses PWA technology to provide access to previously
+                    downloaded materials.
+                </p>
+            </header>
+
+            <section>
+                <h3>
+                    What you can do:
+                </h3>
+                <ul>
+                    <li>
+                        <strong>View purchased courses:</strong>
+                        You have access to all materials you have previously bought.
+                    </li>
+                    <li>
+                        <strong>Study content:</strong>
+                        You can read lessons and access attached resources,
+                        as they are stored locally in the cache.
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>
+                    What you cannot do:
+                </h3>
+                <ul>
+                    <li>
+                        <strong>Purchase new courses</strong>
+                    </li>
+                    <li>
+                        <strong>Take quizzes</strong>
+                    </li>
+                    <li>
+                        <strong>Mark modules as complete</strong>
+                    </li>
+                </ul>
+            </section>
+
+            <footer>
+                <p>
+                    <em>
+                        Connection will be restored automatically
+                        as soon as you are back online.
+                    </em>
+                </p>
+                <a href="{% url 'home' %}"
+                   role="button"
+                   class="secondary">Back to Home Page</a>
+            </footer>
+        </article>
+    </div>
+{% endblock content %}
