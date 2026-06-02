@@ -2,10 +2,11 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django_webtest import WebTest
 
+from courses.models import CourseTag
 from users.models import UserSitePreferences
 
 
-class UsersIntegrationWebTests(WebTest):
+class BaseUserWebTest(WebTest):
     csrf_checks = False
 
     def setUp(self):
@@ -36,9 +37,11 @@ class UsersIntegrationWebTests(WebTest):
         return next(form for form in preferences_page.forms.values() if form.fields.get("color_theme"))
 
     @staticmethod
-    def get_settings_form(settings_page):
-        return next(form for form in settings_page.forms.values() if form.fields.get("receive_notifications"))
+    def get_account_form(account_page):
+        return next(form for form in account_page.forms.values() if form.fields.get("username"))
 
+
+class LoginViewTests(BaseUserWebTest):
     def test_login_view_form_flow(self):
         browse_page = self.login_through_form()
 
@@ -75,6 +78,40 @@ class UsersIntegrationWebTests(WebTest):
         self.assertEqual(redirected_page.status_code, 200)
         self.assertIn("Courses", redirected_page.text)
 
+
+class LogoutViewTests(BaseUserWebTest):
+    def test_logout_view_post_flow(self):
+        self.login_through_form()
+        logout_response = self.app.post(reverse("users:logout"), expect_errors=True)
+
+        self.assertEqual(logout_response.status_code, 302)
+        self.assertEqual(logout_response.location, reverse("users:login"))
+
+        logged_out_page = logout_response.follow()
+        self.assertEqual(logged_out_page.status_code, 200)
+        self.assertIn("Login", logged_out_page.text)
+
+        after_logout_preferences = self.app.get(reverse("users:preferences"), expect_errors=True)
+        self.assertEqual(after_logout_preferences.status_code, 302)
+        self.assertIn(reverse("users:login"), after_logout_preferences.location)
+
+    def test_logout_view_post_twice_remains_logged_out(self):
+        self.login_through_form()
+
+        first_logout_response = self.app.post(reverse("users:logout"), expect_errors=True)
+        second_logout_response = self.app.post(reverse("users:logout"), expect_errors=True)
+
+        self.assertEqual(first_logout_response.status_code, 302)
+        self.assertEqual(first_logout_response.location, reverse("users:login"))
+        self.assertEqual(second_logout_response.status_code, 302)
+        self.assertEqual(second_logout_response.location, reverse("users:login"))
+
+        preferences_after_second_logout = self.app.get(reverse("users:preferences"), expect_errors=True)
+        self.assertEqual(preferences_after_second_logout.status_code, 302)
+        self.assertIn(reverse("users:login"), preferences_after_second_logout.location)
+
+
+class UserPreferencesViewTests(BaseUserWebTest):
     def test_preferences_view_get_and_post_flow(self):
         self.login_through_form()
         preferences_page = self.app.get(reverse("users:preferences"))
@@ -109,36 +146,6 @@ class UsersIntegrationWebTests(WebTest):
         self.assertEqual(preference.theme_mode, "")
         self.assertEqual(preference.color_theme, "pumpkin")
 
-    def test_logout_view_post_flow(self):
-        self.login_through_form()
-        logout_response = self.app.post(reverse("users:logout"), expect_errors=True)
-
-        self.assertEqual(logout_response.status_code, 302)
-        self.assertEqual(logout_response.location, reverse("users:login"))
-
-        logged_out_page = logout_response.follow()
-        self.assertEqual(logged_out_page.status_code, 200)
-        self.assertIn("Login", logged_out_page.text)
-
-        after_logout_preferences = self.app.get(reverse("users:preferences"), expect_errors=True)
-        self.assertEqual(after_logout_preferences.status_code, 302)
-        self.assertIn(reverse("users:login"), after_logout_preferences.location)
-
-    def test_logout_view_post_twice_remains_logged_out(self):
-        self.login_through_form()
-
-        first_logout_response = self.app.post(reverse("users:logout"), expect_errors=True)
-        second_logout_response = self.app.post(reverse("users:logout"), expect_errors=True)
-
-        self.assertEqual(first_logout_response.status_code, 302)
-        self.assertEqual(first_logout_response.location, reverse("users:login"))
-        self.assertEqual(second_logout_response.status_code, 302)
-        self.assertEqual(second_logout_response.location, reverse("users:login"))
-
-        preferences_after_second_logout = self.app.get(reverse("users:preferences"), expect_errors=True)
-        self.assertEqual(preferences_after_second_logout.status_code, 302)
-        self.assertIn(reverse("users:login"), preferences_after_second_logout.location)
-
     def test_settings_view_get_and_post_flow(self):
         self.login_through_form()
         settings_page = self.app.get(reverse("users:preferences"))
@@ -147,7 +154,7 @@ class UsersIntegrationWebTests(WebTest):
         self.assertIn("User Site Preferences", settings_page.text)
         self.assertIn(self.student.username, settings_page.text)
 
-        settings_form = self.get_settings_form(settings_page)
+        settings_form = next(form for form in settings_page.forms.values() if form.fields.get("receive_notifications"))
         settings_form["receive_notifications"].checked = False
         response = settings_form.submit().follow()
 
@@ -168,10 +175,8 @@ class UsersIntegrationWebTests(WebTest):
 
         self.assertIn("Preferences", settings_page.text)
 
-    @staticmethod
-    def get_account_form(account_page):
-        return next(form for form in account_page.forms.values() if form.fields.get("username"))
 
+class UserAccountViewTests(BaseUserWebTest):
     def test_account_view_get_and_post_flow(self):
         self.login_through_form()
         account_page = self.app.get(reverse("users:account"))
@@ -228,3 +233,108 @@ class UsersIntegrationWebTests(WebTest):
         self.assertIn("Account", account_page.text)
         self.assertIn("Preferences", account_page.text)
         self.assertIn("Settings", account_page.text)
+
+
+class ToggleTagPreferenceViewTests(BaseUserWebTest):
+    def test_toggle_tag_preference_view_requires_login(self):
+        tag = CourseTag.objects.create(name="Python")
+        response = self.app.post(
+            reverse("users:toggle_tag_preference"),
+            params={"tag_id": tag.id},
+            expect_errors=True,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("users:login"), response.location)
+
+    def test_toggle_tag_preference_view_add_tag(self):
+        self.login_through_form()
+        tag = CourseTag.objects.create(name="Python")
+        preferences, _ = UserSitePreferences.objects.get_or_create(user=self.student)
+
+        self.assertFalse(preferences.preferred_tags.filter(id=tag.id).exists())
+
+        response = self.app.post(
+            reverse("users:toggle_tag_preference"),
+            params={"tag_id": tag.id},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("✓ Python", response.text)
+        preferences.refresh_from_db()
+        self.assertTrue(preferences.preferred_tags.filter(id=tag.id).exists())
+
+    def test_toggle_tag_preference_view_remove_tag(self):
+        self.login_through_form()
+        tag = CourseTag.objects.create(name="JavaScript")
+        preferences, _ = UserSitePreferences.objects.get_or_create(user=self.student)
+        preferences.preferred_tags.add(tag)
+
+        self.assertTrue(preferences.preferred_tags.filter(id=tag.id).exists())
+
+        response = self.app.post(
+            reverse("users:toggle_tag_preference"),
+            params={"tag_id": tag.id},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("+ JavaScript", response.text)
+        preferences.refresh_from_db()
+        self.assertFalse(preferences.preferred_tags.filter(id=tag.id).exists())
+
+    def test_toggle_tag_preference_view_missing_tag_id_returns_400(self):
+        self.login_through_form()
+        response = self.app.post(
+            reverse("users:toggle_tag_preference"),
+            params={},
+            expect_errors=True,
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Missing tag_id", response.text)
+
+    def test_toggle_tag_preference_view_nonexistent_tag_returns_404(self):
+        self.login_through_form()
+        response = self.app.post(
+            reverse("users:toggle_tag_preference"),
+            params={"tag_id": 99999},
+            expect_errors=True,
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_toggle_tag_preference_view_preserves_search_query(self):
+        self.login_through_form()
+        tag = CourseTag.objects.create(name="Python")
+        CourseTag.objects.create(name="JavaScript")
+
+        response = self.app.post(
+            reverse("users:toggle_tag_preference"),
+            params={"tag_id": tag.id, "q": "python"},
+            extra_environ={"QUERY_STRING": "q=python"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Python", response.text)
+        preferences = UserSitePreferences.objects.get(user=self.student)
+        self.assertTrue(preferences.preferred_tags.filter(id=tag.id).exists())
+
+    def test_toggle_tag_preference_view_returns_both_columns(self):
+        self.login_through_form()
+        tag1 = CourseTag.objects.create(name="Python")
+        tag2 = CourseTag.objects.create(name="JavaScript")
+        tag3 = CourseTag.objects.create(name="Django")
+        preferences, _ = UserSitePreferences.objects.get_or_create(user=self.student)
+        preferences.preferred_tags.add(tag1, tag2)
+
+        response = self.app.post(
+            reverse("users:toggle_tag_preference"),
+            params={"tag_id": tag3.id},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Available Tags", response.text)
+        self.assertIn("Preferred Tags", response.text)
+        self.assertIn("✓ Python", response.text)
+        self.assertIn("✓ JavaScript", response.text)
+        self.assertIn("✓ Django", response.text)
