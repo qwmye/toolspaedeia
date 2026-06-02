@@ -309,6 +309,19 @@ class AttemptQuizView(LoginRequiredMixin, View):
             module__course_id=course_id,
         )
         course = quiz.module.course
+
+        user_is_publisher = request.user == course.publisher
+        has_access = (
+            user_is_publisher
+            or course.purchases.filter(
+                user=request.user,
+                state=Purchase.State.ACCEPTED,
+            ).exists()
+        )
+
+        if not has_access:
+            return HttpResponse(status=403)
+
         questions = get_attempt_questions(quiz)
         quiz_data = build_quiz_data(questions)
         return self.render_quiz_section(request, quiz, course, quiz_data)
@@ -320,6 +333,19 @@ class AttemptQuizView(LoginRequiredMixin, View):
             module__course_id=course_id,
         )
         course = quiz.module.course
+
+        user_is_publisher = request.user == course.publisher
+        has_access = (
+            user_is_publisher
+            or course.purchases.filter(
+                user=request.user,
+                state=Purchase.State.ACCEPTED,
+            ).exists()
+        )
+
+        if not has_access:
+            return HttpResponse(status=403)
+
         questions = get_attempt_questions(quiz, request.POST.getlist("question_ids"))
 
         answers_by_question = {}

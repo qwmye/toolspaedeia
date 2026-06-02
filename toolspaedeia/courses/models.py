@@ -72,9 +72,9 @@ class Module(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        existing_orders = self.course.modules.exclude(pk=self.pk).values_list("order")
-        if self.order in existing_orders:
-            self.order = max(existing_orders) + 1
+        if not self.pk and not self.order:
+            max_order_result = self.course.modules.aggregate(max_order=models.Max("order"))["max_order"]
+            self.order = (max_order_result or 0) + 1
         super().save(*args, **kwargs)
 
 
