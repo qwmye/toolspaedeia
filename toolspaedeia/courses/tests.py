@@ -8,12 +8,14 @@ from django_webtest import WebTest
 
 from courses.models import Answer
 from courses.models import Course
+from courses.models import CourseTag
 from courses.models import Module
 from courses.models import ModuleProgression
 from courses.models import Question
 from courses.models import Quiz
 from courses.models import Resource
 from purchases.models import Purchase
+from users.models import UserSitePreferences
 
 
 class CoursesWebTestBase(WebTest):
@@ -400,3 +402,137 @@ class ResourceIntegrationTests(CoursesWebTestBase):
 
         self.assertNotIn("resource:Summary", module_page.text)
         self.assertIn(resource.file.url, module_page.text)
+
+
+class CourseRecommendationsListViewTests(CoursesWebTestBase):
+    def setUp(self):
+        super().setUp()
+        self.python_tag = CourseTag.objects.create(name="python")
+        self.javascript_tag = CourseTag.objects.create(name="javascript")
+        self.django_tag = CourseTag.objects.create(name="django")
+        self.react_tag = CourseTag.objects.create(name="react")
+
+        self.course.tags.add(self.python_tag, self.django_tag)
+
+        self.other_course_1 = Course.objects.create(
+            name="JavaScript Course",
+            description="Learn JavaScript",
+            is_draft=False,
+            price=29.99,
+            publisher=self.publisher,
+        )
+        self.other_course_1.tags.add(self.javascript_tag)
+
+        self.other_course_2 = Course.objects.create(
+            name="Advanced Django",
+            description="Advanced Django topics",
+            is_draft=False,
+            price=39.99,
+            publisher=self.publisher,
+        )
+        self.other_course_2.tags.add(self.python_tag, self.django_tag)
+
+        self.other_course_3 = Course.objects.create(
+            name="React Basics",
+            description="Learn React",
+            is_draft=False,
+            price=34.99,
+            publisher=self.publisher,
+        )
+        self.other_course_3.tags.add(self.react_tag)
+
+        self.user_preferences, _ = UserSitePreferences.objects.get_or_create(user=self.student)
+        self.user_preferences.preferred_tags.add(self.django_tag, self.react_tag)
+
+    def test_recommendations_page_requires_login(self):
+        response = self.app.get(reverse("courses:course_recommendations_list"), expect_errors=True)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("users:login"), response.location)
+
+    def test_recommendations_shows_courses_matching_preferred_tags(self):
+        self.login_through_form()
+        recommendations_page = self.app.get(reverse("courses:course_recommendations_list"))
+
+        self.assertEqual(recommendations_page.status_code, 200)
+        self.assertIn("Recommended Courses", recommendations_page.text)
+        self.assertIn("Advanced Django", recommendations_page.text)
+        self.assertIn("React Basics", recommendations_page.text)
+
+    def test_recommendations_excludes_purchased_courses(self):
+        self.login_through_form()
+        recommendations_page = self.app.get(reverse("courses:course_recommendations_list"))
+
+        self.assertNotIn("Integration Course", recommendations_page.text)
+
+    def test_recommendations_excludes_published_courses(self):
+        published_course = Course.objects.create(
+            name="My Published Course",
+            description="A course I published",
+            is_draft=False,
+            price=49.99,
+            publisher=self.student,
+        )
+        published_course.tags.add(self.django_tag)
+
+        self.login_through_form()
+        recommendations_page = self.app.get(reverse("courses:course_recommendations_list"))
+
+        self.assertNotIn("My Published Course", recommendations_page.text)
+
+    def test_recommendations_scores_by_preferred_tags(self):
+        self.login_through_form()
+        recommendations_page = self.app.get(reverse("courses:course_recommendations_list"))
+
+        django_idx = recommendations_page.text.find("Advanced Django")
+        react_idx = recommendations_page.text.find("React Basics")
+
+        self.assertGreater(django_idx, 0)
+        self.assertGreater(react_idx, 0)
+        self.assertLess(django_idx, react_idx)
+
+    def test_recommendations_scores_by_purchased_course_tags(self):
+        second_purchase = Course.objects.create(
+            name="More JavaScript",
+            description="More JS",
+            is_draft=False,
+            price=24.99,
+            publisher=self.publisher,
+        )
+        second_purchase.tags.add(self.javascript_tag)
+        Purchase.objects.create(user=self.student, course=second_purchase, amount=second_purchase.price)
+
+        self.login_through_form()
+        recommendations_page = self.app.get(reverse("courses:course_recommendations_list"))
+
+        self.assertIn("JavaScript Course", recommendations_page.text)
+
+    def test_recommendations_shows_empty_message_when_no_matches(self):
+        self.user_preferences.preferred_tags.clear()
+        Purchase.objects.filter(user=self.student).delete()
+
+        self.login_through_form()
+        recommendations_page = self.app.get(reverse("courses:course_recommendations_list"))
+
+        self.assertIn("No recommendations available", recommendations_page.text)
+
+    def test_recommendations_limits_to_top_5(self):
+        for i in range(10):
+            course = Course.objects.create(
+                name=f"Course {i}",
+                description=f"Course {i} description",
+                is_draft=False,
+                price=20.00 + i,
+                publisher=self.publisher,
+            )
+            course.tags.add(self.django_tag)
+
+        self.login_through_form()
+        recommendations_page = self.app.get(reverse("courses:course_recommendations_list"))
+
+        course_count = 0
+        for i in range(10):
+            if f"Course {i}" in recommendations_page.text:
+                course_count += 1
+
+        self.assertLessEqual(course_count, 5)
