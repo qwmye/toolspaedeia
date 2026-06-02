@@ -4,6 +4,7 @@ import stripe
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -18,6 +19,7 @@ from django.views.generic import CreateView
 from django.views.generic import ListView
 
 from courses.models import Course
+from courses.models import Module
 from purchases.models import Purchase
 from toolspaedeia.mixins import TitledViewMixin
 
@@ -43,24 +45,25 @@ class PublisherIncomeView(TitledViewMixin, LoginRequiredMixin, PermissionRequire
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        total_enrollments = 0
-        total_income = 0
-        total_sales = 0
-        distinct_courses = {}
 
-        for purchase in context["purchases"]:
-            total_income += purchase["amount"]
-            total_enrollments += 1
-            if purchase["amount"] > 0:
-                total_sales += 1
-                if purchase["course__name"] not in distinct_courses:
-                    distinct_courses[purchase["course__name"]] = 0
-                distinct_courses[purchase["course__name"]] += purchase["amount"]
+        purchases = Purchase.objects.filter(
+            state=Purchase.State.ACCEPTED,
+            course__publisher=self.request.user,
+        )
 
-        context["total_enrollments"] = total_enrollments
-        context["total_income"] = total_income
-        context["total_sales"] = total_sales
-        context["distinct_courses"] = distinct_courses
+        context["total_enrollments"] = purchases.count()
+
+        totals = purchases.aggregate(total_income=Sum("amount"))
+        context["total_income"] = totals["total_income"] or 0
+
+        context["total_sales"] = purchases.filter(amount__gt=0).count()
+
+        context["distinct_courses"] = dict(
+            purchases.values("course__name")
+            .annotate(total_amount=Sum("amount"))
+            .values_list("course__name", "total_amount")
+        )
+
         return context
 
 
@@ -72,11 +75,23 @@ class EnrollCourseView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("courses:course_browse_list")
 
     def form_valid(self, form):
+        course = form.instance.course
+
+        if course.is_draft:
+            return redirect(self.request.META.get("HTTP_REFERER", self.success_url))
+
+        if Purchase.objects.filter(
+            user=self.request.user,
+            course=course,
+            state__in=[Purchase.State.ACCEPTED, Purchase.State.PENDING],
+        ).exists():
+            return redirect(self.request.META.get("HTTP_REFERER", self.success_url))
+
         Purchase.objects.update_or_create(
             user=self.request.user,
-            course=form.instance.course,
+            course=course,
             defaults={
-                "amount": form.instance.course.price,
+                "amount": course.price,
                 "state": Purchase.State.ACCEPTED,
                 "stripe_payment_id": None,
             },
@@ -93,10 +108,17 @@ class CreateRefundView(LoginRequiredMixin, View):
         if not course_id:
             return JsonResponse({"error": "Missing course_id."}, status=400)
 
-        purchase = Purchase.objects.get(user=request.user, course_id=course_id, state=Purchase.State.ACCEPTED)
+        purchase = get_object_or_404(
+            Purchase,
+            user=request.user,
+            course_id=course_id,
+            state=Purchase.State.ACCEPTED,
+        )
 
-        with contextlib.suppress(stripe.InvalidRequestError):
-            stripe.Refund.create(payment_intent=purchase.stripe_payment_id)
+        if purchase.stripe_payment_id:
+            with contextlib.suppress(stripe.InvalidRequestError):
+                stripe.Refund.create(payment_intent=purchase.stripe_payment_id)
+
         purchase.delete()
         return HttpResponse(status=201, headers={"HX-Redirect": reverse("courses:course_purchased_list")})
 
@@ -106,27 +128,31 @@ class PurchasedContentOfflineMapView(LoginRequiredMixin, View):
     login_url = "users:login"
 
     def get(self, request):
-        purchases = (
-            Purchase.objects.filter(user=request.user, state=Purchase.State.ACCEPTED)
-            .select_related("course")
-            .prefetch_related("course__modules")
-        )
+        urls = set()
 
-        urls = []
-        for purchase in purchases:
-            course = purchase.course
-            urls.append(reverse("courses:course_detail", kwargs={"course_id": course.id}))
+        course_ids = Purchase.objects.filter(
+            user=request.user,
+            state=Purchase.State.ACCEPTED,
+        ).values_list("course_id", flat=True)
 
-            urls.extend(
-                reverse(
-                    "courses:module_detail",
-                    kwargs={"course_id": course.id, "module_id": module.id},
-                )
-                for module in course.modules.filter(is_draft=False).order_by("order")
+        course_urls = [reverse("courses:course_detail", kwargs={"course_id": course_id}) for course_id in course_ids]
+        urls.update(course_urls)
+
+        modules = Module.objects.filter(
+            course_id__in=course_ids,
+            is_draft=False,
+        ).values_list("course_id", "id")
+
+        module_urls = [
+            reverse(
+                "courses:module_detail",
+                kwargs={"course_id": course_id, "module_id": module_id},
             )
+            for course_id, module_id in modules
+        ]
+        urls.update(module_urls)
 
-        unique_urls = list(dict.fromkeys(urls))
-        return JsonResponse({"urls": unique_urls})
+        return JsonResponse({"urls": sorted(urls)})
 
 
 @method_decorator(csrf_exempt, name="dispatch")
