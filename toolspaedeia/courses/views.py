@@ -54,9 +54,9 @@ class CourseDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
             if module.is_completed:
                 progress += 1
         is_purchase_refundable = False
-        purchase: Purchase = Purchase.objects.filter(user=self.request.user, course=self.object).first()
+        purchase: Purchase | None = Purchase.objects.filter(user=self.request.user, course=self.object).first()
         if purchase:
-            is_purchase_refundable = purchase.purchase_date - timedelta(days=1) < timezone.now()
+            is_purchase_refundable = purchase.purchase_date + timedelta(days=1) > timezone.now()
 
         context_data["modules"] = modules
         context_data["total_modules"] = len(modules)
@@ -171,9 +171,9 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         course = super().get_object(queryset)
         module_id = self.kwargs.get("module_id")
         if module_id:
-            course.module = course.modules.filter(Q(is_draft=False) | Q(course__publisher=self.request.user)).get(
-                id=module_id
-            )
+            user_is_publisher = self.request.user == course.publisher
+            draft_filter = Q() if user_is_publisher else Q(is_draft=False)
+            course.module = course.modules.filter(draft_filter).get(id=module_id)
         return course
 
     def get_title(self) -> str:
@@ -185,8 +185,14 @@ class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
         course = self.get_object()
         module = course.module
         context["user_is_publisher"] = self.request.user == course.publisher
-        previous_module = self.object.modules.filter(order__lt=module.order).order_by("-order").first()
-        next_module = self.object.modules.filter(order__gt=module.order).order_by("order").first()
+
+        user_is_publisher = context["user_is_publisher"]
+        draft_filter = Q() if user_is_publisher else Q(is_draft=False)
+
+        previous_module = (
+            self.object.modules.filter(order__lt=module.order).filter(draft_filter).order_by("-order").first()
+        )
+        next_module = self.object.modules.filter(order__gt=module.order).filter(draft_filter).order_by("order").first()
         if previous_module:
             context["previous_module"] = previous_module
         if next_module:
@@ -215,7 +221,21 @@ class ModuleMarkCompleteView(LoginRequiredMixin, View):
     login_url = "users:login"
 
     def post(self, request, course_id, module_id):
-        module = get_object_or_404(Module, pk=module_id)
+        course = get_object_or_404(Course, id=course_id, modules__id=module_id)
+
+        user_is_publisher = request.user == course.publisher
+        has_access = (
+            user_is_publisher
+            or course.purchases.filter(
+                user=request.user,
+                state=Purchase.State.ACCEPTED,
+            ).exists()
+        )
+
+        if not has_access:
+            return HttpResponse(status=403)
+
+        module = get_object_or_404(Module, pk=module_id, course=course)
         progression, _ = module.progressions.get_or_create(user=request.user)
         progression.completed = not progression.completed
         progression.save()

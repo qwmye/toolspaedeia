@@ -1,6 +1,3 @@
-import contextlib
-
-import stripe
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -27,12 +24,7 @@ class Purchase(models.Model):
         verbose_name_plural = "Purchases"
 
     def __str__(self) -> str:
+        user_name = self.user.username if self.user else "Unknown"
         if self.course:
-            return f"{self.state} purchase of {self.course.name} by {self.user.username} on {self.purchase_date}"
-        return f"{self.state} purchase by {self.user.username} on {self.purchase_date}"
-
-    def delete(self, *args, **kwargs):
-        if self.state == self.State.ACCEPTED and self.stripe_payment_id:
-            with contextlib.suppress(stripe.InvalidRequestError):
-                stripe.Refund.create(payment_intent=self.stripe_payment_id)
-        return super().delete(*args, **kwargs)
+            return f"{self.state} purchase of {self.course.name} by {user_name} on {self.purchase_date}"
+        return f"{self.state} purchase by {user_name} on {self.purchase_date}"
