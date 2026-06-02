@@ -1,69 +1,50 @@
+{# djlint:off T001,H037 #}
 <div>
     <h3>
         {{ title }}
     </h3>
-    <ul>
-        {% for tag in page_obj.object_list %}
-            <li>
+    {% for tag in page_obj.object_list %}
+        <p>
+            <button hx-post="{% url 'users:toggle_tag_preference' %}{{ query_suffix }}"
+                    hx-vals='{"tag_id": {{ tag.id }}}'
+                    hx-target="#tags-lists"
+                    hx-swap="innerHTML"
+                    class="{% if list_role == 'preferred' %}
+                               contrast
+                           {% endif %}">
                 {% if list_role == "preferred" %}
-                    <input type="hidden"
-                           name="visible_preferred_tags"
-                           value="{{ tag.id }}" />
+                    ✓ {{ tag.name }}
+                {% else %}
+                    + {{ tag.name }}
                 {% endif %}
-                <label>
-                    <input type="checkbox"
-                           name="{{ checkbox_name }}"
-                           value="{{ tag.id }}"
-                           {% if list_role == "preferred" %}
-                               checked
-                           {% endif %} />
-                    {{ tag.name }}
-                </label>
-            </li>
-        {% empty %}
-            <li>
-                {{ empty_message }}
-            </li>
-        {% endfor %}
-    </ul>
+            </button>
+        </p>
+    {% empty %}
+        {{ empty_message }}
+    {% endfor %}
 
     {% if page_obj.paginator.num_pages > 1 %}
         <nav aria-label="{{ pagination_label }}">
             <ul>
-                {% if page_obj.has_previous %}
+                {% if previous_url %}
                     <li>
-                        {% if tag_query %}
-                            <a href="?q={{ tag_query }}&{{ page_param }}={{ page_obj.previous_page_number }}&{{ other_page_param }}={{ other_page_number }}"
-                               hx-get="?q={{ tag_query }}&{{ page_param }}={{ page_obj.previous_page_number }}&{{ other_page_param }}={{ other_page_number }}"
-                               hx-target="#tags-lists"
-                               hx-push-url="true">Previous</a>
-                        {% else %}
-                            <a href="?{{ page_param }}={{ page_obj.previous_page_number }}&{{ other_page_param }}={{ other_page_number }}"
-                               hx-get="?{{ page_param }}={{ page_obj.previous_page_number }}&{{ other_page_param }}={{ other_page_number }}"
-                               hx-target="#tags-lists"
-                               hx-push-url="true">Previous</a>
-                        {% endif %}
+                        <a hx-get="{{ previous_url }}"
+                           hx-target="#tags-lists"
+                           hx-push-url="true">Previous</a>
                     </li>
                 {% endif %}
                 <li>
                     Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
                 </li>
-                {% if page_obj.has_next %}
+                {% if next_url %}
                     <li>
-                        {% if tag_query %}
-                            <a href="?q={{ tag_query }}&{{ page_param }}={{ page_obj.next_page_number }}&{{ other_page_param }}={{ other_page_number }}"
-                               hx-get="?q={{ tag_query }}&{{ page_param }}={{ page_obj.next_page_number }}&{{ other_page_param }}={{ other_page_number }}"
-                               hx-target="#tags-lists"
-                               hx-push-url="true">Next</a>
-                        {% else %}
-                            <a href="?{{ page_param }}={{ page_obj.next_page_number }}&{{ other_page_param }}={{ other_page_number }}"
-                               hx-get="?{{ page_param }}={{ page_obj.next_page_number }}&{{ other_page_param }}={{ other_page_number }}"
-                               hx-target="#tags-lists"
-                               hx-push-url="true">Next</a>
-                        {% endif %}
+                        <a hx-get="{{ next_url }}"
+                           hx-target="#tags-lists"
+                           hx-push-url="true">Next</a>
                     </li>
                 {% endif %}
             </ul>
         </nav>
     {% endif %}
 </div>
+{# djlint:on #}

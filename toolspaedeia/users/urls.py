@@ -1,6 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
+from users.views import ToggleTagPreferenceView
 from users.views import UserAccountView
 from users.views import UserPreferencesView
 
@@ -15,4 +16,5 @@ urlpatterns = [
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("preferences/", UserPreferencesView.as_view(), name="preferences"),
+    path("preferences/toggle-tag/", ToggleTagPreferenceView.as_view(), name="toggle_tag_preference"),
 ]
