@@ -153,6 +153,39 @@ class CourseBrowseListView(CourseBaseListView):
         return Course.objects.filter(is_draft=False)
 
 
+class CourseRecommendationsListView(CourseBaseListView):
+    title = "Recommended Courses"
+    empty_message = "No recommendations available. Explore more courses or set your preferred tags!"
+
+    def get_base_queryset(self):
+        user_preferences = self.request.user.preferences
+        preferred_tag_ids = set(user_preferences.preferred_tags.values_list("id", flat=True))
+
+        purchased_tag_ids = set(
+            self.request.user.purchases.filter(state=Purchase.State.ACCEPTED).values_list("course__tags__id", flat=True)
+        )
+
+        unpurchased_courses = (
+            Course.objects.filter(is_draft=False)
+            .exclude(purchases__user=self.request.user, purchases__state=Purchase.State.ACCEPTED)
+            .exclude(publisher=self.request.user)
+            .prefetch_related("tags")
+            .distinct()
+        )
+
+        scored_courses = []
+        for course in unpurchased_courses:
+            course_tag_ids = {tag.id for tag in course.tags.all()}
+            score = len(course_tag_ids & preferred_tag_ids) * 2 + len(course_tag_ids & purchased_tag_ids)
+            if score > 0:
+                scored_courses.append((score, course.id))
+
+        scored_courses.sort(reverse=True)
+        top_course_ids = [course_id for _, course_id in scored_courses[:5]]
+
+        return Course.objects.filter(id__in=top_course_ids).prefetch_related("tags")
+
+
 class CourseModuleDetailView(TitledViewMixin, LoginRequiredMixin, DetailView):
     model = Course
     pk_url_kwarg = "course_id"
