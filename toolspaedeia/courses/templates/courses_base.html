@@ -10,6 +10,9 @@
     <h2>
         <a href="{% url 'courses:course_published_list' %}">Published</a>
     </h2>
+    <h2>
+        <a href="{% url 'courses:course_recommendations_list' %}">Recommended</a>
+    </h2>
 {% endblock module_nav %}
 
 {% block breadcrumbs %}
@@ -18,7 +21,7 @@
             {% block breadcrumb_items %}
             {% endblock breadcrumb_items %}
             <li>
-                {{ title }}
+                <u>{{ title }}</u>
             </li>
         </ul>
     </nav>
