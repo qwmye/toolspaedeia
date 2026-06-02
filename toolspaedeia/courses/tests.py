@@ -145,25 +145,18 @@ class PageLoadIntegrationTests(CoursesWebTestBase):
         self.assertIn("Mark as Complete", module_page.text)
 
     def test_duplicate_purchase_is_idempotent(self):
-        browse_page = self.login_through_form()
-        purchase_form = next(
-            form
-            for form in browse_page.forms.values()
-            if (
-                form.action.endswith(reverse("purchases:enroll_course"))
-                and form.fields.get("course")
-                and str(form["course"].value) == str(self.bug_course.id)
-            )
-        )
-
-        purchase_form.submit().follow()
+        self.login_through_form()
 
         purchase_url = reverse("purchases:enroll_course")
 
+        self.app.post(purchase_url, params={"course": str(self.bug_course.id)}).follow()
         self.app.post(purchase_url, params={"course": str(self.bug_course.id)})
         self.app.post(purchase_url, params={"course": str(self.bug_course.id)})
 
         self.assertEqual(Purchase.objects.filter(user=self.student, course=self.bug_course).count(), 1)
+        self.assertEqual(
+            Purchase.objects.filter(user=self.student, course=self.bug_course)[0].state, Purchase.State.ACCEPTED
+        )
 
     def test_browse_page_requires_login(self):
         response = self.app.get(reverse("courses:course_browse_list"), expect_errors=True)
