@@ -5,8 +5,11 @@
 {% endfor %}
 
 {% if page_obj.has_next %}
-    {# djlint:off #}
-    <article hx-get="?{% if query %}q={{ query|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}"
+    <article hx-get="?
+                     {% if query %}
+                         q={{ query|urlencode }}&
+                     {% endif %}
+                     page={{ page_obj.next_page_number }}"
              hx-trigger="revealed"
              hx-swap="outerHTML"
              aria-live="polite">
@@ -15,5 +18,4 @@
         </p>
         <progress />
     </article>
-    {# djlint:on #}
 {% endif %}

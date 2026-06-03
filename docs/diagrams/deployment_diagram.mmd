@@ -1,0 +1,38 @@
+graph TB
+    subgraph DEV ["Mediul de Dezvoltare (Local)"]
+        DEV_USER((Dezvoltator)) --> DEV_SERVER["Server Django\nmanage.py runserver :8000\n+ SQLite3"]
+        DEV_USER --> DEV_TOOLS["Instrumente și Pachete\npre-commit + ruff + djlint\nuv + pyproject.toml"]
+    end
+
+    DEV_SERVER -->|"git push"| REPO
+
+    subgraph GH ["GitHub"]
+        REPO["Repository Git\n(cod sursă)"]
+    end
+
+    REPO -->|"git pull"| DEPLOY
+
+    subgraph PROD ["Mediul de Producție (PythonAnywhere)"]
+        DEPLOY["deploy.sh\nuv sync + migrate + collectstatic"]
+        DEPLOY -->|"repornire aplicație"| WSGI
+        USERS((Utilizatori)) --> WSGI["Server WSGI\n(PythonAnywhere)"]
+        WSGI --> DJANGO["Aplicația Django\n(settings_pythonanywhere.py)"]
+        DJANGO --> MYSQL["MySQL\n(Bază de Date)"]
+        DJANGO --> STATIC_FILES["Fișiere Statice\n(/staticfiles/)"]
+        DJANGO --> MEDIA["Fișiere Media\n(/media/)"]
+    end
+
+    DJANGO -->|"Webhook + Checkout"| STRIPE
+    STRIPE -->|"Confirmare Plată"| DJANGO
+    DJANGO -->|"Încărcare Model ML"| HF
+
+    subgraph EXT ["Servicii Externe"]
+        STRIPE["Stripe API\n(Procesare Plăți)"]
+        HF["Hugging Face\n(Model SentenceTransformer)"]
+    end
+
+    MYSQL ~~~ STRIPE
+
+    style DEV_SERVER fill:#e8f5e9
+    style MYSQL fill:#e3f2fd
+    style REPO fill:#f5f5f5

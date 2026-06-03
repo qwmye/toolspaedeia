@@ -1,0 +1,60 @@
+erDiagram
+    COURSE ||--o{ MODULE : "conține"
+    COURSE }o--o{ COURSE_TAG : "este etichetat cu"
+
+    MODULE ||--o{ RESOURCE : "atașează"
+    MODULE ||--o| QUIZ : "poate avea"
+
+    QUIZ ||--o{ QUESTION : "conține"
+
+    QUESTION ||--o{ ANSWER : "are"
+
+    COURSE {
+        int id PK
+        string name
+        string description
+        decimal price
+        int publisher_id FK
+        boolean is_draft
+    }
+    MODULE {
+        int id PK
+        int course_id FK
+        string title
+        string description
+        text content
+        int order
+        boolean is_draft
+    }
+    RESOURCE {
+        int id PK
+        int module_id FK
+        string title
+        file file
+    }
+    QUIZ {
+        int id PK
+        int module_id FK
+        string title
+        string description
+        boolean randomize_questions
+        boolean track_attempts
+        int max_questions
+        int max_attempts
+    }
+    QUESTION {
+        int id PK
+        int quiz_id FK
+        string text
+        int order
+    }
+    ANSWER {
+        int id PK
+        int question_id FK
+        string text
+        boolean is_correct
+    }
+    COURSE_TAG {
+        int id PK
+        string name
+    }

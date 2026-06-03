@@ -1,0 +1,29 @@
+graph TB
+    subgraph "Browser / Client"
+        direction TB
+        HTMX["HTMX\n(actualizări parțiale DOM)"]
+        SW["Service Worker\n(caching offline)"]
+        PICO["Pico CSS\n(framework UI)"]
+        MATHJAX["MathJax\n(redare formule)"]
+    end
+
+    subgraph "Aplicația pwa"
+        direction TB
+        PWA_MANIFEST["manifest.json"]
+        PWA_SW["serviceworker.js"]
+        PWA_OFFLINE["Pagina offline"]
+    end
+
+    subgraph "Django Application Server"
+        C_VIEWS["Views (courses, purchases, users)"]
+        P_VIEWS["Views (purchases)"]
+    end
+
+    subgraph "Servicii externe"
+        STRIPE["Stripe API"]
+    end
+
+    HTMX -->|"cereri HTTP parțiale"| C_VIEWS
+    HTMX -->|"cereri HTTP parțiale"| P_VIEWS
+    SW -->|"cache / intercept"| HTMX
+    P_VIEWS -->|"Checkout + Webhook"| STRIPE

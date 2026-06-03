@@ -1,0 +1,28 @@
+graph TB
+    START(( )) --> Catalog["Catalog / Achizitionate /\nRecomandari"]
+    Catalog -->|"Selectare curs"| DetaliiCurs["Pagina detalii curs"]
+
+    DetaliiCurs -->|"Curs neachizitionat"| DialogAchizitie["Dialog achizitie /\ninscriere"]
+    DialogAchizitie -->|"Curs gratuit\n(inscriere directa)"| DetaliiCurs
+    DialogAchizitie -->|"Curs cu pret"| Checkout["Stripe Checkout\n(plata)"]
+    Checkout -->|"Plata reusita\n(webhook Stripe)"| Achizitionate["Cursuri achizitionate"]
+    Achizitionate --> DetaliiCurs
+
+    DetaliiCurs -->|"Solicita rambursare\n(max 1 zi)"| Rambursare["Procesare rambursare"]
+    Rambursare --> Achizitionate
+
+    DetaliiCurs -->|"Selectare modul"| Modul["Vizualizare modul\n(Markdown + MathJax)"]
+    Modul --> MarkComplete["Marcare modul finalizat"]
+    MarkComplete --> Modul
+    Modul -->|"Modul urmator /\nanterior"| Modul
+    Modul -->|"Inapoi la curs"| DetaliiCurs
+
+    Modul -->|"Modul cu quiz"| QuizState["Completare quiz"]
+    QuizState -->|"Trimitere raspunsuri"| Rezultat["Rezultat quiz\n(nota automata)"]
+    Rezultat -->|"Reincercare\n(daca mai sunt incercari)"| QuizState
+    Rezultat --> Modul
+
+    %% Force vertical stacking of branches
+    DialogAchizitie ~~~ Rambursare
+    Rambursare ~~~ Modul
+    MarkComplete ~~~ QuizState

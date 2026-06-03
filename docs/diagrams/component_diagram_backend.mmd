@@ -1,0 +1,68 @@
+graph TB
+    subgraph "Aplicația courses"
+        direction LR
+        C_VIEWS["Views\nCourseBrowseList, CourseDetail,\nCourseModuleDetail,\nModuleMarkComplete, AttemptQuiz"]
+        C_MODELS["Models\nCourse, Module, Quiz,\nQuestion, Answer,\nCourseTag, ModuleProgression,\nQuizAttempt, Resource"]
+        C_TEMPLATES["Templates\ncourse_list, course_detail,\ncourse_module_detail\n+ fragmente HTMX"]
+        C_ADMIN["Admin\nCourseAdmin (nested),\nQuizAdmin, CourseTagAdmin"]
+        C_IMPORT["import_export.py\nImport/export cursuri\nMarkdown"]
+        C_MARKDOWN["markdown.py\nRedare Markdown\nîn HTML"]
+        C_SUGGEST["suggestions.py\nSugestii etichete\n(Sentence-Transformers)"]
+        C_QUIZ["quizzes.py\nLogică notare quiz"]
+
+        C_VIEWS --> C_MODELS
+        C_VIEWS --> C_TEMPLATES
+        C_VIEWS --> C_MARKDOWN
+        C_ADMIN --> C_IMPORT
+        C_ADMIN --> C_SUGGEST
+        C_ADMIN --> C_MODELS
+        C_QUIZ --> C_MODELS
+    end
+
+    subgraph "Aplicația purchases"
+        direction LR
+        P_VIEWS["Views\nEnrollCourse, CreateRefund,\nPublisherIncome,\nStripeWebhook,\nEnrollmentDialog"]
+        P_MODELS["Models\nPurchase"]
+
+        P_VIEWS --> P_MODELS
+    end
+
+    subgraph "Aplicația users"
+        direction LR
+        U_VIEWS["Views\nUserAccount, UserPreferences,\nToggleTagPreference"]
+        U_MODELS["Models\nUserSitePreferences"]
+        U_FORMS["Forms\nLoginForm"]
+        U_MIDDLEWARE["Middleware\nThemeCookieMiddleware"]
+        U_CTX["Context Processors\nPreferințe utilizator globale"]
+
+        U_VIEWS --> U_MODELS
+        U_MIDDLEWARE --> U_MODELS
+    end
+
+    subgraph "Baza de date"
+        direction LR
+        DEV_DB["SQLite3\n(dezvoltare)"]
+        PROD_DB["MySQL\n(producție)"]
+    end
+
+    subgraph "Servicii externe"
+        direction LR
+        STRIPE["Stripe API"]
+        HF["Hugging Face\n(model ML descărcat)"]
+    end
+
+    %% Force vertical stacking
+    C_MODELS ~~~ P_VIEWS
+    P_MODELS ~~~ U_VIEWS
+
+    %% Real connections
+    P_VIEWS -->|"Checkout + Webhook"| STRIPE
+    P_VIEWS --> C_MODELS
+    C_SUGGEST -->|"încărcare model"| HF
+
+    C_MODELS --> DEV_DB
+    C_MODELS --> PROD_DB
+    P_MODELS --> DEV_DB
+    P_MODELS --> PROD_DB
+    U_MODELS --> DEV_DB
+    U_MODELS --> PROD_DB

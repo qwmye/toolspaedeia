@@ -1,0 +1,17 @@
+flowchart TB
+    START(["Început"])
+    START --> CHOICE{"Metodă de creare"}
+
+    CHOICE -->|"Manual"| CREATE["Creare curs nou<br/>în Django Admin"]
+    CHOICE -->|"Import"| UPLOAD["Încărcare fișier Markdown<br/>(format import)"]
+
+    UPLOAD --> VALIDATE{"Fișierul este<br/>valid UTF-8?"}
+    VALIDATE -->|"Nu"| ERROR1["Afișare eroare<br/>de codificare"]
+    ERROR1 --> UPLOAD
+    VALIDATE -->|"Da"| PARSE{"Parsarea structurii<br/>Markdown reușită?"}
+    PARSE -->|"Nu"| ERROR2["Afișare eroare<br/>de format"]
+    ERROR2 --> UPLOAD
+    PARSE -->|"Da"| IMPORTED["Curs creat automat<br/>(is_draft=True)<br/>cu module importate"]
+    IMPORTED --> EDIT
+
+    CREATE --> EDIT["Editare câmpuri curs<br/>(nume, descriere, preț)"]

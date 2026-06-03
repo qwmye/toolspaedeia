@@ -7,16 +7,11 @@ erDiagram
 
     COURSE ||--o{ PURCHASE : "este obiectul"
     COURSE ||--o{ MODULE : "conține"
-    COURSE }o--o{ COURSE_TAG : "este etichetat cu"
 
-    MODULE ||--o{ RESOURCE : "atașează"
     MODULE ||--o{ MODULE_PROGRESSION : "este urmărit prin"
     MODULE ||--o| QUIZ : "poate avea"
 
-    QUIZ ||--o{ QUESTION : "conține"
     QUIZ ||--o{ QUIZ_ATTEMPT : "este evaluat prin"
-
-    QUESTION ||--o{ ANSWER : "are"
 
     USER_SITE_PREFERENCES }o--o{ COURSE_TAG : "preferă"
 
@@ -35,57 +30,12 @@ erDiagram
         image profile_picture
         boolean receive_notifications
     }
-    COURSE {
-        int id PK
-        string name
-        string description
-        decimal price
-        int publisher_id FK
-        boolean is_draft
-    }
-    MODULE {
-        int id PK
-        int course_id FK
-        string title
-        string description
-        text content
-        int order
-        boolean is_draft
-    }
-    RESOURCE {
-        int id PK
-        int module_id FK
-        string title
-        file file
-    }
     MODULE_PROGRESSION {
         int id PK
         int user_id FK
         int module_id FK
         boolean completed
         datetime completion_date
-    }
-    QUIZ {
-        int id PK
-        int module_id FK
-        string title
-        string description
-        boolean randomize_questions
-        boolean track_attempts
-        int max_questions
-        int max_attempts
-    }
-    QUESTION {
-        int id PK
-        int quiz_id FK
-        string text
-        int order
-    }
-    ANSWER {
-        int id PK
-        int question_id FK
-        string text
-        boolean is_correct
     }
     QUIZ_ATTEMPT {
         int id PK

@@ -1,0 +1,66 @@
+stateDiagram-v2
+    [*] --> Home
+    Home: Pagina principala
+    Login: Formular de autentificare
+    Register: Formular de inregistrare
+    Catalog: Catalog cursuri (browse)
+    Recomandari: Recomandari personalizate
+    Achizitionate: Cursuri achizitionate
+    Publicate: Cursuri publicate
+    Venituri: Vizualizare venituri
+    DetaliiCurs: Pagina detalii curs
+    DialogAchizitie: Dialog achizitie / inscriere
+    Checkout: Stripe Checkout (plata)
+    Rambursare: Procesare rambursare
+    Modul: Vizualizare modul (Markdown + MathJax)
+    MarkComplete: Marcare modul finalizat
+    QuizState: Completare quiz
+    Rezultat: Rezultat quiz (nota automata)
+    Profil: Editare cont si preferinte
+    Tema: Tema si mod vizual
+    Etichete: Selectare etichete preferate
+    OfflineState: Mod offline (continut din cache)
+
+    Home --> Login
+    Home --> Register
+    Register --> Login: Cont creat
+
+    Login --> Catalog: Autentificare reusita
+
+    Catalog --> Recomandari
+    Recomandari --> Catalog
+    Catalog --> Achizitionate
+    Achizitionate --> Catalog
+    Catalog --> Publicate
+    Publicate --> Venituri
+    Venituri --> Publicate
+
+    Catalog --> DetaliiCurs: Selectare curs
+    Achizitionate --> DetaliiCurs
+    Recomandari --> DetaliiCurs
+
+    DetaliiCurs --> DialogAchizitie: Curs neachizitionat
+    DialogAchizitie --> Checkout: Curs cu pret
+    DialogAchizitie --> DetaliiCurs: Curs gratuit (inscriere directa)
+    Checkout --> DetaliiCurs: Plata reusita
+    DetaliiCurs --> Rambursare: Solicita rambursare
+    Rambursare --> Achizitionate
+
+    DetaliiCurs --> Modul: Selectare modul
+    Modul --> MarkComplete
+    MarkComplete --> Modul
+    Modul --> QuizState: Modul cu quiz
+    QuizState --> Rezultat: Trimitere raspunsuri
+    Rezultat --> Modul
+    Modul --> Modul: Modul urmator / anterior
+    Modul --> DetaliiCurs: Inapoi la curs
+
+    Catalog --> Profil: Setari
+    Profil --> Tema
+    Tema --> Etichete
+    Etichete --> Catalog
+
+    Catalog --> OfflineState: Pierdere conexiune
+    OfflineState --> Catalog: Revenire conexiune
+
+    Catalog --> Home: Deconectare

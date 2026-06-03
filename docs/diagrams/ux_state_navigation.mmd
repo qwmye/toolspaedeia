@@ -1,0 +1,33 @@
+graph TB
+    START(( )) --> Home["Pagina principala\n(publica)"]
+    Home -->|"Utilizator\nneautentificat"| Login["Formular de\nautentificare"]
+    Login -->|"Autentificare\nreusita"| Catalog["Catalog cursuri\n(browse)"]
+
+    Catalog --> Recomandari["Recomandari\npersonalizate"]
+    Recomandari --> Catalog
+
+    Catalog --> Achizitionate["Cursuri achizitionate"]
+    Achizitionate --> Catalog
+
+    Catalog -->|"Doar publicator"| Publicate["Cursuri publicate\n(publicator)"]
+    Publicate --> Venituri["Vizualizare venituri\n(publicator)"]
+    Venituri --> Publicate
+    Publicate --> Catalog
+
+    Catalog -->|"Setari"| Cont["Editare cont"]
+    Cont --> Catalog
+
+    Catalog -->|"Setari"| Preferinte["Preferinte\n(tema, etichete, profil)"]
+    Preferinte --> Catalog
+
+    Catalog -->|"Pierdere conexiune"| OfflineState["Mod offline\n(continut din cache)"]
+    OfflineState -->|"Revenire conexiune"| Catalog
+
+    Catalog -->|"Deconectare"| Home
+
+    %% Force vertical stacking of branches
+    Recomandari ~~~ Achizitionate
+    Achizitionate ~~~ Publicate
+    Publicate ~~~ Cont
+    Cont ~~~ Preferinte
+    Preferinte ~~~ OfflineState

@@ -1,0 +1,50 @@
+sequenceDiagram
+    participant U as Utilizator (Browser)
+    participant SW as Service Worker
+    participant C as Cache Local
+    participant S as Server Django
+
+    Note over U,S: Instalare și Activare PWA
+
+    U->>SW: navigator.serviceWorker.register()
+    SW->>C: Creare APP_SHELL_CACHE
+    SW->>S: Pre-cache pagini esențiale<br/>(/, /courses/browse/, /no-internet/)
+    S-->>C: Stocare răspunsuri în cache
+
+    Note over U,S: Navigare Online - Resurse Statice (Cache-First)
+
+    U->>SW: Request /static/pico.min.css
+    SW->>C: Caută în cache
+    C-->>SW: Returnează din cache
+    SW-->>U: Răspuns din cache (rapid)
+
+    Note over U,S: Navigare Online - Pagini (Network-First)
+
+    U->>SW: Request /courses/5/
+    SW->>S: Trimite cerere la server
+    S-->>SW: Răspuns HTML
+    SW->>C: Actualizare cache (PRIVATE_CONTENT_CACHE)
+    SW-->>U: Returnează răspuns server
+
+    Note over U,S: Pre-cache Conținut Achiziționat
+
+    U->>SW: postMessage(WARM_PURCHASED_CONTENT)
+    SW->>S: GET /purchases/offline-map/
+    S-->>SW: JSON cu URL-uri module achiziționate
+    loop Pentru fiecare URL
+        SW->>S: Fetch URL modul
+        S-->>C: Stocare în PRIVATE_CONTENT_CACHE
+    end
+
+    Note over U,S: Navigare Offline
+
+    U->>SW: Request /courses/5/modules/3/
+    SW->>S: Încercare rețea (eșuează)
+    SW->>C: Caută în PRIVATE_CONTENT_CACHE
+    C-->>SW: Returnează conținut salvat
+    SW-->>U: Pagina modulului (offline)
+
+    Note over U,S: Deconectare (Logout)
+
+    U->>SW: postMessage(CLEAR_PRIVATE_CACHE)
+    SW->>C: Ștergere PRIVATE_CONTENT_CACHE

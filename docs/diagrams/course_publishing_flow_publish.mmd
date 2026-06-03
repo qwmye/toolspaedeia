@@ -1,0 +1,23 @@
+flowchart TB
+    EDIT["Editare câmpuri curs<br/>(nume, descriere, preț)"]
+
+    EDIT --> MODULES["Adăugare și ordonare module<br/>(titlu, descriere, conținut Markdown)"]
+    MODULES --> RESOURCES{"Modulele necesită<br/>resurse atașate?"}
+    RESOURCES -->|"Da"| UPLOAD_RES["Încărcare resurse<br/>(imagini, PDF, audio, video)"]
+    UPLOAD_RES --> TAGS
+    RESOURCES -->|"Nu"| TAGS
+
+    TAGS{"Utilizare sugestii<br/>automate de etichete?"}
+    TAGS -->|"Da"| SUGGEST["Generare sugestii<br/>prin Sentence-Transformers"]
+    SUGGEST --> APPLY["Selectare și aplicare<br/>etichete relevante"]
+    APPLY --> PREVIEW
+    TAGS -->|"Nu"| MANUAL_TAGS{"Adăugare manuală<br/>de etichete?"}
+    MANUAL_TAGS -->|"Da"| ADD_TAGS["Atribuire etichete<br/>existente cursului"]
+    ADD_TAGS --> PREVIEW
+    MANUAL_TAGS -->|"Nu"| PREVIEW
+
+    PREVIEW["Previzualizare curs pe site<br/>(publicatorul vede propriile draft-uri)"]
+    PREVIEW --> SATISFIED{"Conținutul este<br/>satisfăcător?"}
+    SATISFIED -->|"Nu"| EDIT
+    SATISFIED -->|"Da"| PUBLISH["Dezactivare flag is_draft<br/>pe curs și module"]
+    PUBLISH --> LIVE(["Cursul este public<br/>în catalogul de cursuri"])

@@ -1,13 +1,16 @@
-graph LR
-    A[Text Brut Markdown] --> B[Preprocesare]
-    B --> C[Vectorizare]
-    C --> D[Model ML - scikit-learn]
-    D --> E[Analiza Relevanței]
-    E --> F[Sugerare Etichete/Tags]
+graph TB
+    A["Conținut Curs\n(Titlu + Descriere + Module)"] --> B["Codificare Embeddings\n(SentenceTransformer\nparaphrase-MiniLM-L3-v2)"]
+    C["Etichete Existente\n(CourseTag)"] --> D["Codificare Embeddings\n(Același Model)"]
+    B --> E["Calcul Similaritate Cosinus\n(cos_sim)"]
+    D --> E
+    E --> F["Filtrare\n(prag minim: 0.2)"]
+    F --> G["Sortare Descrescătoare\ndupă Scor"]
+    G --> H["Sugestii Etichete\ncu Procent de Încredere"]
 
-    subgraph NLP_Pipeline
+    subgraph Pipeline_Semantic
     B
-    C
     D
     E
+    F
+    G
     end

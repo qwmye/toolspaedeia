@@ -1,0 +1,21 @@
+sequenceDiagram
+    participant U as Utilizator
+    participant T as Toolspaedeia (Server)
+    participant S as Stripe API
+    participant DB as Baza de Date
+
+    U->>T: Solicită rambursare (POST course_id)
+    T->>DB: Caută achiziția (user, course, state=ACCEPTED)
+    alt Achiziția nu există
+        DB-->>T: 404 Not Found
+        T-->>U: Eroare - achiziție inexistentă
+    else Achiziția există
+        DB-->>T: Returnează înregistrarea Purchase
+        alt Plată prin Stripe (stripe_payment_id prezent)
+            T->>S: stripe.Refund.create(payment_intent)
+            S-->>T: Confirmare rambursare
+        end
+        T->>DB: Șterge înregistrarea Purchase
+        DB-->>T: Confirmare ștergere
+        T-->>U: Redirect către lista cursurilor achiziționate
+    end

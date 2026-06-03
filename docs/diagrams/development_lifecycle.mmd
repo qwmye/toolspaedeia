@@ -1,13 +1,18 @@
-graph TD
-    A[Analiză] --> B[Proiectare]
-    B --> C[Implementare]
-    C --> D[Validare]
-    D -->|Feedback/Optimizare| A
-    D --> E[Lansare/Producție]
-
-    subgraph Iteratii
-    A
-    B
-    C
-    D
+graph TB
+    subgraph row1[" "]
+        direction LR
+        F1["<b>Faza 1: Fundație</b>\nModele Course, Module\nSistem de progresie"]
+        F2["<b>Faza 2: Conținut</b>\nMotor Markdown + MathJax\nSistem Quiz-uri\nResurse multimedia"]
     end
+    subgraph row2[" "]
+        direction LR
+        F3["<b>Faza 3: Monetizare</b>\nPreferințe utilizator\nPlăți Stripe\nTeme și personalizare"]
+        F4["<b>Faza 4: Producție</b>\nSugestii etichete (ML)\nPWA + Service Worker\nDeploy PythonAnywhere"]
+    end
+
+    F1 ~~~ F2
+    F3 ~~~ F4
+    row1 ~~~ row2
+
+    style row1 fill:none,stroke:none
+    style row2 fill:none,stroke:none

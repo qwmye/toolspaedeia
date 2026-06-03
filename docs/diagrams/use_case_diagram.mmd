@@ -1,0 +1,45 @@
+graph TB
+    subgraph Actori
+        direction LR
+        A((Administrator)) -..->|"moștenește"| P((Publicator))
+        P -..->|"moștenește"| S((Student))
+    end
+
+    subgraph UC_A["Cazuri de utilizare - Administrator"]
+        direction LR
+        UC23["Gestionare utilizatori<br/>prin Django Admin"]
+        UC24["Gestionare cursuri ale<br/>tuturor publicatorilor"]
+        UC25["Utilizare sugestii automate<br/>de etichete"]
+    end
+
+    subgraph UC_P["Cazuri de utilizare - Publicator"]
+        direction LR
+        UC17["Creare și editare curs"]
+        UC18["Adăugare și ordonare<br/>module"]
+        UC19["Atașare resurse<br/>la module"]
+        UC20["Configurare quiz-uri"]
+        UC21["Import/export curs<br/>în format Markdown"]
+        UC22["Vizualizare venituri<br/>din cursuri"]
+    end
+
+    subgraph UC_S["Cazuri de utilizare - Student"]
+        direction LR
+        UC1["Autentificare"]
+        UC3["Căutare cursuri"]
+        UC4["Filtrare după etichete"]
+        UC5["Vizualizare recomandări<br/>personalizate"]
+        UC6["Navigare catalog cu<br/>încărcare continuă"]
+        UC7["Achiziție curs<br/>prin Stripe"]
+        UC8["Înscriere curs gratuit"]
+        UC9["Solicitare rambursare"]
+        UC10["Vizualizare conținut<br/>modul Markdown"]
+        UC11["Marcare modul<br/>ca finalizat"]
+        UC12["Completare quiz cu<br/>notare automată"]
+        UC13["Descărcare conținut<br/>offline prin PWA"]
+        UC14["Personalizare temă<br/>și mod vizual"]
+        UC15["Selectare etichete<br/>preferate"]
+    end
+
+    A --> UC_A
+    P --> UC_P
+    S --> UC_S
