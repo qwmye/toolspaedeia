@@ -48,18 +48,20 @@
             </thead>
             <tbody>
                 {% for course_name, course_amount in distinct_courses.items %}
-                    <tr>
-                        <td>
-                            {{ course_name }}
-                        </td>
-                        <td>
-                            <sub>{{ course_amount }} EUR</sub>
-                            <sub> ({% widthratio course_amount total_income 100 %}%)</sub>
-                            <progress value="{{ course_amount }}"
-                                      max="{{ total_income }}">
-                            </progress>
-                        </td>
-                    </tr>
+                    {% if course_amount > 0 %}
+                        <tr>
+                            <td>
+                                {{ course_name }}
+                            </td>
+                            <td>
+                                <sub>{{ course_amount }} EUR</sub>
+                                <sub> ({% widthratio course_amount total_income 100 %}%)</sub>
+                                <progress value="{{ course_amount }}"
+                                          max="{{ total_income }}">
+                                </progress>
+                            </td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
             </tbody>
         </table>
