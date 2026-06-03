@@ -65,13 +65,11 @@
                             <sub>
                                 {{ category.enrolled_students }} enrollment{{ category.enrolled_students|pluralize }}
                             </sub>
+                            {# djlint:off #}
                             <progress value="{{ category.enrolled_students }}"
-                                      max="{% if enrollments_count %}
-                                               {{ enrollments_count }}
-                                           {% else %}
-                                               1
-                                           {% endif %}">
+                                      max="{% if enrollments_count %}{{ enrollments_count }}{% else %}1{% endif %}">
                             </progress>
+                            {# djlint:on #}
                         </div>
                     </div>
                 {% endfor %}
