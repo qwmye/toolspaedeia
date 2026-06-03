@@ -1,0 +1,13 @@
+graph TD
+    A[Analiză] --> B[Proiectare]
+    B --> C[Implementare]
+    C --> D[Validare]
+    D -->|Feedback/Optimizare| A
+    D --> E[Lansare/Producție]
+
+    subgraph Iteratii
+    A
+    B
+    C
+    D
+    end

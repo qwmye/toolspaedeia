@@ -1,0 +1,29 @@
+erDiagram
+    USER ||--o{ PURCHASE : "efectuează"
+    COURSE ||--o{ PURCHASE : "este obiectul"
+    COURSE ||--o{ MODULE : "conține"
+    MODULE ||--o{ TAG : "are"
+
+    USER {
+        string username
+        string email
+        string theme_preference
+    }
+    COURSE {
+        string title
+        string description
+        boolean is_draft
+    }
+    MODULE {
+        string title
+        string content_markdown
+        int order
+    }
+    PURCHASE {
+        datetime date_purchase
+        string payment_status
+        float amount
+    }
+    TAG {
+        string name
+    }

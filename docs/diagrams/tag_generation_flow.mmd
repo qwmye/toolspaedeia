@@ -1,0 +1,13 @@
+graph LR
+    A[Text Brut Markdown] --> B[Preprocesare]
+    B --> C[Vectorizare]
+    C --> D[Model ML - scikit-learn]
+    D --> E[Analiza Relevanței]
+    E --> F[Sugerare Etichete/Tags]
+
+    subgraph NLP_Pipeline
+    B
+    C
+    D
+    E
+    end

@@ -1,0 +1,108 @@
+Ghid de elaborare a lucrării de licenţă
+1. Tipuri de lucrări de licență la Informatică Economică...........
+2. Cerinţe de urmărit de către coordonator în vederea acceptării depunerii lucrării
+3. Limbajul şi stilul .........
+4. Structura......
+5. Formatarea .....
+6. Bibliografia............
+9. Diagramele ....
+
+1. Tipuri de lucrări de licență la Informatică Economică
+Principii generale:
+    1. Lucrarea de licență este oglinda competenţei unui absolvent și poate deveni o valoroasă piesă de portofoliu personal, de inclus în CV-ul unui student proaspăt absolvent de facultate. Dezvoltarea acesteia trebuie văzută în primul rând ca o oportunitate de învăţare.
+    2. Autorul lucrării de licență trebuie să demonstreze abilități/competenţe pentru care s-a acreditat programul de studii urmat. Drept consecință, se vor evita lucrările de tip prezentare de produs, conspect, sondaj de opinie, prezentare didactică, blog, testimoniale de la locul de muncă - lucrarea trebuie subordonată unei metodologii consacrate de inginerie software sau de cercetare ştiinţifică.
+    3. Lucrarea de licență reprezintă o probă de evaluare finală complexă în vederea absolvirii unui program de studiu. Așadar, aceasta trebuie să depășească amploarea unui proiect de laborator axat pe o singură disciplină de specialitate. Ea trebuie să integreze atât aspecte teoretice/conceptuale (analiză de business, proiectare/modelare conceptuală), cât şi deprinderi tehnice/practice (implementare software, procesare de date, exploatare de tehnologii).
+
+Pentru atingerea acestor deziderate se vor realiza următoarele tipuri de lucrări de licență:
+    Tip A. Proiectare și implementare de aplicații (Web, desktop, mobile etc.) sau de componente software (servicii şi interfețe Web, module de automatizare pentru testare, instalare, RPA3, procese ETL pentru translatare de date/documente, module de inteligență artificială, agenți software, chatbots etc.)
+Contribuţia acestui tip de lucrare trebuie să acopere:
+    * analiza unui context de business care ar putea beneficia de implementarea propusă (modelul de business deservit, obiectivele și procesele de afaceri pentru care se realizează software-ul propus, analiză Before/After pentru a evidenția beneficiile aşteptate de la implementare)
+    * proiectarea aplicației/componentei implementate folosind standarde de modelare consacrate (UML, BPMN, DFD, ERD);
+    * detalierea implementării (discutarea unor mostre de cod sursă, descrierea bazelor/surselor de date accesate și a structurilor de date manipulate);
+    * evaluarea calității implementării din perspective relevante; exemple de perspective: strategia de asigurare a calității software (cu exemplificare de erori și abordări de depanare folosite în realizarea lucrării), măsurători (asupra utilizabilității, performanței, scalabilității), validare faţă de cerinţe concrete (dacă aplicația are deja utilizatori reali).
+
+** LLM COMMENT: THERE ARE MORE TYPES, BUT IN OUR CASE IT'S TYPE A **
+
+2. Cerinţe de urmărit de către coordonator în vederea acceptării depunerii lucrării
+    1. Lucrarea să se încadreze într-una dintre categoriile menționate şi să reflecte competenţele pentru care este acreditat programul de studii Informatică Economică;
+    2. Existenţa componentei practice a lucrării (aplicația implementată, instrumentele de procesare a datelor, platformele analizate în cadrul studiului de caz) să fie demonstrabilă;
+    3. Lucrarea să conțină minim 30 de pagini de conținut original (conform formatului şablonului oficial la nivel de facultate), în urma scăderii din dimensiunea totală a lucrării a procentajului de similitudine detectat de aplicația facultății1o; conținutul original să fie mult peste conținutul asimilat similitudinilor;
+    4. Lucrarea să aibă un titlu specific, nu doar cel generic al şablonului ("Lucrare de licenţă"). Titlul lucrării să ofere indicii privind domeniul de aplicare şi tehnologiile-cheie folosite: exemple pozitive: „Aplicație de tip rețea socială implementată în Laravel cu bază de date MySQL"; „Sistem de recomandare de produse cu elemente de inteligență artificială implementate în Python"; exemple negative: "Site făcut în PHP", "Aplicație pentru Lavanda S.R.L.", "Proiectarea şi implementarea unui magazin virtual";
+    5. Partea practică (implementarea demonstrată la susținere) și cea descriptivă (analiză/sinteză) a lucrării să fie în concordanţă una cu cealaltă. Se vor evita situațiile în care:
+        * diagramele sunt despre o altă aplicație decât cea implementată (exemple: diagrama use case indică funcționalități care nu există, diagrama de arhitectură arată componente inexistente, diagrama BD indică alte tabele decât cele prezente în aplicație etc.);
+        * tehnologiile prezentate în lucrarea scrisă sunt altele decât cele utilizate în implementare (exemplu: se pretinde că s-a folosit un framework MVC şi o bază de date Mongo, dar aplicația prezentată nu e MVC și/sau baza de date nu e Mongo); în lucrare s-a folosit un anumit set de date/metodă/instrument, dar la susținere se foloseşte alt set de date/metodă/instrument.
+    6. Lucrarea să folosească un sistem de citare consistent și consacrat (Harvard, IEEE etc.) pentru respectarea drepturilor de autor, eventual cu ajutorul unui instrument de citare accesibil (de exemplu cel prezent în Word). Pentru evitarea unor situații de plagiat accidental, atragem atenția cu privire la următoarele scenarii ce trebuie evitate:
+        * publicarea proiectului într-un depozit public (ex. Github) de unde poate fi preluat şi prezentat de altcineva, uneori chiar înaintea autorului real (sau poate fi detectat ca o similitudine de aplicația de verificare);
+        * folosirea de capitole care au fost utilizate la comun ca suport de învățare pentru diverse examene (deci riscă să fie preluate simultan în multiple lucrări);
+        * folosirea de capitole preluate din ghiduri, modele din lucrări vechi sau de la alte centre universitare (adesea și acestea conduc la apariția de conținut comun în multiple lucrări dacă nu sunt filtrate și adaptate corespunzător).
+
+3. Limbajul şi stilul
+    1. Lucrarea se poate scrie în română sau engleză, dar nu o combinație între cele două. Excepție fac termenii netraductibili precum,,mişcarea mouse-ului", „baze de date în cloud" etc. Se vor evita exprimări de tipul „Sistem de Reporting al Taskurilor și Bugurilor pentru Developerii Remote", având în vedere că toți termenii sunt traductibili;
+    2. Conţinutul trebuie să fie alcătuit din fraze complete, cu subiect şi predicat. Se va evita preluarea de text direct de pe prezentări Powerpoint. Powerpoint e menit să prezinte text schematic, lipsit de context narativ și conectori lexicali (deci necesită completări pentru a le transpune în contextul narativ al unor paragrafe Word);
+    3. Nu se va reproduce codul sursă integral în lucrare. În schimb, diverse mostre de cod-sursă se pot discuta în capitolul dedicat implementării (exemple: mostre de interogări, mostre de cereri HTTP, o mostră de controller PHP, un algoritm aparte care e contribuție proprie);
+    4. Descrierea aplicației implementate nu se va realiza exclusiv prin capturi de ecran - scopul lucrării nu e oferirea unui manual de utilizare, ci evidențierea modului în care s-a realizat implementarea. În consecință, eventualele capturi de ecran vor fi însoțite (în capitolul de implementare) de mostre de cod-sursă relevante pentru ce se vede în captura de ecran. Excepție fac eventualele schițe mock-up/wireframe (ecrane false realizate cu instrumente precum Figma), care nu sunt propriu-zis capturi de ecran, ci țin de proiectarea UX11 şi prin urmare își au locul în capitolul de proiectare;
+    5. Lucrarea trebuie să descrie contribuția efectivă a autorului, fără a avea stilul unui curs sau a unei prezentări de produs. De exemplu, lucrarea nu va dedica pagini întregi explicând ce e testarea, ce înseamnă Scrum, ce e un serviciu Web, ce e Web-ul, ce e o bază de date. Pentru a introduce astfel de noțiuni se vor folosi două secțiuni dedicate:
+        * un Glosar de termeni de specialitate (pentru a sistematiza diverse,,definiții” cu privire la tehnologii sau la domeniul de aplicare);
+        * o secțiune Tehnologii specifice, în care se va dedica maxim un paragraf fiecărei tehnologii/framework/librării folosite, indicând şi adresa URL oficială; această secțiune are rolul de a oferi o informare rapidă comisiei cu privire la tehnologiile folosite în lucrare, fără intenția replicării unui curs adresat comisiei despre acele tehnologii.
+
+4. Structura
+Sub aspect structural se va asigura o distincție clară între capitole:
+    * Introducerea va prezenta motivația lucrării (încadrată în paradigma tehnologică sau economică de care aparține lucrarea), va formula obiectivele, va menționa metodologia și tehnologiile folosite și va trece în revistă structura întregii lucrării. Şablonul facultății impune şi includerea unui Rezumat separat, care să surprindă esenţa contribuției întregii lucrări într-o formă foarte concisă, indicând: natura lucrării (dezvoltare software, cercetare ştiinţifică, studiu de caz IT), obiectivul, tehnologia folosită și rezultatul obținut;
+    * Un capitol va descrie Metodologia de lucru (pașii în care s-a realizat lucrarea); aceasta va prezenta, în funcție de tipul lucrării, metodologia de inginerie software, cea de cercetare și analiză a datelor, respectiv de realizare a studiului de caz. Nu se va folosi acest capitol pentru a prezenta toate metodologiile cunoscute, dar se poate include o justificare a preferinței autorului pentru metodologia aleasă (față de altele). În acest capitol se va include și subsecţiunea Tehnologii specifice menționată anterior, ca o trecere în revistă a instrumentarului folosit - tehnologiile folosite în implementare sau pentru prelucrarea datelor.
+
+În capitolele de analiză/proiectare nu se vor include cod sursă sau capturi de ecran, ci diagrame și aspecte teoretice-descriptive; se va asigura separarea între un capitol de Analiză de business (concentrat pe a descrie contextul de business, motivația, cerințele și beneficiile contribuției) și unul de Proiectare (concentrat pe a descrie software și aspecte ale implementării).
+În capitolul de Implementare nu se vor include diagrame, ci fragmente de cod sursă însoțite de capturi de ecran (se va evita descrierea implementării exclusiv prin capturi de ecran, fără a oferi niciun detaliu privind modul de implementare).
+Un capitol de Evaluare va evidenția atât calitățile măsurabile (bazate pe date) cât şi limitările contribuției. În cazul lucrărilor de tip A se va evidenția și modul în care s-a asigurat testarea software pe parcursul implementării (cu exemple de erori și modul de surprindere a lor).
+Pentru studiul literaturii se vor consulta și biblioteci digitale cu literatură științifică (AIS, ACM, IEEE, Springer, ScienceDirect etc.) sau platforme de indexare a acestora (Google Scholar).
+Concluziile vor reflecta asupra a ce s-a prezentat în lucrare și vor propune unele direcții de dezvoltare viitoare. Paragraful final al Concluziilor va descrie pe scurt ce consideră autorul că a învăţat pe parcursul realizării lucrării (învățarea unei tehnologii, aprofundarea unui fenomen economic, a unei metodologii etc.) și care consideră că e contribuția cea mai importantă a lucrării;
+Un Glosar de termeni va oferi definiții succinte privind termeni tehnici sau terminologie de specialitate din domeniul de aplicare. Nu se vor include aici abrevieri, pentru acelea există o secțiune separată în şablonul facultății.
+
+5. Formatarea
+Principii generale:
+* Formatarea lucrării trebuie să denote stăpânirea regulilor elementare de redactare a unui document Word;
+* Se va folosi şablonul de formatare al facultății, acela conținând și ghidul de redactare/formatare.
+Precizăm doar câteva cerințe punctuale:
+    1. Formatările să fie uniforme, fără variații de la un capitol la altul (toate paragrafele și spațierile,
+tabelele etc. să arate la fel structural și estetic);
+    2. Paginile să fie numerotate;
+    3. Orice tabel/figură să fie numerotată, cu o etichetă (caption) iar eticheta să aibă funcţie informativă (se vor evita etichete ce conțin un nume de fișier, precum add.html, folosind în schimb etichete care informează cititorul cu privire la ce vede, de exemplu Componenta client pentru adăugarea de produse);
+    4. Orice tabel/figură să fie menționată în text prin trimitere la numărul acesteia (Fig. 2, 3 etc.) evitând referirea la poziție relativă (,,figura de mai jos",,,de pe pagina precedentă" etc.) căci nu există garanția că acele poziții vor rămâne nemodificate pe parcursul elaborării lucrării; 5. Figurile să se poată citi la imprimare alb-negru (font rezonabil, contrast adecvat).
+
+7. Bibliografia
+Principiu general: se vor include referințe bibliografice nu doar la citatele exacte, ci şi la surse care au fost conspectate/rezumate.
+Suplimentar indicațiilor oferite prin şablonul facultății, se vor include în bibliografie:
+    * adrese URL pentru orice instrument/librărie/framework folosit (Bootstrap, Laravel, JQuery etc.):
+    * link de unde se poate obține;
+    * link cu documentația oficială şi eventualele tutoriale după care s-a deprins folosirea instrumentului;
+    * acolo unde se poate identifica, link la specificațiile originale (exemple: la standardul UML, la specificația REST, JSON, HTTP etc.);
+    * link la instrumente folosite în alte scopuri decât implementarea (instrumente pentru testare, mock-up design, diagrame etc.).
+    * linkurile de descărcare ale instrumentelor software se pot include și ca note de subsol, în secțiunea Tehnologii specifice menționată anterior (menită să rezume specificul tehnologic al lucrării); orice item din bibliografie, inclusiv adresele URL, trebuie să aibă titlu (să se indice ce se găseşte la acel link) și, acolo unde e identificabil, autorul/organizația și anul publicării:
+    * la adresele URL unde nu e identificabil autorul, obligatoriu se va preciza titlul; dacă un link duce la o carte/articol se va trece în bibliografie cartea/articolul cu toate detaliile sale (editură, an etc.); se poate adăuga la final și linkul cu o mențiune de forma ,,disponibil/accesat la ..." dar nu se va folosi linkul ca substitut pentru detaliile publicaţiei; se vor evita paginile Wikipedia şi depozitele colective de documente (ScriTube, Scribd, Referate etc.); în cazul Wikipedia se pot folosi sursele indicate pe orice pagină Wikipedia în secțiunea External Links (de unde sunt preluate informațiile sintetizate acolo);
+
+8. Diagramele
+Principii generale:
+    * Diagramele sunt cel mai concis mijloc de raportare/descriere în analiza de business, în proiectarea software sau în descrierea unui software deja implementat, pentru o comunicare eficientă cu potențialii evaluatori. Acestea permit lucrării de licență să prezinte nu doar ce s-a realizat, ci şi cum (partea de proiectare) și de ce (partea de analiză de business);
+    * Diagramele trebuie să fie în concordanţă cu ce s-a implementat, să nu conțină elemente care nu se regăsesc în implementare;
+    * Diagramele trebuie să fie specifice pentru lucrarea realizată, și nu generaliste (să nu fie valabile pentru orice lucrare, ci distinctive şi informative pentru fiecare lucrare în parte);
+    * Diagramele trebuie să respecte standardele de modelare adoptate (UML, BPMN, ER etc.).
+
+Consecinţe:
+    * Diagramele nu pot avea sursă bibliografică. Dacă au, înseamnă că ori sunt prea generaliste, ori sunt despre o altă aplicaţie;
+    * Se vor evita diagramele generaliste din literatură (MVC, client-server). Ele trebuie instantiate şi defalcate pe componentele concrete care s-au implementat, în următoarele scopuri:
+        * de a oferi cititorului răspunsuri rapide la întrebări precum: Ce fel de client s-a implementat? (React? Angular? Android?) Ce fel de back-end? (PHP? Laravel?) Ce fel de interfaţă? (REST? GraphQL? Mongoose?);
+        * de a permite defalcarea implementării în diagrama de componente: Ce controllere s- au creat? (produse, utilizatori etc.) Ce componente React? (afișare produse, editare produse etc.).
+
+Aşadar, elementele diagramelor trebuie să fie specifice proiectului și identificabile în cadrul proiectului:
+    * Exemple negative (generice): Client, Server, Database, Entity, Table, Interface;
+
+    * Exemple pozitive (specifice): Controller produse, Tabel clienți, Tabel produse, serviciu de plăți Paypal, interfață HTTP de tip REST, Componentă afișare produse13.
+    * Tipurile de diagrame relevante pot varia în funcție de tipul lucrării. Diferențiem în continuare tipurile de diagrame după relevanță:
+    Pentru lucrările de tip A:
+        * diagrame utile analizei de business, pentru a evidenția potențialele beneficii ale componentei/aplicației dezvoltate într-un context de business (fictiv sau real): Business Model Canvas, diagramă Fishbone, grafic Pareto, diagramă de obiective (cu accent pe obiectivele de business, și nu ale programatorului), diagramă use case, diagrame BPMN pentru procese de afaceri As-Is ("before") vs. To-Be ("after");
+        * diagrama de arhitectură/deployment va indica și în ce tehnologii s-a implementat fiecare
+        * diagrame utile în proiectare sau în descrierea implementării realizate: diagrame arhitecturale (deployment și de componente), schițe UX14 ("wireframes"), procese de utilizare (diagramă BPMN sau de activități, diagramă de stări), diagrame ale bazei de date (conceptuală și fizică), diagrama fluxurilor de date (DFD), iar acolo unde e relevant și diagrama de clase;
+
+Eventualii algoritmi implementați pot fi descriși:
+• fie ca pseudocod,
+• fie ca diagrame flowchart (scheme logice) sau diagrame de proces/activități.
+Notă: Descrierea de algoritmi direct prin exemplificarea directă a codului-sursă nu ține de capitolele de analiză/proiectare, ci de capitolul de implementare.

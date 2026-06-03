@@ -1,0 +1,14 @@
+sequenceDiagram
+    participant U as Utilizator
+    participant T as Toolspaedeia (Server)
+    participant S as Stripe API
+    participant DB as Baza de Date
+
+    U->>T: Selectează Curs și cere achiziție
+    T->>S: Creează Sesiune de Checkout
+    S-->>U: Redirect către pagina de plată Stripe
+    U->>S: Efectuează plata
+    S->>T: Trimite Webhook (Payment Success)
+    T->>T: Validează semnătura Webhook
+    T->>DB: Creează înregistrare în tabelul Purchases
+    T-->>U: Acordă acces la modulele cursului

@@ -1,0 +1,210 @@
+QUAESTUS MULTIDISCIPLINARY RESEARCH JOURNAL263
+THE USE OF GENERATIVE TECHNOLOGIES IN
+E-EDUCATION
+Loredana MOCEAN
+Miranda-Petronella VLAD
+Abstract: This paper explores an innovative technology capable of creating
+new content from existing data, capturing global attention with the launch of
+the first generative AI chatbot in 2022. The main types of AI and its applica-
+tions are presented, with a focus on the impact in education. Various software
+tools integrate generative AI, including OpenAI (ChatGPT, Codex), Micro-
+soft (Copilot, Azure AI), Adobe (Sensei, Photoshop Generative Fill), NVIDIA
+(Canvas, GauGAN), IBM (Watson), and Autodesk (Generative Design) .
+Google has integrated AI into multiple applications to improve functionality
+and user experience: Google Vertex AI, Google Search (RankBrain, BERT),
+Google Assistant, Google Photos (Magic Editor), Gmail (Smart Compose,
+Smart Reply), Google Translate, Google Maps, Google Ads, Google Cloud
+AI, YouTube and Google Docs.
+The paper’s conclusion highlights the transformative potential of generative
+AI in education, providing significant benefits for improving teaching and
+learning experiences. AI can create personalized educational content, pro-
+vide real-time feedback and adapt to individual learning styles. However,
+the integration of AI in education presents challenges such as data privacy
+and the need for continuous training of educators. Balancing technological
+advances with ethical considerations and ensuring equitable access are es-
+sential for generative AI to become a powerful ally in creating more dynamic
+and effective education systems.
+Keywords: Generative, Application, Education, Conversational AI
+INTRODUCTION
+Generative AI is a relatively new artificial intelligence service that,
+unlike its predecessors, can create new content by searching with advanced
+filters in the vast databases of the Internet, with the help of long-established
+search algorithms. Its extraordinary ability to produce human-like text, im-
+ages, sound and video has captured the world’s imagination since the first
+generative AI chatbot for consumers was released to the public in the fall of
+2022 [1]. The main types of AI are presented in Figure 1.
+QUAESTUS MULTIDISCIPLINARY RESEARCH JOURNAL264
+State of the Art
+There are numerous scientific articles exploring the impact and appli-
+cations of artificial intelligence (AI) in education. These articles provide a
+broad perspective on how AI is being integrated into educational environ-
+ments, the benefits it brings, and the challenges that need to be addressed.
+They offer valuable insights for educators, researchers, and policymakers
+interested in the intersection of AI and education.[4]
+Figure 1. Types of AI, programming and machine learning
+Applications integrated with AI
+Many software tools have integrated generative artificial intelligence
+to enhance functionalities and provide users with more advanced experienc-
+es. Here are some notable examples:
+1. OpenAI
+• ChatGPT: Used for text generation, answering questions,
+and virtual assistance.
+• Codex: Integrates AI into software development platforms
+to assist with coding.
+2. Google
+3. Microsoft
+• Microsoft Copilot: Integrates GPT models into Microsoft
+QUAESTUS MULTIDISCIPLINARY RESEARCH JOURNAL265
+365 applications (Word, Excel) to help generate content and
+analyze data.
+• Azure AI: Offers generative AI services for developers.
+4. Adobe
+• Adobe Sensei: Uses AI to generate and edit images, videos,
+and graphic designs.
+• Photoshop Generative Fill: Allows automatic addition and
+modification of image content.
+5. NVIDIA
+• NVIDIA Canvas: Transforms sketches into photorealistic
+images using generative AI.
+• NVIDIA GauGAN: Another tool for generating realistic
+images from simple drawings.
+6. IBM
+• IBM Watson: Includes generative AI functionalities to help
+with data analysis and generating reports and predictions.
+7. Autodesk
+• Autodesk Generative Design: Used in industrial design
+and engineering to generate multiple design options based
+on specified criteria.
+8. OpenAI
+• DALL-E: Generates images based on textual descriptions.
+• Jukedeck: Generates personalized music.
+These tools demonstrate the power and versatility of generative artifi-
+cial intelligence, which can transform the way we work, create, and interact
+with technology.
+Google Applications integrated with AI
+Google has integrated artificial intelligence into several of its appli-
+cations, enhancing functionality and user experience in various ways. Here
+are a few notable examples.
+One of the most useful applications by Google is Google Vertex AI.
+It can be accessed from any browser using an account. Vertex AI is an ar-
+tificial intelligence platform developed by Google Cloud that enables the
+development, training, and deployment of machine learning (ML) and AI
+models. It is designed to simplify the process of creating and managing AI
+solutions, offering a wide range of integrated tools and services.
+QUAESTUS MULTIDISCIPLINARY RESEARCH JOURNAL266
+Figure 2. Google Vertex AI (https://console.cloud.google.com/)
+In our projects, collaborators can be added on various levels, budget esti-
+mates or different alerts.
+Figure 3. Edit the collaboration project in Vertex AI
+For budget creation we have an automation of the process through
+which we can check each stage of the project. A budget allows us to track
+actual expenses against planned expenses.
+We can view and configure cost history, current cost trends and esti-
+mated costs with intuitive reports available in the Google Cloud console.
+Several different reports are available for your billing data analysis needs
+[5].
+Google has also integrated artificial intelligence into other tools and
+platforms to improve functionality, efficiency and user experience. Here are
+some of the main Google tools and platforms that benefit from AI integra-
+tion:
+Google Search, has two new modules called:
+• RankBrain: An artificial intelligence system that helps understand
+and process complex search queries.
+• BERT (Bidirectional Encoder Representations from Transformers):
+QUAESTUS MULTIDISCIPLINARY RESEARCH JOURNAL267
+A natural language processing model that improves context understanding
+in search queries. BERT is designed to pre-train deep bidirectional repre-
+sentations from unlabeled text by jointly conditioning on both left and right
+context in all layers.[2]
+Google Assistant (www.assistant.google.com) has an AI virtual as-
+sistant that responds to voice commands, performs tasks and answers ques-
+tions using natural language understanding.
+Figure 4. Google Assistant Window, for Developers
+Google Photos uses AI to organize photos, recognize faces, create
+automatic albums and offer editing suggestions. Magic Editor, an AI tool
+incorporated in Google Photos, will become available on Android and iOS
+to more Google Photos users, helping you to make complex edits in an in-
+tuitive way leveraging generative AI.
+Figure 5. Google Photos with AI instruments integrated
+QUAESTUS MULTIDISCIPLINARY RESEARCH JOURNAL268
+Classical Gmail has two important options:
+• Smart Compose and Smart Reply: Features that use AI to suggest
+completions and auto-reply to emails.
+• Spam Filter: Spam filtering system based on machine learning to
+detect and block unwanted emails.
+Google Translate uses advanced AI models for real-time text trans-
+lation, language recognition and improved translation accuracy. Google
+Cloud’s AI-powered APIs help you translate documents, websites, apps,
+audio files, videos, and more at scale with best-in-class quality and enter-
+prise-grade control and security [5]. It can translate from handwriting, voice,
+and camera, and outputs speech and text-over-image. Google Translate uses
+Google neural machine translation [3].
+Google Maps integrates AI to provide optimal routes, real-time traf-
+fic estimates, location suggestions and reviews based on user preferences.
+Google Maps usually shows different locations with reviews. Following the
+update, users would be able to identify any listed for example, restaurant’s
+food items using AI along with other details like cost, availability, and nu-
+tritional value.
+Figure 6. Google Maps with AI integrated
+Google Ads use AI to optimize ad campaigns, target the right audi-
+ences and maximize ROI for advertisers.
+Google Cloud AI provides various AI services including Cloud Au-
+toML, Dialogflow for chatbot development, Vision AI for image recogni-
+tion and Natural Language API for text analysis and processing.
+YouTube uses AI for personalized video recommendations, detecting
+and removing inappropriate content, and improving video quality with fea-
+QUAESTUS MULTIDISCIPLINARY RESEARCH JOURNAL269
+tures like image stabilization.
+Google Docs integrates AI for grammar and spelling correction sug-
+gestions, as well as style and wording recommendations.
+Documents can be created and edited collaboratively, together with
+team members, in real time using quick access permission. Comments, sug-
+gestions and tasks can be used to keep the activity running without interrup-
+tions. @-mentions can be used to include relevant people, files, and events
+in online files and in Documents for a complex collaboration.
+Figure 7. Google Doc window, using templates and documents
+Google Home use AI to control smart home devices, answer ques-
+tions and automate household tasks.
+Figure 7. Google Home to easily manage your smart home
+QUAESTUS MULTIDISCIPLINARY RESEARCH JOURNAL270
+CONCLUSION
+Generative AI integrated into education holds transformative poten-
+tial, offering a range of benefits that can significantly enhance teaching and
+learning experiences. The ability of generative AI to create personalized
+educational content, provide real-time feedback, and adapt to individual
+learning styles paves the way for more effective and engaging education-
+al environments. By automating administrative tasks, such as grading and
+content creation, AI allows educators to focus more on interactive and per-
+sonalized teaching methods.
+However, the integration of generative AI in education also presents
+challenges, including concerns about data privacy, the digital divide, and
+the need for educators to develop new skills to effectively use AI tools. Ad-
+dressing these challenges requires careful planning, robust ethical frame-
+works, and ongoing training for educators.
+In conclusion, while generative AI offers immense opportunities for
+revolutionizing education, its successful integration will depend on balanc-
+ing technological advancements with ethical considerations and ensuring
+equitable access for all students. By doing so, generative AI can become a
+powerful ally in creating more dynamic, inclusive, and effective education-
+al systems.
+WEBSITES
+https://www.oracle.com/ro/artificial-intelligence/generative-ai/what-is-gen-
+erative-ai/
+https://research.google/pubs/bert-pre-training-of-deep-bidirectional-trans-
+formers-for-language-understanding/
+https://www.lavivienpost.com/google-translate-and-transformer-model/
+https://www.eschoolnews.com/digital-learning/2024/02/05/impact-of-artifi-
+cial-intelligence-in-education/
+www.cloud.google.com
+Notes on the authors
+Loredana Mocean
+loredana.mocean@ubbcluj.ro
+Babeş-Bolyai University, Cluj-Napoca, Romania
+Miranda-Petronella Vlad
+miranda.vlad@cantemircluj.ro
+“Dimitrie Cantemir” Christian University, Bucharest, Romania
+© 2024. This work is published under
+https://creativecommons.org/licenses/by-nc-nd/4.0/(the
+“License”). Notwithstanding the ProQuest Terms and
+Conditions, you may use this content in accordance with the
+terms of the License.

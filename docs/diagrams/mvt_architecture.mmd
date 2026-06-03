@@ -1,0 +1,12 @@
+graph TD
+    User((Utilizator)) -->|Request HTTP| View[Stratul de Vizualizare - View]
+    View -->|Interogare date| Model[Stratul de Model - Model]
+    Model -->|Date extrase| View
+    View -->|Context/Date| Template[Stratul de Template - Template]
+    Template -->|Randare HTML| User
+
+    subgraph Logic_Server
+    View
+    Model
+    Template
+    end

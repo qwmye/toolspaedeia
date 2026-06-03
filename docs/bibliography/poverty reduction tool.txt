@@ -1,0 +1,317 @@
+Annals of the „Constantin Brâncuşi” University of Târgu Jiu, Economy Series, Special Issue, volume I/2016
+INFORMATION AND COMMUNICATIONS TECHNOLOGY AS A POVERTY
+REDUCTION TOOL
+CLAUDIA ANDREEA UREAN,
+PHD CANDIDATE, BABEȘ-BOLYAI UNIVERSITY, CLUJ-NAPOCA, ROMANIA
+e-mail: andreea_urean@yahoo.com
+VIOREL DORIN LĂCĂTUȘ,
+ASSOC.PROF. PHD, BABEȘ-BOLYAI UNIVERSITY, CLUJ-NAPOCA, ROMANIA
+e-mail: viorel.lacatus@econ.ubbcluj.ro
+LOREDANA MOCEAN,
+ASSOC.PROF. PHD, BABEȘ-BOLYAI UNIVERSITY, CLUJ-NAPOCA, ROMANIA
+e-mail: loredana.mocean@econ.ubbcluj.ro
+Abstract
+In a world where the scourge of poverty affects more and more people, we believe that any possible wicket,
+any possible tool to reduce poverty must be exploited. In this context, due to the expansion that information and
+communications technology has experienced in recent years in developed and in developing countries, in poor
+countries, starting from the premise that poverty means not just the lack of resources to cover basic needs, food,
+clothing, housing, but also limiting access to information, our work is projected as an analysis of ICT’s impact in
+poverty reduction. Our research is an extension of our latest work “A view on the role of ICT in the fight against
+poverty”, and is built on a review of the existing studies from the specialized literature which analyze the relationship
+between poverty and ICT and confirms the role of ICT in reducing poverty. The literature review that highlights the
+role of ICT in poverty reduction is followed by a concise analysis of ICT penetration in Romania.
+Keywords: information and communications technology (ICT), poverty reduction, ICT penetration, Romania.
+Classification JEL: I39, D80, I32, I38, L86
+1. Introduction
+In the beginning of Romania’s transition to the market economy poverty represented a marginal phenomenon,
+today poverty represents a major problem affecting a considerable number of people across the world. According to a
+World Bank report, created in association with the International Monetary Fund, the global number of people living on
+less than $ 1.9 / day reached 9.6% in 2015. The situation is alarming even in Romania, which is the “champion” of the
+European Union regarding the relative poverty rate, which reached a record level of 25.4% in 2014 and 2015; 2016 is
+expected to follow the same trend. Therefore, the economic and financial crisis started in 2008, despite technological
+advances, is reflected in the poverty statistics. This causes a concern increasingly raised between decision makers and
+researchers in the field to find solutions, appropriate policies and instruments for poverty reduction.
+We live in a knowledge society and knowledge, information, mean economic, political and social power. Due to
+the expansion that ICT has experienced in most recent years in many emerging countries, governments focus their
+attention on developing information and communications technologies (ICTs), “deemed as a key in reducing poverty
+through the impact these technologies have on society and on economy: providing access to education through
+information and communication infrastructure development and increasing labor productivity” (Urean et al., 2016).
+National Strategy on the Digital Agenda for Romania aimed directly the ICT sector to contribute to economic
+growth (Roemer&Gugerty (1997) consider poverty reduction as one of the benefits of economic growth) and
+Romania's competitiveness, “both through direct actions such as support for e-Commerce sector and effective
+development of the Romanian ICT sector and indirect actions such as increasing efficiency and reducing public sector
+costs in Romania, improving the productivity of the private sector by reducing administrative barriers in relation to the
+state, improving the competitiveness of the labor force in Romania and not only.” (National Strategy on Digital
+Agenda, 2014).
+Romania is a country of paradoxes: 1. The paradox is that while data on the economy are optimistic, despite
+the upsurge of GDP, despite the economic growth forecast for 2016 on domestic demand and measures of fiscal
+relaxation, the statistics on poverty are worrying; 2. The second paradox is that in European Union countries rankings,
+„ACADEMICA BRÂNCUŞI” PUBLISHER, ISSN 2344 – 3685/ISSN-L 1844 - 7007
+107
+Annals of the „Constantin Brâncuşi” University of Târgu Jiu, Economy Series, Special Issue, volume I/2016
+conducted by Internet World Stats, in 2015 Romania is placed 8th in terms of Internet use, while its poverty rate ranks
+first place between all EU countries.
+Figure no.1. European Union - Top 10 Internet Countries – November 2015
+(millions of users)
+Source: authors’ processing based on the data provided by Internet World Stats
+2. Poverty and ICT – the conceptual framework
+2.1. Poverty definitions
+Urean et al. (2016) consider that defining poverty is not simple and unambiguous, although it seems practically
+conventional; the specialized literature identified conflicting points of view on the concept and methodology for
+measuring poverty.
+The World Bank Organization describes poverty in the following way: “Poverty is hunger. Poverty is lack of
+shelter. Poverty is being sick and not being able to see a doctor. Poverty is not having access to school and not knowing
+how to read. Poverty is not having a job, is fear for the future, living one day at a time.
+Over time, some of the most eminent sociologists gave a series of definitions of poverty that we will arrange in
+chronological order: Rowntree (1901) “A family is counted as poor if their total earnings is insufficient to Obtain the
+minimum necessities of merely physical efficiency”; Beveridge (1942) “as regards the minimum income needed a
+person of working age for subsistence during interruption of earnings is sufficient to take into account food, clothing,
+fuel, light and various household expenses and rent, plus a margin to be allowed for inefficiency costs”; Henderson
+(1975) “To the extent that poverty is defined by reference to an acceptable minimum standard of living, is a relative
+concept. [It requires] a value judgment [which] should take account of productivity in the economy and community
+attitudes. To determine a minimum standard of living is difficult given the diversity of lifestyles and values of
+Australian society and the multitude of issues that must be considered, such as food, shelter, clothing, health and
+education”; Townsend (1979) “Individuals’ families and groups in the population can be said to be in poverty when
+they lack the resources to obtain the types of diet, participate in the activities and have the living conditions and
+amenities which are customary, or at least widely encouraged or approved, in the societies to which they belong”;
+Ravallion (1994) “Poverty can be said to exist in a given society when one or more persons do not attain a level of
+economic well-being deemed to constitute a reasonable minimum by the standards of that society.”
+2.2. ICT's definitions
+UNESCO (2002) stated that “ICT is the combination of informatics technology with other related
+technologies, specifically communication technology” and represents a field of work and study that “includes
+technologies such as desktop and laptop computers, software, peripherals, and connections to the Internet that are
+intended to fulfil information processing and communications functions” (Statistics Canada, 2008).
+Flor (2001) considered that “ICT is the collective term given to the new generation (second and third)
+information technology spawned by the merger of computers and telecommunications. ICT may be Web-enabled,
+networked, or stand-alone; it may make available an information or knowledge system; or it may generate an
+„ACADEMICA BRÂNCUŞI” PUBLISHER, ISSN 2344 – 3685/ISSN-L 1844 - 7007
+108
+Annals of the „Constantin Brâncuşi” University of Târgu Jiu, Economy Series, Special Issue, volume I/2016
+information or knowledge product or service. One feature of ICT is the convergence of media (print, audio and video –
+hence, multimedia) made possible by a common digital platform. “
+In Wikipedia we can find the following definition: “Information and communications technology is an
+extended term for information technology (IT) which stresses the role of unified communications and the integration
+of telecommunications (telephone lines and wireless signals), computers as well as necessary enterprise
+software, middleware, storage, and audio-visual systems, which enable users to access, store, transmit, and manipulate
+information”
+.
+In Zuppo’s opinion, the challenge of defining ICT, in a universal sense, becomes apparent when one considers
+that diverse applications of the term ICT exist within several contexts and treatments of the term. The continuum of
+definitions and applications of ICT one may encounter are further divided as the span of differences is represented in
+kinds rather than merely by degrees. Although the term ICT is found within a variety of contexts, there has been an
+underdeveloped response to the development of a framework for hierarchical classifications representing empirical
+definitions and applications of the term” (Zuppo, 2012).
+3. The role of ICT in the fight against poverty – literature review
+Most of the existing studies have mainly focused attention on the ICT’s role that on the economic, social and
+cultural life, while few of them that analyzed its impact in the fight against poverty, although “it is obvious that ICT
+contributes to GDP growth, increases labor productivity and has an undeniable role in the educational process” (Urean
+et al.,2016).
+The first section of our study represents a concise analysis of the research literature that highlighted the role of
+ICT in poverty reduction and we start in this analysis from Figueres’ (2014) point of view who considered that all three
+components of the term “information and communications technology” add value to the development process: “access
+to information enables people to make informed decisions which are beneficial for both their private and professional
+lives; communication enables people to join forces, share views and ideas, and co‐create solutions, thereby enabling
+them to address their own individual problems; technology helps us to gather, access and disseminate information more
+quickly”
+.
+In the research literature there is no universally accepted opinion confirming the importance of ICT in poverty
+reduction. Kim (2014) identified two groups of people: the supporters of ICT which believed that the new technology is
+critical for emerging countries and on the other side, the skeptics which believe that investment in ICT is not a priority.
+In his opinion, “ICT investments can reduce poverty by increasing not only economic development, but by also
+increasing other aspects of development such as political inclusion, freedom of speech, and gender equality. While
+investments in technology in general can reduce poverty, most of these investments mainly increase economic
+development. ICT investments, however, are particularly important because they reduce poverty by promoting
+development beyond just the economic aspect”. The group of “skeptics” was also detected by Tambo (2003). Tambo
+(2003) argue that this group perceived ICT as “an expensive distraction, rather than a powerful tool for empowerment
+of the poor”
+.
+Among the supporters of ICT there is also Greenberg (2005) which believes that “ICTs can, and in fact must, be
+used as a tool in the fight against poverty, for poverty alleviation, the focus must be on poverty issues, with ICTs
+simply being tools and enablers. The use of ICTs can be a critical and required component of addressing some facets of
+poverty”
+.
+The role of ICT in poverty reduction is also confirmed by the European Parliamentary Service (2015): “ICTs are
+powerful instruments to provide people with economic opportunities, knowledge and services that can alleviate poverty
+in all its dimension. The significance of ICTs for poverty alleviation and reduction depends on how a specific
+technology can be integrated into the livelihood strategies of the poor. For example, there is abundant evidence that
+mobile phone technology can help alleviate poverty, by providing services that were previously unavailable to poor and
+remote communities”. There were other researchers, like Bhavnani&others. (2008), Cardomy (2012), Sife&others
+(2010), who examined the role of mobile phone in poverty reduction, concluding that the deployment of mobile phones
+does have a multi-dimensional positive impact on sustainable poverty reduction.
+According to the UNDP, “Information and communications technology has become an indispensable tool in the
+fight against world poverty. ICT provides developing nations with an unprecedented opportunity to meet vital
+development goals such as poverty reduction, basic health care, and education far more effectively than before. Those
+nations that succeed in harnessing the potential of ICT can look forward to greatly expanded economic growth,
+dramatically improved human welfare, and stronger forms of democratic government.”
+The World Bank Report proposed a strategy for attacking poverty through ICTs in three ways: “promoting
+opportunity, facilitating empowerment and financial risk mitigation” (Cecchini and Scott, 2003).
+Flor (2001) in the paper entitled “ICT and poverty. The indisputable link” explored the relationship between ICT
+and poverty, on the assumption that: “information generates opportunities, opportunities generate resources, access to
+information leads to access to resources, to opportunities that generate resources. In a knowledge society, poor
+information is a source of poverty”. She stated that the lower the number of Internet service providers, telephone lines,
+„ACADEMICA BRÂNCUŞI” PUBLISHER, ISSN 2344 – 3685/ISSN-L 1844 - 7007
+109
+Annals of the „Constantin Brâncuşi” University of Târgu Jiu, Economy Series, Special Issue, volume I/2016
+PCs and TVs, the higher the Human Poverty Index. The study identifies four paradigms in the poverty analysis:
+technological, economic, structural and cultural. According to the technological paradigm, the main cause of poverty is
+lack of knowledge of technology, considering that rich nations are using modern technologies in industry, agriculture
+and other sectors of the economy. Some of the recommendations made by Flor (2001) were as follows: developing
+poverty reduction programs that use ICT, making the best use of the maps of poverty, governmental support for the use
+of ICT in education.
+If is tailored to the needs of the poor and if is used in the right way and for the right purposes, ICT can contribute
+to poverty reduction (Kelles-Viitanen, 2003). ICT can be used to accelerate the eradication of poverty both in the more
+traditional sense of promoting economic opportunities, and in the modern sense, by catalyzing awareness and
+empowerment as well as sector strengthening. (International Institute for Communication and Development, 2014).
+Sofowora (2009), May (2012), Howard and Horn (2014) also analyzed the link between poverty and ICT,
+concluding that where the poverty rate is low, there is high access to ICT, and where the poverty rate is relative high,
+the access to ICT is limited.
+Singh (2003) arrived to a significant conclusion, that we consider to be very relevant: “ICT is not a magic cure
+for hunger or poverty. However, the right information at the right time can help in finding a solution”
+.
+4. Statistics on ICT access in Romania
+Based on the utilization of information and communications technologies, Romania is placed among countries
+with a low level of access and utilization. There are a few important questions that need precise answers: Are there
+differences between urban and rural areas regarding the access to ICTs? Are there differences in the level of education?
+Are there differences according to age? These are just some of the questions we try to answer using the data supplied
+by the National Statistics Institute, data that will shape a descriptive image on ICT utilization in Romania.
+4.1. Residence environment vs. ICT
+In Romania, among other factors, the residence environment can be an important and determinant factor of
+digital stratification, differences between urban and rural are not insignificant at all, as indicated by the statistics for the
+2007-2015 period:
+Figure no.2. The share of households having access to a computer, by residence in the period 2007-2015
+(%)
+Source: authors’ processing based on the data provided by National Institute of Statistics
+One of the possible explanations for this gap, in addition to the financial one, may possibly be the lack of
+infrastructure in rural areas in comparison to the high level of digitization in many of the Romanian cities.
+„ACADEMICA BRÂNCUŞI” PUBLISHER, ISSN 2344 – 3685/ISSN-L 1844 - 7007
+110
+Annals of the „Constantin Brâncuşi” University of Târgu Jiu, Economy Series, Special Issue, volume I/2016
+Figure no.3. The share of households having Internet access by residence environment in the period 2007-
+2015 (%)
+Source: authors’ processing based on the data provided by National Institute of Statistics
+4.2. Age vs. ICT
+of the family is older:
+An analysis of statistical data based on the householder age, indicates that Internet use decreases where the head
+Table no.1. The share of households having Internet access by age of the householder in the period 2007-2015 (%)
+The age of the
+householder 2007 2008 2009 2010 2011 2012 2013 2014 2015
+16-24 years 25-34 years 29,2 39,8 49,6 58,2 64,4 72,4 74 83,3 86,5
+35-44 years 45-54 years 32,2 38,2 50,2 52,8 58,3 66,1 69,2 71,5 80
+55-64 years 65-74 years 75 years and over 2,8 4,6 8,9 9,8 9,6 15,4 16 15,6 18,6
+38 54,3 67,1 70,8 82,7 81,3 76,5 87,3 82,1
+31,4 39,8 49,9 53,3 57,5 66,5 71,1 77,1 82,8
+16,7 25,7 31,7 38,6 43,5 49,9 55,4 54,6 61,9
+5,7 10,2 14,1 17,2 23,9 25,2 30,2 30,1 38,7
+Source: authors' processing based on the data provided by National Institute of Statistics
+We can observe that where the householder is 16-24 years old, 82% of households have internet access, while
+household access to the internet decreases by 20% (61.9%) where the head of the family is older. An analysis of the
+frequency of internet use, by age group, indicates that young people use computers and access the Internet daily or
+almost daily. In case of senior citizens, even when they have a computer and Internet access, the use of ICT is
+extremely low.
+4.3. Level of education vs. ICT
+Education accompanied by residence and age is another determinant factor with a key role in influencing an ICT
+profile and for digital stratification. The statistics provided by the National Institute of Statistics indicate high
+discrepancies regarding computer use by the level of education: the number of people who use the computer and the
+internet increases with the level of education.
+„ACADEMICA BRÂNCUŞI” PUBLISHER, ISSN 2344 – 3685/ISSN-L 1844 - 7007
+111
+Annals of the „Constantin Brâncuşi” University of Târgu Jiu, Economy Series, Special Issue, volume I/2016
+Figure no.4. The share of households having access to a computer by education level of householder, in 2015
+(%)
+Source: authors’ processing based on the data provided by National Institute of Statistics
+We observe that 93.2% of households whose head of the family has a higher level of education have access to a
+computer, compared to 22.1% of households whose head of the family has a lower level of education (primary
+education).
+5. Conclusions
+Our paper is an extended version of our latest research (Urean et al.,2016) , a review of the specialized studies that
+have examined the role of information and communications technology in poverty reduction. This represents an
+important issue nowadays, which reaches alarming heights at global and national levels, Romania being at the top of
+the EU’s relative poverty rate. The incontestable role of ICT in poverty reduction is confirmed by most existing studies
+in the literature. To see who are the so-called “digital non-haves” in Romania, we continued our study with a brief
+descriptive analysis of the data provided by the National Institute of Statistics, analysis which allows us to conclude
+that factors such as the residence - urban/rural, age and level of education have a significant influence over the use of
+ICT. As research perspectives we intend to compare ICT indicators with poverty indicators to comprehend whether the
+statistical data confirms the link between ICT and poverty in our country.
+6. Acknowledgements.
+A part of the present research was supported by the PNII-RU-TE-2014-4-2640 UEFISCDI grant “eTrajectory –
+students’ professional trajectory”.
+7. References
+[1] Beveridge, W., The Beveridge Report led to the establishment of a system of social security and the National
+Health Service after the end of the war, 1942.
+[2] Beynon-Davies, P., The ‘language’ of informatics: The nature of information systems, International Journal of
+Information Management, Volume 29, Issue 2, 2009, pp. 92–103.
+[3] Bhavnani, A., Chiu,W., The role of mobile phones in sustainable rural poverty reduction, ICT policy division
+global information and communications department (GICT), 2008.
+[4] Breșfelean, V.P., Urean, C.A, The trajectory of young people in education and in the labor market - ICT
+implications, LDMD 3, 3-4 December 2015, pp.540-550.
+[5] Cardomy, P., The Informationalization of Poverty in Africa? Mobile Phones and Economic Structure,
+Annenberg School for Communication & Journalism. Published under Creative Commons Attribution-Non
+Commercial-Share Alike 3.0. Volume 8, Number 3, Fall 2012, 1–17, 2012.
+[6] Cecchini, S., Scott, C., Can information and communications technology applications contribute to poverty
+reduction? Lessons from rural India. Information Technology for Development, 2003, 10, 73‐ 84.
+[7] Colrain M. Zuppo M., Defining ICT In A Boundaryless World: The Development Of A Working Hierarchy,
+International Journal of Managing Information Technology (IJMIT) Vol.4, No.3, August 2012.
+„ACADEMICA BRÂNCUŞI” PUBLISHER, ISSN 2344 – 3685/ISSN-L 1844 - 7007
+112
+Annals of the „Constantin Brâncuşi” University of Târgu Jiu, Economy Series, Special Issue, volume I/2016
+[8] UNDP, Driving Information and Communications Technology for Development: A UNDP Agenda for Action
+2000 – 2001’. See http://www.undp.org/info21.
+[9] Europena Parliment, ICT in the developing world, Study IP/G/STOA/FWC/2013-001/LOT4/C3 December,
+2015.
+[10] Flor, A.G., ICT and poverty: the indisputable link, Paper for Third Asia Development Forum on “Regional
+Economic Cooperation in Asia and the Pacific” Bangkok, 2001.
+[11] Greenberg, A., ICTs for Poverty Alleviation: Basic Tool and Enabling Sector, ICT for Development Secretariat,
+Department for Infrastructure and Economic Cooperation, SIDA, 2005.
+[12] Guvernul României, Ministerul pentru societatea informațională, Strategia Națională privind Agenda Digitală
+pentru România, 2013
+[13] Henderson, R.F., Poverty in Australia First Main Report April 1975, Commission of Inquiry into Poverty,
+AGPS, Canberra, 1975.
+[14] Howard, G., Horn, A., The relationship between access to ICT and poverty in South Africa, Africanus: Journal
+of Development Studies, Vol. 44, No. 1, 2014.
+[15] International Institute for Communication and Development, http://www.ict4dc.org/blog/david-
+hollow/international-institute-communication-and-development-iicd, 2014.
+[16] Kelles-Viitanen, A., The Role of ICT in Governing Rural Development, http://www.ejir.au.edu/wp-
+content/uploads/2014/12/Sample_1.pdf, 2003.
+[17] Kim, V., The Importance of Information and Communications Technology in Reducing Poverty, Washington and
+Lee University, 2014.
+[18] Kundishora, S.M., “The Role of Information and Communication Technology ICT in Enhancing Local
+Economic Development and Poverty Reduction, http://siteresources.worldbank.org/CMUDLP/
+Resources/Role_ICT_paper.pdf, 2009.
+[19] May, J., Tweeting out of poverty: Access to information and communication technologies as a pathway from
+poverty, paper presented at the Towards Carnegie III.
+[20] Ministry for Information Society, National Strategy on Digital Agenda for Romania, 2014.
+[21] Ravallion, M., Poverty Lines, The New Palgrave Dictionary of Economics, 2nd edition, Larry Blume and Steven
+Durlauf (eds) London: Palgrave Macmillan, 1994.
+[22] Ravallion, M., Poverty Lines. Dictionary of Economics, 2nd edition, 1994.
+[23] Roemer, M., Gugerty M.K., Does economic growth reduce poverty?, CAER I1 Discussion Paper No. 4 April
+1997;
+[24] [1] Rowntree, B. S., Poverty: A study of town life, London: Macmillan, 1901.
+Rukmani Gounder, , Zhongwei Xing, Impact of education and health on poverty reduction: Monetary and non-
+monetary evidence from Fiji, Economic Modelling Volume 29, Issue 3, May 2012, Pages 787–794.
+[25] Singh, A., Information and communication technologies (ICT) and sustainable development’, Development
+Alternatives, New Delhi, India, memo, 2003.
+[26] Smith, A.,An Inquiry into the Nature and Causes of the Wealth of Nations, Edinburg, Book 5, Chapter 2, Article
+4.,1776.
+[27] Sofowora, O., The potential of using information and communication technology for poverty alleviation and
+economic empowerment in Osun State, Nigeria, IJEDICT Vol. 5, Issue 3, 2009, pp. 131-140.
+[28] Statistics Canada, Information and communications technologies (ICTs). Accessed 15 April 2010 from
+http://www.statcan.gc.ca/pub/81-004-x/def/4068723-eng.htm, 2008.
+[29] Tambo, I., Integrating ICT in Development Programmes, www.oecd.org/dac/ict, 2003.
+[30] Townsend, P., Poverty in the United Kingdom: A survey ofhousehold resources and standards of living,
+Harmondsworth: Penguin, 1979.
+[31] [32] UNDP, Human Development Report, 2015.
+UNESCO, Information and communication technology in education - a curriculum for schools and programme of
+teacher development, 2002.
+[33] UNESCO, Information and communication technology in education. Accessed 15 April 2010 from
+http://unesdoc.unesco.org/images/0012/001295/129538e.pdf., 2002.
+[34] Urean C.A., Lacatus V.D., Mocean L., A view on the role of information and communications technology
+(ICT) in the fight against poverty, accepted for publication in Proceedings of the International Scientific
+Conference ECOTREND 2016 Performance, Competitiveness, Creativity, 18-19 nov.Targu Jiu, Romania, ISSN
+2248-0889, „Academica Brancusi” Publisher
+[35] Wikipedia, https://en.wikipedia.org/wiki/Information_and_communications_technology.
+[36] World Bank Institute, Priorities and Strategies for Education. A World Bank Review, Development in Practice,
+1995.
+[37] Zuppo, M., Defining ICT in a boundaryless world: The development of a working hierarchy, International
+Journal of Managing Information Technology (IJMIT) Vol.4, No.3, August 2012.
+„ACADEMICA BRÂNCUŞI” PUBLISHER, ISSN 2344 – 3685/ISSN-L 1844 - 7007
+113
