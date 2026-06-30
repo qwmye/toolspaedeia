@@ -4,7 +4,6 @@ from toolspaedeia.settings import *  # noqa: F403
 
 DEBUG = False
 
-# --- Security -----------------------------------------------------------
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 STRIPE_SECRET_KEY = os.environ["STRIPE_SECRET_KEY"]
 STRIPE_WEBHOOK_SECRET = os.environ["STRIPE_WEBHOOK_SECRET"]
@@ -17,7 +16,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://qwmyee.pythonanywhere.com",
 ]
 
-# --- Database ------------------
 DATABASES = {
     "default": {
         "ENGINE": os.environ["DATABASE_ENGINE"],
@@ -29,7 +27,6 @@ DATABASES = {
     }
 }
 
-# --- HTTPS / cookie hardening -------------------------------------------
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True
@@ -38,5 +35,4 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# PWA settings
 PWA_APP_DEBUG_MODE = False

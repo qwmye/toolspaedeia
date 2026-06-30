@@ -33,9 +33,7 @@
                     type: "WARM_PURCHASED_CONTENT",
                     urls: urls
                 });
-            } catch (_error) {
-                // Non-fatal: app remains functional even if background warming fails.
-            }
+            } catch (_error) {}
         }
 
         function attachLogoutCacheClear() {
@@ -53,9 +51,7 @@
                             });
                         }
                     })
-                    .catch(() => {
-                        // Ignore failure; logout should proceed regardless.
-                    });
+                    .catch(() => {});
             });
         }
 

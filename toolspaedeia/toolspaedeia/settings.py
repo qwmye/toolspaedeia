@@ -56,7 +56,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "toolspaedeia.wsgi.application"
 
 
-# Database
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -65,7 +64,6 @@ DATABASES = {
 }
 
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -82,7 +80,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -92,7 +89,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files
 STATICFILES_DIRS = [str(BASE_DIR / "static")]
 
 STATIC_URL = "/static/"
@@ -101,16 +97,13 @@ STATIC_ROOT = str(BASE_DIR / "staticfiles")
 MEDIA_URL = "/media/"
 MEDIA_ROOT = str(BASE_DIR / "media")
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "users:login"
 
-# Clickjacking protection settings
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
-# PWA settings
 PWA_APP_NAME = "Toolspaedeia"
 PWA_APP_SHORT_NAME = "Toolspaedeia"
 PWA_APP_DESCRIPTION = "A collection of tools and courses."
